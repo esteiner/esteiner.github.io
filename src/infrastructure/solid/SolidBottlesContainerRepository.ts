@@ -10,7 +10,7 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
     private bottlesUrl: string;
 
     constructor(storageUrl: URL) {
-        this.bottlesUrl = storageUrl.toString() + 'private/kellermeister/bottles/bottles.ttl';
+        this.bottlesUrl = storageUrl.toString() + 'private/kellermeister/bottles/bottles#it';
     }
 
     async fetchBottlesContainer(): Promise<BottlesContainer | null> {
@@ -18,8 +18,9 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
         if (bottlesContainer) {
             return bottlesContainer;
         } else {
-            console.log("fetchBottlesContainer: not found");
-            return null;
+            console.log("fetchBottlesContainer: not found, creating it now");
+            let newBottlesContainer = new BottlesContainer({ url: this.bottlesUrl });
+            return await newBottlesContainer.save();
         }
     }
 
