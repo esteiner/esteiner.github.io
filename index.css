@@ -1,0 +1,40 @@
+/* Grundlegende Styles */
+html {
+    /* colors */
+    --app-color-primary: #0F5132;
+
+    /* decrease lightness of primary color so we achieve a better contrast on white */
+    --app-primary-on-white-background: hsl(from var(--app-color-primary) h s calc(l * 0.75));
+
+    /* spacing */
+    --app-spacing-space-0: 0.125 rem; /*  2px */
+    --app-spacing-space-1: 0.25rem; /*  4px */
+    --app-spacing-space-2: 0.5rem; /*  8px */
+    --app-spacing-space-3: 0.75rem; /* 12px */
+    --app-spacing-space-4: 1rem; /* 16px */
+    --app-spacing-space-5: 1.25rem; /* 20px */
+    --app-spacing-space-6: 1.5rem; /* 24px */
+    --app-spacing-space-7: 2rem; /* 32px */
+    --app-spacing-space-8: 4rem; /* 64px */
+
+    /* fonts */
+    --app-font-family: 'Roboto Condensed', sans-serif;
+    --app-font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --app-font-optical-sizing: auto;
+    --app-font-weight: 200;
+    --app-font-style: normal;
+    --app-font-size: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--app-font-family);
+    min-height: 100vh;
+    padding-top: 130px;
+    padding-bottom: 120px;
+}

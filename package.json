@@ -1,0 +1,32 @@
+{
+  "name": "kellermeister",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@inrupt/vocab-solid": "^1.0.4",
+    "@inrupt/solid-client-authn-browser": "^3.1.1",
+    "@inrupt/solid-client": "^3.0.0",
+    "@vaadin/router": "2.0.1",
+    "lit": "^3.3.1",
+    "soukai": "^0.7.1",
+    "soukai-solid": "^0.7.1",
+    "@noeldemartin/solid-utils": "^0.6.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-lit-css": "^2.2.1",
+    "vite-plugin-node-polyfills": "0.24.0",
+    "vite-plugin-pwa": "^1.0.3",
+    "vitest": "^3.2.4",
+    "@dotenvx/dotenvx": "^1.51.0",
+    "@types/node": "^24.6.0"
+  }
+}

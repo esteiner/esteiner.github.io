@@ -1,0 +1,78 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Shelf frame -->
+    <path d="M4 4V60H60V4" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Horizontal shelves -->
+    <path d="M4 20H60" stroke="black" stroke-width="2" stroke-linecap="round"/>
+    <path d="M4 38H60" stroke="black" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Vertical dividers -->
+    <path d="M22 4V60" stroke="black" stroke-width="2" stroke-linecap="round"/>
+    <path d="M42 4V60" stroke="black" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Top row bottles (lying down) -->
+    <ellipse cx="13" cy="10" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 10H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="13" cy="14" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 14H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="10" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 10H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="14" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 14H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="10" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 10H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="14" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 14H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Middle row bottles (lying down) -->
+    <ellipse cx="13" cy="27" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 27H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="13" cy="32" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 32H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="27" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 27H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="32" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 32H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="27" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 27H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="32" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 32H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Bottom row bottles (lying down) -->
+    <ellipse cx="13" cy="45" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 45H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="13" cy="50" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 50H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="13" cy="55" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M15 55H19" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="45" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 45H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="50" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 50H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="32" cy="55" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M34 55H38" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="45" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 45H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="50" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 50H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+
+    <ellipse cx="51" cy="55" rx="2" ry="1.5" stroke="black" stroke-width="1.5"/>
+    <path d="M53 55H57" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

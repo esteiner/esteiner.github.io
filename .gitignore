@@ -1,0 +1,33 @@
+# Ignore all IntelliJ stuff and include the important things
+# @see https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/jsLinters/
+!/.idea/runConfigurations/
+!/.idea/codeStyleSettings.xml
+!/.idea/encodings.xml
+!/.idea/prettier.xml
+*.iml
+
+# ASDF
+.tool-versions
+
+/dist/
+/node_modules/
+/public/shoelace/
+/public/sitemap.xml
+/coverage/
+
+/.env.local
+
+# LLMs
+CLAUDE.local.md
+**/.claude/settings.local.json
+
+/playwright-report/
+/test-results/
+
+/.lighthouseci/
+
+# MacOS
+.DS_Store
