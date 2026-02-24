@@ -5,6 +5,9 @@ export default defineConfig({
   // Set base path for GitHub Pages deployment
   // Use '/' for local development, '/repo-name/' for GitHub Pages
   base: process.env.VITE_BASE_PATH || '/',
+  build: {
+    outDir: './docs'
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
