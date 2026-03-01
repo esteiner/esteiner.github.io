@@ -1,0 +1,203 @@
+❯ Read the source and then plan a linear walkthrough of the code that explains how it all works in detail.
+
+⏺ Explore(Read all source files)
+  ⎿  Done (57 tool uses · 65.1k tokens · 53s)
+  (ctrl+o to expand)
+
+⏺ Let me read the actual file contents directly so I can give you a precise, detailed walkthrough.
+
+⏺ Read 26 files (ctrl+o to expand)
+
+⏺ Now I have everything I need. Here is the complete linear walkthrough.
+
+  ---
+  Kellermeister: Linear Code Walkthrough
+
+  1. index.html — The browser entry point
+
+  The browser loads index.html. The body contains only one element:
+
+  <kellermeister-app></kellermeister-app>
+
+  That custom element doesn't exist yet — it gets registered by the script tag that loads main.ts as an ES module.
+
+  ---
+  2. main.ts — Bootstrap IIFE
+
+  Everything starts in an immediately-invoked async function:
+
+  initRouter(kellermeister-app element)
+    → Vaadin Router registers routes, renders first matched page into <slot>
+  setEngine(new SolidEngine(authenticatedFetch))
+    → Soukai now knows how to make authenticated HTTP requests to a Solid Pod
+  bootSolidModels()
+    → Registers all Soukai model schemas globally
+  CDI.getInstance().getSolidService().restoreSession()
+    → Inrupt's handleIncomingRedirect() completes any pending OIDC redirect
+
+  The order matters: the router runs first so a page is visible immediately. The Soukai engine is wired with InruptSolidService.getAuthenticatedFetch(), which returns Inrupt's patched fetch — any HTTP
+  request made by Soukai automatically carries the session bearer token.
+
+  ---
+  3. CDI — Dependency injection, two-phase initialization
+
+  CDI is a singleton. At creation time it only initializes two things:
+
+  - BottleFactory (stateless, no Pod URL needed)
+  - InruptSolidService (stateless wrapper around Inrupt's library)
+
+  Everything else (SolidCellarRepository, SolidBottlesContainerRepository, SolidOrderRepository, SolidPodService, KellermeisterService) is null until CDI.setStorageUrl(url) is called. Any page that calls
+  cdi.getKellermeisterService() before login throws.
+
+  ---
+  4. kellermeister-app.ts + BaseComponent — Shell component
+
+  <kellermeister-app> extends BaseComponent (which extends LitElement) and renders a single <slot>. The Vaadin Router uses this slot as its outlet — it inserts the active page component there. BaseComponent
+  provides the shared CSS for the fixed header/footer layout used by all pages.
+
+  ---
+  5. router.ts — Client-side routing
+
+  Six routes are registered. All page imports are lazy (async () => import('./pages/...')), so Vite code-splits each page into its own chunk. The Vaadin Router calls onBeforeEnter(location) on a page
+  component before inserting it into the DOM, which is how pages load their data before first render.
+
+  ---
+  6. landing-page.ts — Auth hub and home screen
+
+  LandingPage is the first page rendered. It does two things at connectedCallback:
+
+  1. Registers listeners for three Inrupt session events: LOGIN, SESSION_RESTORED, LOGOUT
+  2. Calls loadCellars() (which no-ops if not logged in)
+
+  Not-logged-in path: renders a welcome screen with one button.
+
+  Login flow (handleLoginClick):
+  - prompt() asks the user for their WebID (e.g. http://localhost:3000/edwin/profile/card#me)
+  - Calls InruptSolidService.getWebIDProfile(webID) → reads the WebID document via @inrupt/solid-client's getProfileAll, extracts solid:oidcIssuer and pim:storage triples
+  - Calls InruptSolidService.login(issuerUrl) → delegates to Inrupt's login(), which does an OIDC redirect to the Identity Provider. The page navigation leaves the app.
+
+  Return from Identity Provider:
+  main.ts calls restoreSession() → handleIncomingRedirect({ restorePreviousSession: true }). This completes the OIDC code exchange. Inrupt fires EVENTS.SESSION_RESTORED. The landing page's listener calls
+  sessionChangedCallback(session).
+
+  sessionChangedCallback is the pivotal function:
+  1. Reads the WebID profile again (now with an authenticated session)
+  2. Asserts exactly one pim:storage URL exists
+  3. Calls CDI.setStorageUrl(storageUrl) → this is the gate that instantiates all repositories and KellermeisterService
+  4. Calls SolidPodService.setupPodForKellermeister() to create missing containers
+  5. Calls loadCellars() → now getKellermeisterService() succeeds
+
+  ---
+  7. SolidPodService — Container provisioning
+
+  On first login, the app ensures three LDP containers exist in the Pod under private/kellermeister/:
+
+  {storageUrl}private/kellermeister/cellars/
+  {storageUrl}private/kellermeister/orders/
+  {storageUrl}private/kellermeister/bottles/
+
+  It uses SolidContainer.find(url) → if null, SolidContainer.create({url, name}). These are standard Solid LDP containers represented as RDF resources.
+
+  Two special "virtual" cellars also exist as named resources:
+  - cellars/cellarWork#it — the inbox staging area ("Eingang")
+  - cellars/altglass#it — the recycling bin ("Altglass")
+
+  Both have displayOrder: -1, so fetchCellars() filters them out of the home screen list (only displayOrder > 0 is shown).
+
+  ---
+  8. Domain models and Soukai schemas — How data maps to RDF
+
+  Every domain model class inherits from a schema defined with defineSolidModelSchema(). The schema declares the RDF class and maps TypeScript property names to RDF predicates.
+
+  Cellar (schema:Room)
+  - Fields: name (string), displayOrder (number, predicate km:displayOrder)
+  - Stored as individual documents in cellars/
+
+  BottlesContainer (schema:Collection) + Bottle (schema:ListItem)
+  - Stored together in a single Turtle document: bottles/bottles.ttl
+  - BottlesContainer.bottlesRelationship() → belongsToMany(Bottle, 'bottlesUrl').usingSameDocument(true). The usingSameDocument(true) tells Soukai to embed the related Bottle nodes in the same .ttl file
+  rather than linking to separate documents.
+  - Bottle.productRelationship() → belongsToOne(Product, 'productUrl').usingSameDocument(true). Products are also embedded in the same file.
+  - The cellar field on Bottle is just a plain FieldType.Key — a URL string pointing to the cellar's ID. It's not a Soukai relation; the cellar lookup is done in application code by comparing strings.
+
+  Product (schema:Product)
+  - Uses two RDF contexts: standard schema: for name/productionDate and a custom km: namespace (https://kellermeister.ch/) for wine-specific fields (weinart, traubensorte, alkoholgehalt, ausbau, region,
+  land, etc.)
+
+  Order → schema:Order, with belongsToMany(OrderItem) and belongsToOne(Seller) — all in same document. Orders live in either orders/ (processed) or inbox/kellermeister/ (unprocessed).
+
+  ---
+  9. Repositories — Data access layer
+
+  SolidCellarRepository
+  Cellar.from(cellarUrl).all() — Soukai queries the container and returns all schema:Room resources. Uses Cellar.find(id) for single lookups.
+
+  SolidBottlesContainerRepository
+  BottlesContainer.find(bottlesUrl) — fetches the single bottles.ttl document. Soukai loads the container and all embedded Bottle and Product nodes in one HTTP request.
+
+  SolidOrderRepository
+  fetchOrders() merges two sources: orders/ (processed) and inbox/kellermeister/ (unprocessed).
+  saveProcessedOrder(order) generates a UUID, calls order.mintUrl(ordersUrl + uuid, false, 'it') to assign a new URL before saving.
+
+  ---
+  10. KellermeisterService — Application use cases
+
+  This is where business logic lives, combining repositories with domain operations.
+
+  getAllCellars() — simple delegation to cellarRepository.fetchCellars().
+
+  bottlesFromCellarGroupedByProduct(cellar) — fetches the entire BottlesContainer (all bottles in one shot), filters by bottle.cellar === cellar.id, then groups into a Map<productId, Bottle[]>. The map is
+  sorted by product ID descending. This is how the cellar page knows to show "3x Barolo" as one row.
+
+  ingestOrdersFromInbox() — the most complex flow:
+  1. Fetches the "cellarWork" staging cellar (creates it if absent)
+  2. Fetches unprocessed orders from inbox/kellermeister/
+  3. For each order, calls ingestOrder():
+    - Calls explode(orderItem) — expands an OrderItem with orderQuantity: 3 into 3 individual OrderItem instances
+    - Calls getOrCreateProduct() — deduplicates by name against existing products already in the BottlesContainer
+    - Uses BottleFactory.createFromOrderItem() to build a Bottle, setting its cellar to the staging cellar ID
+    - Calls bottlesContainer.addBottle(bottle) which pushes to the in-memory array and marks the container dirty
+  4. If the container is dirty: bottlesContainer.save() writes everything back to bottles.ttl in one PUT, then moveProcessedOrders() saves each order to orders/ and deletes the original from inbox via
+  deleteSolidDataset()
+
+  transferBottles(bottles, cellarIds) — for each bottle/cellarId pair, calls bottlesContainer.transferBottle(bottle, cellarId) which simply sets bottle.cellar = cellarId on the in-memory object, then saves
+  the whole container.
+
+  ---
+  11. Pages — UI layer
+
+  cellar-page.ts
+  Uses Vaadin's onBeforeEnter(location) hook (runs before the element connects to DOM) to load cellar and bottles. Renders each product group as a <bottle-component> showing the first bottle's details with a
+   count badge (bottles.length).
+
+  cellarwork-page.ts
+  The assignment UI. On connectedCallback, if the source cellar is the staging "cellarWork" cellar, it triggers ingestOrdersFromInbox() automatically. Then it loads all available destination cellars
+  (excluding source, appending Altglass).
+
+  The grid layout uses CSS custom properties: grid-template-columns: 60% repeat(var(--cellar-columns, N), 1fr) where N is the number of destination cellars, set via inline style. Each row has radio buttons,
+  one per cellar column. Clicking a cellar header button calls handleCellarClick(cellarId) which fills all cellarIds in the state array with that cellar — a "select all" shortcut. Submit calls
+  transferBottles(bottles, cellarIds).
+
+  ---
+  Data flow summary
+
+  Browser
+    → index.html loads main.ts
+    → initRouter() → LandingPage rendered
+    → restoreSession() → if returning from OIDC: SESSION_RESTORED fires
+    → sessionChangedCallback() → CDI.setStorageUrl() gates all services
+    → setupPodForKellermeister() → LDP containers exist
+    → loadCellars() → SolidCellarRepository → Cellar.from(url).all() → Pod HTTP GET
+    → render cellars as links
+
+  User navigates to /cellar/:id
+    → onBeforeEnter() → getCellarById() + bottlesFromCellarGroupedByProduct()
+       → BottlesContainer.find(bottles.ttl) → single HTTP GET loads all bottles+products
+       → filter + group by product → render
+
+  User navigates to /cellarwork/:id
+    → onBeforeEnter() → loadCellar()
+    → connectedCallback() → ingestOrdersFromInbox()
+       → inbox HTTP GET → explode items → create Bottles → bottlesContainer.save()
+       → orders moved from inbox → private/orders/
+    → render assignment table → user submits → transferBottles() → save()
