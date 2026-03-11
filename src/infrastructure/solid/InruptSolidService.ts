@@ -25,7 +25,7 @@ export class InruptSolidService implements SolidService {
                 const issuers = getUrlAll(webIdThing, SOLID.oidcIssuer);
                 const storages = getUrlAll(webIdThing, 'http://www.w3.org/ns/pim/space#storage');
                 const inboxes = getUrlAll(webIdThing, SOLID.inbox);
-                console.log(`getWebIDProfile: found issers ${issuers} for WebID ${webID}.`);
+                console.log(`getWebIDProfile: found issuers ${issuers} for WebID ${webID}.`);
                 const webIDProfile: WebIDProfile = new WebIDProfile(issuers, storages, inboxes);
                 return webIDProfile;
             }

@@ -8,9 +8,7 @@ import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import {Product} from "../domain/Product/Product.ts";
-import {
-    deleteSolidDataset
-} from "@inrupt/solid-client";
+import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
 
 /**
@@ -39,7 +37,7 @@ export class KellermeisterService {
     }
 
     async getAllBottles(): Promise<Bottle[]> {
-        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottlesContainer();
+        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
         if (bottlesContainer) {
             return bottlesContainer.bottles;
         } else {
@@ -129,7 +127,7 @@ export class KellermeisterService {
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
 
         if (unprocessedOrders.length > 0) {
-            const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottlesContainer();
+            const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
             if (bottlesContainer) {
                 unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottlesContainer));
 
@@ -171,7 +169,7 @@ export class KellermeisterService {
     }
 
     async transferBottles(bottles: Bottle[], cellarIds: string[]) {
-        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottlesContainer();
+        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
         if (bottlesContainer) {
             for (var i = 0; i < bottles.length; i++) {
                 if (cellarIds[i] != undefined) {
@@ -183,7 +181,7 @@ export class KellermeisterService {
             await bottlesContainer.save();
         }
     }
-    
+
     // -----------------------------------------------------------------
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar) {
@@ -273,7 +271,7 @@ export class KellermeisterService {
         if (unprocessedOrder.getSourceDocumentUrl()) {
             await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
         }
-     }
+    }
 
     private explode(orderItem: OrderItem): OrderItem[] {
         const orderItems = new Array()

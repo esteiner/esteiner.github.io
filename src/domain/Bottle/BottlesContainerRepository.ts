@@ -9,6 +9,6 @@ export interface BottlesContainerRepository {
     /**
      * Fetches BottlesContainer.
      */
-    fetchBottlesContainer(): Promise<BottlesContainer | null>;
+    fetchBottles(): Promise<BottlesContainer | null>;
 
 }

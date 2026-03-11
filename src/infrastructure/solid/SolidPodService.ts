@@ -1,5 +1,8 @@
-import {SolidContainer} from "soukai-solid";
+import {isContainer, createContainerAt, universalAccess, getResourceInfo} from "@inrupt/solid-client";
+import {fetch} from "@inrupt/solid-client-authn-browser";
+import {getAclServerResourceInfo} from "@inrupt/solid-client/universal";
 
+const inboxKellermeisterContainerPath: string = 'inbox/kellermeister/';
 const ordersContainerPath: string = 'private/kellermeister/orders/';
 const cellarsContainerPath: string = 'private/kellermeister/cellars/';
 const bottlesContainerPath: string = 'private/kellermeister/bottles/';
@@ -14,42 +17,40 @@ export class SolidPodService {
 
     async setupPodForKellermeister(): Promise<void> {
         console.log("setupPodForKellermeister");
-        const storageUrlString = this.storageUrl.toString();
-        await this.setupContainer(new URL(storageUrlString + cellarsContainerPath), 'Cellars');
-        await this.setupContainer(new URL(storageUrlString + ordersContainerPath), 'Orders');
-        await this.setupContainer(new URL(storageUrlString + bottlesContainerPath), 'Bottles');
+        await this.setupFolder(inboxKellermeisterContainerPath);
+        await this.setInboxKellermeisterAppendable(); // ACR or ACL
+        await this.setupFolder(cellarsContainerPath);
+        await this.setupFolder(ordersContainerPath);
+        await this.setupFolder(bottlesContainerPath);
     }
 
-    async setupContainer(containerUrl: URL, containerName: string) {
-        console.log(`setupContainer: check for ${containerName} container at ${containerUrl}`);
-        // 2. Container erstellen (falls noch nicht vorhanden)
-        let container;
+    async setupFolder(urlPath: String) {
+        let url: URL = new URL(this.storageUrl.toString() + urlPath);
         try {
-            container = await SolidContainer.find(containerUrl.toString());
-            if (!container) {
-                container = await SolidContainer.create({
-                    url: containerUrl.toString(),
-                    name: containerName
-                });
-                console.log(`setupContainer: ${containerName} container created at ${container.url}`);
+            if (!isContainer(url.toString())) {
+                await createContainerAt(url.toString(), { fetch: fetch });
+                console.log("setupFolder: path created", url.toString());
+            } else {
+                console.log("setupFolder: path exists", url.toString());
             }
         }
-        catch (error) {
-            // Container nicht vorhanden, also erstellen
-            console.log("setupContainer: error occurred:",error);
-            console.log(`setupContainer: creating container ${containerName}`);
-            container = await SolidContainer.create({
-                url: containerUrl.toString(),
-                name: containerName
-            });
-            console.log(`setupContainer: ${containerName} container created at ${container}`);
+        catch (e) {
+            console.log("setupFolder: failed to create path", url.toString(), e);
         }
-        // // Typ im TypeIndex registrieren
-        // await SolidTypeRegistration.forClass(
-        //     'https://schema.org/Room',
-        //     cellarsContainerUrl,
-        //     { isListed: false }
-        // );
-        // console.log('Bottle type successfully registered');
     }
+
+    async setInboxKellermeisterAppendable() {
+        let url: URL = new URL(this.storageUrl.toString() + inboxKellermeisterContainerPath);
+        const resourceInfo = await getResourceInfo(url.toString(), { fetch: fetch });
+        console.log("setInboxKellermeisterAppendable:", resourceInfo);
+        let aclServerResourceInfo = await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
+        console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
+        let accessModes = await universalAccess.setPublicAccess(
+            url.toString(),
+            { append: true },   // grant append; leave read/write/control untouched
+            { fetch: fetch }
+        );
+        console.log("setInboxKellermeisterAppendable:", accessModes);
+    }
+
 }
