@@ -7,7 +7,7 @@ export default defineSolidModelSchema({
         schema: 'https://schema.org/',
         xsd: 'http://www.w3.org/2001/XMLSchema#'
     },
-    rdfsClass: 'schema:Order',
+    rdfsClasses: ['schema:Order'],
 
     fields: {
         orderNumber: FieldType.String,

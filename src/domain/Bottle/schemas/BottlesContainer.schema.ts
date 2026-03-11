@@ -6,7 +6,7 @@ export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/'
     },
-    rdfsClass: 'schema:Collection',
+    rdfsClasses: ['schema:Collection'],
 
     fields: {
         bottlesUrl: {

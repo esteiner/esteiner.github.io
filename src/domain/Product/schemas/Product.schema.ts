@@ -5,8 +5,9 @@ import {defineSolidModelSchema} from "soukai-solid";
 export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/',
-        km: 'https://kellermeister.ch/'
+        km: 'https://vocab.kellermeister.ch/wine/'
     },
+    rdfsClasses: ['schema:Product'],
 
     fields: {
         // schema.org
@@ -18,7 +19,7 @@ export default defineSolidModelSchema({
             type: FieldType.Date,
             rdfProperty: 'schema:productionDate'
         },
-        // kellermeister.ch
+        // vocab.kellermeister.ch/wine/
         hersteller: {
             type: FieldType.String,
             rdfProperty: 'km:hersteller'

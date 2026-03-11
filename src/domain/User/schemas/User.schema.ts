@@ -8,7 +8,7 @@ export default defineSolidModelSchema({
         foaf: 'http://xmlns.com/foaf/0.1/',
         pim: 'http://www.w3.org/ns/pim/space#'
     },
-    rdfsClass: 'schema:Person',
+    rdfsClasses: ['schema:Person'],
 
     fields: {
         name: FieldType.String,

@@ -6,7 +6,7 @@ export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/'
     },
-    rdfsClass: 'schema:ListItem',
+    rdfsClasses: ['schema:ListItem'],
 
     fields: {
         price: FieldType.Number,

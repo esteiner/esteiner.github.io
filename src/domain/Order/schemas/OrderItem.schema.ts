@@ -6,7 +6,7 @@ export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/'
     },
-    rdfsClass: 'schema:OrderItem',
+    rdfsClasses: ['schema:OrderItem'],
 
     fields: {
         orderQuantity: FieldType.Number,

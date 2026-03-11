@@ -6,7 +6,7 @@ export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/'
     },
-    rdfsClass: 'schema:Room',
+    rdfsClasses: ['schema:Room'],
 
     fields: {
         name: FieldType.String,
