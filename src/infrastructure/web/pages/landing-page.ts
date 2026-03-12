@@ -24,6 +24,20 @@ class LandingPage extends BasePage {
     @state()
     cellars: Cellar[];
 
+    @state()
+    private showWebIdDialog: boolean = false;
+
+    @state()
+    private webIdInput: string = '';
+
+    @state()
+    private webIdError: string = '';
+
+    @state()
+    private webIdLoading: boolean = false;
+
+    private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
@@ -94,6 +108,31 @@ class LandingPage extends BasePage {
 
     render() {
         return html`
+            ${this.showWebIdDialog ? html`
+                <div class="dialog-overlay" @click="${this.handleWebIdCancel}">
+                    <div class="dialog" role="dialog" aria-modal="true" aria-label="WebID eingeben" @click="${(e: Event) => e.stopPropagation()}">
+                        <h2>WebID eingeben</h2>
+                        <p>Bitte gib deine WebID ein, um dich anzumelden.</p>
+                        <input
+                            class="dialog-input"
+                            type="url"
+                            .value="${this.webIdInput}"
+                            @input="${(e: InputEvent) => this.webIdInput = (e.target as HTMLInputElement).value}"
+                            @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleWebIdOk()}"
+                            placeholder="z.B. https://mypod.example/profile/card#me"
+                            ?disabled="${this.webIdLoading}"
+                            autofocus
+                        />
+                        ${this.webIdError ? html`<p class="dialog-error">${this.webIdError}</p>` : ''}
+                        <div class="dialog-actions">
+                            <button class="dialog-btn dialog-btn-cancel" @click="${this.handleWebIdCancel}" ?disabled="${this.webIdLoading}">Abbrechen</button>
+                            <button class="dialog-btn dialog-btn-ok" @click="${this.handleWebIdOk}" ?disabled="${this.webIdLoading}">
+                                ${this.webIdLoading ? 'Prüfe...' : 'OK'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
             ${this.session.info.isLoggedIn ? html`
                 <kellermeister-header>Kellermeister
                     <kellermeister-button @click="${this.handleLogoutClick}" slot="actions" text="Logout" icon="logout" class="header-btn" size="small"></kellermeister-button>
@@ -156,23 +195,50 @@ class LandingPage extends BasePage {
         }
     }
 
-    private async getWebID(): Promise<WebIDProfile | null> {
-        const input: string | null = prompt('Enter your WebID to login', 'http://localhost:3000/edwin/profile/card#me');
+    private getWebID(): Promise<WebIDProfile | null> {
+        this.showWebIdDialog = true;
+        this.webIdInput = '';
+        this.webIdError = '';
+        this.webIdLoading = false;
+        return new Promise((resolve) => {
+            this._webIdResolve = resolve;
+        });
+    }
 
-        if (input) {
-            try {
-                const webID: URL = new URL(input);
-                const webIDProfile: WebIDProfile | null = await this.cdi.getSolidService().getWebIDProfile(webID);
-                if (webIDProfile) {
-                    return webIDProfile;
-                } else {
-                    alert(`Kein WebID Profil Dokument gefunden. Ist ${webID} wirklich die WebID?`);
-                }
-            } catch (e) {
-                console.log("getWebID: failed with error:", e);
-            }
+    private async handleWebIdOk() {
+        const input = this.webIdInput.trim();
+        if (!input) {
+            this.webIdError = 'Bitte gib deine WebID ein.';
+            return;
         }
-        return null;
+        this.webIdLoading = true;
+        this.webIdError = '';
+        try {
+            const webID = new URL(input);
+            const profile = await this.cdi.getSolidService().getWebIDProfile(webID);
+            if (profile) {
+                this.showWebIdDialog = false;
+                this._webIdResolve?.(profile);
+                this._webIdResolve = null;
+            } else {
+                this.webIdError = `Kein WebID Profil Dokument gefunden. Ist "${input}" wirklich deine WebID?`;
+            }
+        } catch (e) {
+            if (e instanceof TypeError) {
+                this.webIdError = 'Ungültige URL. Bitte gib eine gültige WebID ein.';
+            } else {
+                this.webIdError = `Fehler beim Laden des WebID Profils.`;
+            }
+            console.log("handleWebIdOk: failed with error:", e);
+        } finally {
+            this.webIdLoading = false;
+        }
+    }
+
+    private handleWebIdCancel() {
+        this.showWebIdDialog = false;
+        this._webIdResolve?.(null);
+        this._webIdResolve = null;
     }
 
     private async handleNewCellarClick() {
@@ -209,6 +275,102 @@ class LandingPage extends BasePage {
                     cursor: pointer;
                     transition: all 0.3s ease;
                     text-align: center;
+                }
+
+                .dialog-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.6);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 2000;
+                }
+
+                .dialog {
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+                    padding: 28px 24px 20px;
+                    width: min(480px, 90vw);
+                    color: #222;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .dialog h2 {
+                    margin: 0;
+                    font-size: 18px;
+                    color: #333;
+                }
+
+                .dialog p {
+                    margin: 0;
+                    font-size: 14px;
+                    color: #666;
+                }
+
+                .dialog-input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 10px 12px;
+                    border-radius: 8px;
+                    border: 1px solid #ccc;
+                    background: #f9f9f9;
+                    color: #222;
+                    font-size: 14px;
+                    outline: none;
+                }
+
+                .dialog-input:focus {
+                    border-color: #007aff;
+                }
+
+                .dialog-input:disabled {
+                    opacity: 0.5;
+                }
+
+                .dialog-error {
+                    margin: 0;
+                    font-size: 13px;
+                    color: #d0021b;
+                }
+
+                .dialog-actions {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    margin-top: 4px;
+                }
+
+                .dialog-btn {
+                    padding: 8px 20px;
+                    border-radius: 8px;
+                    border: none;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: opacity 0.2s;
+                }
+
+                .dialog-btn:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                }
+
+                .dialog-btn-cancel {
+                    background: #e9e9e9;
+                    color: #555;
+                }
+
+                .dialog-btn-ok {
+                    background: #007aff;
+                    color: #fff;
+                }
+
+                .dialog-btn-ok:hover:not(:disabled) {
+                    opacity: 0.85;
                 }
             `
         ];
