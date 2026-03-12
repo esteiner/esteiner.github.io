@@ -31,12 +31,35 @@ class LandingPage extends BasePage {
     private webIdInput: string = '';
 
     @state()
+    private webIdSelected: string = '__new__';
+
+    @state()
+    private webIdHistory: string[] = [];
+
+    @state()
     private webIdError: string = '';
 
     @state()
     private webIdLoading: boolean = false;
 
     private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
+
+    private static readonly WEBID_HISTORY_KEY = 'kellermeister_webid_history';
+
+    private loadWebIdHistory(): string[] {
+        try {
+            const stored = localStorage.getItem(LandingPage.WEBID_HISTORY_KEY);
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    private saveWebIdToHistory(webId: string) {
+        const history = this.loadWebIdHistory().filter(id => id !== webId);
+        history.unshift(webId);
+        localStorage.setItem(LandingPage.WEBID_HISTORY_KEY, JSON.stringify(history));
+    }
 
     private cdi: CDI = CDI.getInstance();
 
@@ -113,16 +136,29 @@ class LandingPage extends BasePage {
                     <div class="dialog" role="dialog" aria-modal="true" aria-label="WebID eingeben" @click="${(e: Event) => e.stopPropagation()}">
                         <h2>WebID eingeben</h2>
                         <p>Bitte gib deine WebID ein, um dich anzumelden.</p>
-                        <input
-                            class="dialog-input"
-                            type="url"
-                            .value="${this.webIdInput}"
-                            @input="${(e: InputEvent) => this.webIdInput = (e.target as HTMLInputElement).value}"
-                            @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleWebIdOk()}"
-                            placeholder="z.B. https://mypod.example/profile/card#me"
-                            ?disabled="${this.webIdLoading}"
-                            autofocus
-                        />
+                        ${this.webIdHistory.length > 0 ? html`
+                            <select
+                                class="dialog-select"
+                                .value="${this.webIdSelected}"
+                                @change="${(e: Event) => this.webIdSelected = (e.target as HTMLSelectElement).value}"
+                                ?disabled="${this.webIdLoading}"
+                            >
+                                ${this.webIdHistory.map(id => html`<option value="${id}">${id}</option>`)}
+                                <option value="__new__">— Neue WebID eingeben —</option>
+                            </select>
+                        ` : ''}
+                        ${this.webIdSelected === '__new__' ? html`
+                            <input
+                                class="dialog-input"
+                                type="url"
+                                .value="${this.webIdInput}"
+                                @input="${(e: InputEvent) => this.webIdInput = (e.target as HTMLInputElement).value}"
+                                @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleWebIdOk()}"
+                                placeholder="z.B. https://mypod.example/profile/card#me"
+                                ?disabled="${this.webIdLoading}"
+                                ?autofocus="${this.webIdHistory.length === 0}"
+                            />
+                        ` : ''}
                         ${this.webIdError ? html`<p class="dialog-error">${this.webIdError}</p>` : ''}
                         <div class="dialog-actions">
                             <button class="dialog-btn dialog-btn-cancel" @click="${this.handleWebIdCancel}" ?disabled="${this.webIdLoading}">Abbrechen</button>
@@ -196,17 +232,19 @@ class LandingPage extends BasePage {
     }
 
     private getWebID(): Promise<WebIDProfile | null> {
-        this.showWebIdDialog = true;
+        this.webIdHistory = this.loadWebIdHistory();
+        this.webIdSelected = this.webIdHistory.length > 0 ? this.webIdHistory[0] : '__new__';
         this.webIdInput = '';
         this.webIdError = '';
         this.webIdLoading = false;
+        this.showWebIdDialog = true;
         return new Promise((resolve) => {
             this._webIdResolve = resolve;
         });
     }
 
     private async handleWebIdOk() {
-        const input = this.webIdInput.trim();
+        const input = (this.webIdSelected === '__new__' ? this.webIdInput : this.webIdSelected).trim();
         if (!input) {
             this.webIdError = 'Bitte gib deine WebID ein.';
             return;
@@ -217,6 +255,7 @@ class LandingPage extends BasePage {
             const webID = new URL(input);
             const profile = await this.cdi.getSolidService().getWebIDProfile(webID);
             if (profile) {
+                this.saveWebIdToHistory(input);
                 this.showWebIdDialog = false;
                 this._webIdResolve?.(profile);
                 this._webIdResolve = null;
@@ -311,6 +350,7 @@ class LandingPage extends BasePage {
                     color: #666;
                 }
 
+                .dialog-select,
                 .dialog-input {
                     width: 100%;
                     box-sizing: border-box;
@@ -323,10 +363,12 @@ class LandingPage extends BasePage {
                     outline: none;
                 }
 
+                .dialog-select:focus,
                 .dialog-input:focus {
                     border-color: #007aff;
                 }
 
+                .dialog-select:disabled,
                 .dialog-input:disabled {
                     opacity: 0.5;
                 }
