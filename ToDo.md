@@ -1,11 +1,13 @@
 ToDo
 ===
 
-- [x] Namen optimieren
-- [ ] Inventar optimieren
-- [ ] Foto-to-Order
-- [x] Inrupt Setup
 - [ ] Flaschen suchen auf Kellerarbeit, Keller und Einkäufe (ein Suchfeld auf: Name, Jahrgang, Weinart, Land, Region, Traubensorte, Alkoholgehalt, Trinkfenster-Bis)
+- [ ] Layout
+- [x] Namen optimieren
+- [x] Inventar optimieren
+- [x] Foto-to-Order
+- [x] Inrupt Setup
+- [ ] Icons einbauen
 
 ### Prio 1
 
