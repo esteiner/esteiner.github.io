@@ -57,13 +57,15 @@ class CellarPage extends BasePage {
     render() {
         return html`
           <kellermeister-header>Keller ${this.cellar?.name}
-              <kellermeister-button slot="actions" text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
           </kellermeister-header>
+          <div class="filter">
+              <kellermeister-button text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
+              <kellermeister-button text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
+              <kellermeister-button text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
+              <kellermeister-button text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
+              </div>
           ${this.showSearchInput ? html`
               <div class="search-bar">
                   <input
@@ -78,7 +80,7 @@ class CellarPage extends BasePage {
               </div>
           ` : ''}
           <main>
-              <div>
+              <div class="bottles">
                     ${this.bottles.size > 0
                             ? html`
                               ${[...this.bottles.values()].map(
@@ -177,6 +179,16 @@ class CellarPage extends BasePage {
         return [
             ...super.styles,
             css`
+                .filter {
+                    display: flex;
+                    align-items: center;
+                    padding: 0 0 10px 16px;
+                }
+                
+                .bottles {
+                    padding: 0 8px;    
+                }
+                
                 .search-bar {
                     position: fixed;
                     top: 90px;

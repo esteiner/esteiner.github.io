@@ -27,9 +27,6 @@ class BottleComponent extends BaseComponent {
                     border: none;
                 }
                 .card1 {
-                    background: #f8f9fa;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
                     margin: 15px;
                 }
             `

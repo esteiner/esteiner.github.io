@@ -22,7 +22,7 @@ import iconLogout from '../images/icons/hiker.svg?raw';
 import iconWineRed from '../images/icons/wine-red.svg?raw';
 import iconWineWhite from '../images/icons/wine-white.svg?raw';
 import iconWineRose from '../images/icons/wine-rose.svg?raw';
-import iconWineBubble from '../images/icons/wine-white.svg?raw';
+import iconWineBubble from '../images/icons/wine-bubbles.svg?raw';
 import iconSearch from '../images/icons/search.svg?raw';
 import iconShopping from '../images/icons/shopping.svg?raw';
 

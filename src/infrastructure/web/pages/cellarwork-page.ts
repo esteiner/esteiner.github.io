@@ -60,6 +60,13 @@ class CellarWorkPage extends BasePage {
         return [
             ...super.styles,
             css`
+                .filter {
+                    display: flex;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    padding: 0 0 10px 0;
+                }
+                
                 .table {
                     display: grid;
                     grid-template-columns: 60% repeat(var(--cellar-columns, 2), 1fr);
@@ -68,12 +75,13 @@ class CellarWorkPage extends BasePage {
                 .header-row,
                 .data-row {
                     display: contents;
+                    padding: 0 8px;
                 }
                 
                 .header-row span {
                     font-weight: bold;
-                    background-color: #f0f0f0;
-                    padding: 8px;
+                    background-color: white;
+                    padding: 8px 8px 8px 16px;
                     border-bottom: 2px solid #333;
                     align-content: center;
                 }
@@ -168,14 +176,17 @@ class CellarWorkPage extends BasePage {
     render() {
         return html`
             <kellermeister-header>Kellerarbeit ${this.sourceCellar?.name}
-                <kellermeister-button slot="actions" text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
-                <kellermeister-button slot="actions" text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
-                <kellermeister-button slot="actions" text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
-                <kellermeister-button slot="actions" text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
                 <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
-                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="einbuchen" icon="wine-shelf"
+                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="wine-shelf"
                                       size="small"></kellermeister-button>
             </kellermeister-header>
+            <div class="filter">
+                <kellermeister-button text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
+                <kellermeister-button text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
+                <kellermeister-button text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
+                <kellermeister-button text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
+
+            </div>
             ${this.showSearchInput ? html`
               <div class="search-bar">
                   <input
@@ -193,9 +204,9 @@ class CellarWorkPage extends BasePage {
                 <form @submit="${this.handleIngestClick}">
                     <div class="table" style="--cellar-columns: ${this.cellars.length};">
                         <div class="header-row">
-                            <span class="column1">${this.bottles.length} Flaschen zum einbuchen</span>
+                            <span class="column1">${this.bottles.length} Flaschen zum umbuchen</span>
                             ${repeat(this.cellars, (cellar) => cellar.id, (cellar) =>  html`
-                                <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.id)}" class="column2" icon="wine-shelf" size="small" text="${cellar.name}"></kellermeister-button></span>
+                                <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.id)}" class="column2" icon="wine-shelf" ghost size="small" text="${cellar.name}"></kellermeister-button></span>
                             `)}
                         </div>
                         <div class="data-row">

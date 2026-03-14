@@ -171,7 +171,7 @@ class LandingPage extends BasePage {
             ` : ''}
             ${this.session.info.isLoggedIn ? html`
                 <kellermeister-header>Kellermeister
-                    <kellermeister-button @click="${this.handleLogoutClick}" slot="actions" text="Logout" icon="logout" class="header-btn" size="small"></kellermeister-button>
+                    <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
                 </kellermeister-header>
                 <main class="content">
                     <div>
@@ -183,7 +183,7 @@ class LandingPage extends BasePage {
                                             </a>
                                         `
                         )}
-                        <kellermeister-button ghost icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" data-testid="new-cellar-button"></kellermeister-button>
+                        
                         <kellermeister-button ghost icon="work" text="Kellerarbeit" @click="${this.handleCellarWorkClick}"></kellermeister-button>
                         <a href="${router.urlForName('cellar-page', {cellarId: `${this.cdi?.getKellermeisterService().getAltglassId()}`})}">
                             <kellermeister-button ghost icon="trash" text="Altglass"></kellermeister-button>
