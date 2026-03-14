@@ -45,7 +45,7 @@ export abstract class BaseComponent extends LitElement {
             }
 
             .content {
-                padding: 20px;
+                padding: 0px;
                 max-width: 600px;
                 margin: 0 auto;
             }
