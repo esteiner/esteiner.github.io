@@ -181,8 +181,9 @@ class CellarPage extends BasePage {
             css`
                 .filter {
                     display: flex;
+                    justify-content: space-evenly;
                     align-items: center;
-                    padding: 0 0 10px 16px;
+                    padding: 0 0 10px 0;
                 }
                 
                 .bottles {

@@ -92,7 +92,7 @@ class KellermeisterButton extends BaseComponent {
         .button:hover,
         .button.cta {
           box-shadow: 0 0 0 0 rgb(from var(--app-color-primary) r g b / 0.5);
-          animation: pulse 2s infinite;
+          animation: pulse 2s calc(1);
         }
 
         @keyframes pulse {
