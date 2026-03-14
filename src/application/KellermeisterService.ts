@@ -80,9 +80,9 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellar(cellar: Cellar, filter: ProductFilter): Promise<Bottle[]> {
+    async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
         const bottles = await this.getAllBottles();
-        return bottles.filter(bottle => cellar.id === bottle.cellar).filter(bottle => filter.filterBottle(bottle))
+        return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterBottle(bottle))
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.product, b.product));
     }
 
@@ -262,7 +262,7 @@ export class KellermeisterService {
     }
 
     private async isEmpty(cellar: Cellar) {
-        const bottles = await this.bottlesFromCellar(cellar);
+        const bottles = await this.bottlesFromCellar(cellar, new ProductFilter());
         if (bottles.length > 0) {
             return false;
         }

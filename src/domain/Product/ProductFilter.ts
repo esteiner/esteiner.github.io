@@ -14,7 +14,7 @@ export class ProductFilter {
     public isRose: boolean = false;
 
     public isText: boolean = false;
-    public textFilter: String | null = null;
+    public textFilter: string | null = null;
 
     public toggleSprudelFilter(): void {
         this.isSprudel = !this.isSprudel;
@@ -61,15 +61,17 @@ export class ProductFilter {
         }
         // Text
         if (this.isText) {
-            result = result && (
-                bottle.product.name.toLowerCase().includes(this.textFilter.toLowerCase())
-                || bottle.product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
-                || bottle.product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
-                || bottle.product.alkoholgehalt?.includes(this.textFilter)
-                || bottle.product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
-                || bottle.product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
-                || bottle.product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
-            );
+            if (this.textFilter) {
+                result = result && (
+                    bottle.product.name?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || bottle.product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
+                    || bottle.product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || bottle.product.alkoholgehalt?.includes(this.textFilter)
+                    || bottle.product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || bottle.product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || bottle.product.trinkfensterBis === undefined ? true : bottle.product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
+                );
+            }
         }
         return result;
     }
