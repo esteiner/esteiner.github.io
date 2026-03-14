@@ -51,6 +51,10 @@ class ProductComponent extends BaseComponent {
                     <div>${this.product?.weinart}</div>
                 </div>
                 <div class="group">
+                    <label>Weinfarbe:</label>
+                    <div>${this.product?.weinfarbe}</div>
+                </div>
+                <div class="group">
                     <label>Region:</label>
                     <div>${this.product?.region}</div>
                 </div>

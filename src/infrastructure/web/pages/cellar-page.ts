@@ -4,6 +4,7 @@ import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {Cellar} from "../../../domain/Cellar/Cellar.ts";
 import {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
@@ -24,10 +25,14 @@ class CellarPage extends BasePage {
     @state()
     bottles: Map<string, Bottle[]>;
 
+    @state()
+    filter: ProductFilter;
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
         super();
+        this.filter = new ProductFilter();
         this.bottles = new Map<string, Bottle[]>;
     }
 
@@ -40,10 +45,10 @@ class CellarPage extends BasePage {
     render() {
         return html`
           <kellermeister-header>Keller ${this.cellar?.name}
-              <kellermeister-button slot="actions" text="Sprudel" icon="wine-bubble" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Rot" icon="wine-red" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Weiss" icon="wine-white" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Rosé" icon="wine-rose" size="small"></kellermeister-button>
+              <kellermeister-button slot="actions" text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
+              <kellermeister-button slot="actions" text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
+              <kellermeister-button slot="actions" text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
+              <kellermeister-button slot="actions" text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
@@ -97,6 +102,26 @@ class CellarPage extends BasePage {
         if (this.cellar) {
             Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cellar.id}`}));
         }
+    }
+
+    private async handleSprudelFilterClick(): void {
+        this.filter.toggleSprudelFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    private async handleRedFilterClick(): void {
+        this.filter.toggleRedFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    private async handleWhiteFilterClick(): void {
+        this.filter.toggleWhiteFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    private async handleRoseFilterClick(): void {
+        this.filter.toggleRoseFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 }
 

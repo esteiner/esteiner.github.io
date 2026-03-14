@@ -28,6 +28,10 @@ export default defineSolidModelSchema({
             type: FieldType.String,
             rdfProperty: 'km:weinart'
         },
+        weinfarbe: {
+            type: FieldType.String,
+            rdfProperty: 'km:weinfarbe'
+        },
         milliliter: {
             type: FieldType.Number,
             rdfProperty: 'km:milliliter'

@@ -5,6 +5,7 @@ import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
 import {Order} from "../domain/Order/Order.ts";
 import type {OrderItem} from "../domain/Order/OrderItem.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
+import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import {Product} from "../domain/Product/Product.ts";
@@ -48,15 +49,25 @@ export class KellermeisterService {
         }
     }
 
+    async filterBottles(): Promise<Bottle[]> {
+        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
+        if (bottlesContainer) {
+            return bottlesContainer.bottles;
+        } else {
+            console.log("getAllBottles: bottles container not found")
+            return new Array();
+        }
+    }
+
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellarGroupedByProduct(cellar: Cellar): Promise<Map<string, Bottle[]>> {
+    async bottlesFromCellarGroupedByProduct(cellar: Cellar, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
         const bottles = await this.getAllBottles();
         const grouped = new Map<string, Bottle[]>();
 
         for (const bottle of bottles) {
-            if (bottle.product && this.isBottleInThisCellar(bottle, cellar)) {
+            if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && this.isBottleInFilter(bottle, filter)) {
                 if (!grouped.has(bottle.product.id)) {
                     grouped.set(bottle.product.id, []);
                 }
@@ -211,6 +222,13 @@ export class KellermeisterService {
         return false;
     }
 
+    private isBottleInFilter(bottle: Bottle, filter: ProductFilter) {
+        if (filter) {
+            return filter.filterBottle(bottle);
+        }
+        return true;
+    }
+
     private groupOrdersByMonth(orders: Order[]): Map<Date, Order[]> {
         const unknownDate = new Date(1900, 0, 1);
         const dates: Map<string, Date> = new Map();
@@ -263,6 +281,7 @@ export class KellermeisterService {
             newProduct.productionDate = productFromOrderItem.productionDate;
             newProduct.hersteller = productFromOrderItem.hersteller;
             newProduct.weinart = productFromOrderItem.weinart;
+            newProduct.weinfarbe = productFromOrderItem.weinfarbe;
             newProduct.milliliter = productFromOrderItem.milliliter;
             newProduct.region = productFromOrderItem.region;
             newProduct.land = productFromOrderItem.land;
