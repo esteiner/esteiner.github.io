@@ -19,7 +19,7 @@ export abstract class BaseComponent extends LitElement {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 0 30px;
+                padding: 0 0 0 30px;
                 z-index: 1000;
             }
             

@@ -1,12 +1,15 @@
 ToDo
 ===
 
-- [ ] Layout
+- [ ] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
+- [ ] Filter für Text auf Einkäufe Seite
+- [ ] Profil Seite ist Text zu nahe am Rand
+- [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
 - [x] Namen optimieren
 - [x] Inventar optimieren
 - [x] Foto-to-Order
 - [x] Inrupt Setup
-- [ ] Icons einbauen
+- [x] Icons einbauen
 
 ### Prio 1
 
