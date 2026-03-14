@@ -17,6 +17,8 @@ import { fetch } from "@inrupt/solid-client-authn-browser";
  */
 export class KellermeisterService {
 
+    private bottlesContainer: BottlesContainer | null;
+
     constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory) {
     }
 
@@ -37,7 +39,7 @@ export class KellermeisterService {
     }
 
     async getAllBottles(): Promise<Bottle[]> {
-        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
+        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {
             return bottlesContainer.bottles;
         } else {
@@ -127,11 +129,12 @@ export class KellermeisterService {
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
 
         if (unprocessedOrders.length > 0) {
-            const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
+            const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
             if (bottlesContainer) {
                 unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottlesContainer));
 
                 if (bottlesContainer.isDirty()) {
+                    this.bottlesContainer = null;
                     await bottlesContainer.save();
                     this.moveProcessedOrders(unprocessedOrders);
                     console.log("ingestOrdersFromInbox: processed orders:", unprocessedOrders.length);
@@ -169,7 +172,7 @@ export class KellermeisterService {
     }
 
     async transferBottles(bottles: Bottle[], cellarIds: string[]) {
-        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
+        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {
             for (var i = 0; i < bottles.length; i++) {
                 if (cellarIds[i] != undefined) {
@@ -178,11 +181,28 @@ export class KellermeisterService {
             }
         }
         if (bottlesContainer?.isDirty) {
+            this.bottlesContainer = null;
             await bottlesContainer.save();
         }
     }
 
     // -----------------------------------------------------------------
+
+    private async fetchBottles(): Promise<BottlesContainer | null> {
+        if (this.bottlesContainer) {
+            console.log("fetchBottles: from cache");
+            return this.bottlesContainer;
+        } else {
+            const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
+            if (bottlesContainer) {
+                this.bottlesContainer = bottlesContainer;
+                return this.bottlesContainer;
+            } else {
+                console.log("fetchBottles: bottles container not found")
+                return null;
+            }
+        }
+    }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar) {
         if (cellar) {
