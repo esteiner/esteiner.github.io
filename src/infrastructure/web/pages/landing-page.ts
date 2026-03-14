@@ -178,16 +178,12 @@ class LandingPage extends BasePage {
                         ${this.cellars.map(
                                 cellar =>
                                         html`
-                                            <a href="${router.urlForName('cellar-page', {cellarId: `${cellar.id}`})}">
-                                                <kellermeister-button ghost icon="wine-shelf" text="${cellar.name}"></kellermeister-button>
-                                            </a>
+                                            <kellermeister-button text="${cellar.name}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="wine-shelf"></kellermeister-button>
                                         `
                         )}
                         
-                        <kellermeister-button ghost icon="work" text="Kellerarbeit" @click="${this.handleCellarWorkClick}"></kellermeister-button>
-                        <a href="${router.urlForName('cellar-page', {cellarId: `${this.cdi?.getKellermeisterService().getAltglassId()}`})}">
-                            <kellermeister-button ghost icon="trash" text="Altglass"></kellermeister-button>
-                        </a>
+                        <kellermeister-button text="Kellerarbeit" @click="${this.handleCellarWorkClick}" ghost icon="work"></kellermeister-button>
+                        <kellermeister-button text="Altglass" @click="${() => this.handleCellarClick(this.cdi?.getKellermeisterService().getAltglassId())}" ghost icon="trash"></kellermeister-button>
                     </div>
                 </main>
                 <kellermeister-footer></kellermeister-footer>
@@ -278,6 +274,10 @@ class LandingPage extends BasePage {
         this.showWebIdDialog = false;
         this._webIdResolve?.(null);
         this._webIdResolve = null;
+    }
+
+    private async handleCellarClick(cellarId: string) {
+        Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
     }
 
     private async handleNewCellarClick() {
