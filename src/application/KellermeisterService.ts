@@ -80,9 +80,9 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellar(cellar: Cellar): Promise<Bottle[]> {
+    async bottlesFromCellar(cellar: Cellar, filter: ProductFilter): Promise<Bottle[]> {
         const bottles = await this.getAllBottles();
-        return bottles.filter(bottle => cellar.id === bottle.cellar)
+        return bottles.filter(bottle => cellar.id === bottle.cellar).filter(bottle => filter.filterBottle(bottle))
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.product, b.product));
     }
 

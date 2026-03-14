@@ -61,8 +61,15 @@ export class ProductFilter {
         }
         // Text
         if (this.isText) {
-            console.log("filterBottle: text=", this.textFilter);
-            result = result && bottle.product.name.toLowerCase().includes(this.textFilter.toLowerCase());
+            result = result && (
+                bottle.product.name.toLowerCase().includes(this.textFilter.toLowerCase())
+                || bottle.product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
+                || bottle.product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
+                || bottle.product.alkoholgehalt?.includes(this.textFilter)
+                || bottle.product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
+                || bottle.product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
+                || bottle.product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
+            );
         }
         return result;
     }

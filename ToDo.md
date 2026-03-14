@@ -1,7 +1,6 @@
 ToDo
 ===
 
-- [ ] Flaschen suchen auf Kellerarbeit, Keller (✔) und Einkäufe (ein Suchfeld auf: Name, Jahrgang, Weinart, Land, Region, Traubensorte, Alkoholgehalt, Trinkfenster-Bis)
 - [ ] Layout
 - [x] Namen optimieren
 - [x] Inventar optimieren
@@ -11,7 +10,7 @@ ToDo
 
 ### Prio 1
 
-- [ ] Filter für Weinart auf Keller Seite (✔) und Kellerarbeit Seite
+- [x] Filter für Weinart auf Keller Seite (✔) und Kellerarbeit (✔) Seite
 - [x] Optimierung: Porto, Geschenkpackung, Rabatt, etc. aus Bestellung entfernen
 - [ ] Server von Python auf Quarkus migrieren
 - [ ] Solid Bootstrapping via WebID -> oidcIssuer(s) / storage(s) -> Type Indices

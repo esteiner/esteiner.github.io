@@ -11,6 +11,7 @@ import '../components/kellermeister-footer.ts';
 import "../components/order-item-component.ts";
 import "../components/bottle-component.ts";
 import type {RouterLocation} from "@vaadin/router";
+import {ProductFilter} from "../../../domain/Product/ProductFilter";
 
 @customElement('cellarwork-page')
 class CellarWorkPage extends BasePage {
@@ -30,13 +31,29 @@ class CellarWorkPage extends BasePage {
     @state()
     cellarIds: string[];
 
+    @state()
+    filter: ProductFilter;
+
+    @state()
+    private showSearchInput: boolean = false;
+
+    @state()
+    private searchText: string = '';
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
         super();
+        this.filter = new ProductFilter();
         this.cellars = new Array();
         this.bottles = new Array();
         this.cellarIds = new Array();
+    }
+
+    updated(changedProperties: Map<string, unknown>) {
+        if (changedProperties.has('showSearchInput') && this.showSearchInput) {
+            this.shadowRoot?.querySelector<HTMLInputElement>('.search-input')?.focus();
+        }
     }
 
     static get styles() {
@@ -74,6 +91,34 @@ class CellarWorkPage extends BasePage {
                 span.column2 {
                     text-align: center;
                 }
+
+                .search-bar {
+                    position: fixed;
+                    top: 90px;
+                    left: 0;
+                    right: 0;
+                    padding: 8px 16px;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(8px);
+                    border-bottom: 1px solid #e0e0e0;
+                    z-index: 999;
+                    box-sizing: border-box;
+                }
+
+                .search-input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid #ccc;
+                    background: #f9f9f9;
+                    font-size: 15px;
+                    outline: none;
+                }
+
+                .search-input:focus {
+                    border-color: #007aff;
+                }
             `
         ];
     }
@@ -103,7 +148,7 @@ class CellarWorkPage extends BasePage {
     }
 
     async fetchBottlesFromCellar(cellar: Cellar) {
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(cellar);
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(cellar, this.filter);
         this.cellarIds = Array(this.bottles.length).fill(undefined, 0);
     }
 
@@ -122,11 +167,28 @@ class CellarWorkPage extends BasePage {
 
     render() {
         return html`
-            <kellermeister-header>
-                Kellerarbeit ${this.sourceCellar?.name}
-                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="einbuchen" icon="wine-bubble"
+            <kellermeister-header>Kellerarbeit ${this.sourceCellar?.name}
+                <kellermeister-button slot="actions" text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
+                <kellermeister-button slot="actions" text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
+                <kellermeister-button slot="actions" text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
+                <kellermeister-button slot="actions" text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
+                <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
+                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="einbuchen" icon="wine-shelf"
                                       size="small"></kellermeister-button>
             </kellermeister-header>
+            ${this.showSearchInput ? html`
+              <div class="search-bar">
+                  <input
+                      class="search-input"
+                      type="search"
+                      .value="${this.searchText}"
+                      @input="${(e: InputEvent) => this.searchText = (e.target as HTMLInputElement).value}"
+                      @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleSearchCommit()}"
+                      @search="${this.handleSearchClear}"
+                      placeholder="Suchen..."
+                  />
+              </div>
+          ` : ''}
             <main>
                 <form @submit="${this.handleIngestClick}">
                     <div class="table" style="--cellar-columns: ${this.cellars.length};">
@@ -185,6 +247,49 @@ class CellarWorkPage extends BasePage {
         console.log("handleCellarClick: to cellar:", cellarId);
         this.cellarIds = Array(this.bottles.length).fill(cellarId, 0);
         console.log("handleCellarClick: ", this.cellarIds);
+    }
+
+    private async handleSprudelFilterClick(): Promise<void> {
+        this.filter.toggleSprudelFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
+    }
+
+    private async handleRedFilterClick(): Promise<void> {
+        this.filter.toggleRedFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
+    }
+
+    private async handleWhiteFilterClick(): Promise<void> {
+        this.filter.toggleWhiteFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
+    }
+
+    private async handleRoseFilterClick(): Promise<void> {
+        this.filter.toggleRoseFilter();
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
+    }
+
+    private handleTextFilterClick(): void {
+        if (this.showSearchInput) {
+            this.showSearchInput = false;
+        } else {
+            this.searchText = this.filter.textFilter?.toString() ?? '';
+            this.showSearchInput = true;
+        }
+    }
+
+    private async handleSearchCommit(): Promise<void> {
+        this.showSearchInput = false;
+        this.filter.textFilter = this.searchText || null;
+        this.filter.isText = !!this.searchText;
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
+    }
+
+    private async handleSearchClear() {
+        this.showSearchInput = false;
+        this.filter.textFilter = null;
+        this.filter.isText = false;
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
 }
