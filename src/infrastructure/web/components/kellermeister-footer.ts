@@ -42,9 +42,9 @@ class KellermeisterFooter extends BaseComponent {
 
     render() {
         return html`
-            <kellermeister-button text="Übersicht" @click="${this.handleOverviewClick}" icon="house"></kellermeister-button>
-            <kellermeister-button text="Einkäufe" @click="${this.handleOrderClick}" icon="shopping"></kellermeister-button>
-            <kellermeister-button text="Profil" @click="${this.handleProfileClick}" icon="profile"></kellermeister-button>
+            <kellermeister-button text="Übersicht" @click="${this.handleOverviewClick}" icon="house" size="small"></kellermeister-button>
+            <kellermeister-button text="Einkäufe" @click="${this.handleOrderClick}" icon="shopping" size="small"></kellermeister-button>
+            <kellermeister-button text="Profil" @click="${this.handleProfileClick}" icon="profile" size="small"></kellermeister-button>
         `;
     }
 
