@@ -45,7 +45,6 @@ class CellarPage extends BasePage {
               <kellermeister-button slot="actions" text="Weiss" icon="wine-white" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Rosé" icon="wine-rose" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
-              <kellermeister-button slot="actions" text="Löschen" @click="${this.handleDeleteClick}" icon="trash" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
               <div>
@@ -92,13 +91,6 @@ class CellarPage extends BasePage {
         } else {
             console.log("loadCellar: failed, because cellarId is undefined!");
         }
-    }
-
-    private async handleDeleteClick() {
-        // check for bottles in this cellar
-        //alert("Es gibt noch Flaschen in diesem Keller!")
-        await this.cdi.getKellermeisterService().removeCellar(this.cellar);
-        Router.go(router.urlForName('landing-page'));
     }
 
     private handleCellarworkClick() {
