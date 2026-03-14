@@ -18,7 +18,7 @@ import { fetch } from "@inrupt/solid-client-authn-browser";
  */
 export class KellermeisterService {
 
-    private bottlesContainer: BottlesContainer | null;
+    private bottlesContainer: BottlesContainer | null = null;
 
     constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory) {
     }
@@ -62,7 +62,7 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellarGroupedByProduct(cellar: Cellar, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
+    async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
         const bottles = await this.getAllBottles();
         const grouped = new Map<string, Bottle[]>();
 
@@ -215,7 +215,7 @@ export class KellermeisterService {
         }
     }
 
-    private isBottleInThisCellar(bottle: Bottle, cellar: Cellar) {
+    private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
         if (cellar) {
             return cellar.id == bottle.cellar;
         }

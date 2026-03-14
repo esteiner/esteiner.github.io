@@ -81,7 +81,7 @@ class CellarPage extends BasePage {
 
     private async loadBottles() {
         if (this.cellar) {
-            this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar);
+            this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
         } else {
             console.log("loadBottle: failed, because cellar is undefined!");
         }
@@ -104,22 +104,22 @@ class CellarPage extends BasePage {
         }
     }
 
-    private async handleSprudelFilterClick(): void {
+    private async handleSprudelFilterClick(): Promise<void> {
         this.filter.toggleSprudelFilter();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
-    private async handleRedFilterClick(): void {
+    private async handleRedFilterClick(): Promise<void> {
         this.filter.toggleRedFilter();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
-    private async handleWhiteFilterClick(): void {
+    private async handleWhiteFilterClick(): Promise<void> {
         this.filter.toggleWhiteFilter();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
-    private async handleRoseFilterClick(): void {
+    private async handleRoseFilterClick(): Promise<void> {
         this.filter.toggleRoseFilter();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
