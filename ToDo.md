@@ -26,6 +26,7 @@ ToDo
 - [ ] Flasche(n) löschen
 - [ ] Refresh nach neuen Keller erstellen
 - [ ] Keller löschen im Profil
+- [ ] WebID löschen im Profil
 - [ ] Eingang aus Foto via Email
 
 ### Prio 3
