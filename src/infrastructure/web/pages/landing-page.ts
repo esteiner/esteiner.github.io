@@ -292,11 +292,6 @@ class LandingPage extends BasePage {
         Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cdi?.getKellermeisterService().getCellarWorkId()}`}));
     }
 
-    private handleLogoutClick() {
-        console.log("handleLogoutClick");
-        this.cdi.getSolidService().logout();
-    }
-
     static get styles() {
         return [
             ...super.styles,
