@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
@@ -28,12 +28,24 @@ class CellarPage extends BasePage {
     @state()
     filter: ProductFilter;
 
+    @state()
+    private showSearchInput: boolean = false;
+
+    @state()
+    private searchText: string = '';
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
         super();
         this.filter = new ProductFilter();
         this.bottles = new Map<string, Bottle[]>;
+    }
+
+    updated(changedProperties: Map<string, unknown>) {
+        if (changedProperties.has('showSearchInput') && this.showSearchInput) {
+            this.shadowRoot?.querySelector<HTMLInputElement>('.search-input')?.focus();
+        }
     }
 
     async onBeforeEnter(location: RouterLocation) {
@@ -49,8 +61,22 @@ class CellarPage extends BasePage {
               <kellermeister-button slot="actions" text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Weiss" @click="${this.handleWhiteFilterClick}" .ghost=${this.filter.isWhite} icon="wine-white" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Rosé" @click="${this.handleRoseFilterClick}" .ghost=${this.filter.isRose} icon="wine-rose" size="small"></kellermeister-button>
+              <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
           </kellermeister-header>
+          ${this.showSearchInput ? html`
+              <div class="search-bar">
+                  <input
+                      class="search-input"
+                      type="search"
+                      .value="${this.searchText}"
+                      @input="${(e: InputEvent) => this.searchText = (e.target as HTMLInputElement).value}"
+                      @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleSearchCommit()}"
+                      @search="${this.handleSearchClear}"
+                      placeholder="Suchen..."
+                  />
+              </div>
+          ` : ''}
           <main>
               <div>
                     ${this.bottles.size > 0
@@ -122,6 +148,64 @@ class CellarPage extends BasePage {
     private async handleRoseFilterClick(): Promise<void> {
         this.filter.toggleRoseFilter();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    private handleTextFilterClick(): void {
+        if (this.showSearchInput) {
+            this.showSearchInput = false;
+        } else {
+            this.searchText = this.filter.textFilter?.toString() ?? '';
+            this.showSearchInput = true;
+        }
+    }
+
+    private async handleSearchCommit(): Promise<void> {
+        this.showSearchInput = false;
+        this.filter.textFilter = this.searchText || null;
+        this.filter.isText = !!this.searchText;
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    private async handleSearchClear() {
+        this.showSearchInput = false;
+        this.filter.textFilter = null;
+        this.filter.isText = false;
+        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+    }
+
+    static get styles() {
+        return [
+            ...super.styles,
+            css`
+                .search-bar {
+                    position: fixed;
+                    top: 90px;
+                    left: 0;
+                    right: 0;
+                    padding: 8px 16px;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(8px);
+                    border-bottom: 1px solid #e0e0e0;
+                    z-index: 999;
+                    box-sizing: border-box;
+                }
+
+                .search-input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1px solid #ccc;
+                    background: #f9f9f9;
+                    font-size: 15px;
+                    outline: none;
+                }
+
+                .search-input:focus {
+                    border-color: #007aff;
+                }
+            `
+        ];
     }
 }
 

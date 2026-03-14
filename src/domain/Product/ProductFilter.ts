@@ -13,6 +13,7 @@ export class ProductFilter {
     public isRed: boolean = false;
     public isRose: boolean = false;
 
+    public isText: boolean = false;
     public textFilter: String | null = null;
 
     public toggleSprudelFilter(): void {
@@ -35,6 +36,10 @@ export class ProductFilter {
         this.isRose = !this.isRose;
     }
 
+    public toggleTextFilter(): void {
+        this.isText = !this.isText;
+    }
+
     public filterBottle(bottle: Bottle): boolean {
         let result: boolean = true;
         // Weinart
@@ -54,7 +59,11 @@ export class ProductFilter {
         if (this.isRose) {
             result = result && Weinfarbe.Rose.equals(bottle.product.weinfarbe);
         }
-
+        // Text
+        if (this.isText) {
+            console.log("filterBottle: text=", this.textFilter);
+            result = result && bottle.product.name.toLowerCase().includes(this.textFilter.toLowerCase());
+        }
         return result;
     }
 
