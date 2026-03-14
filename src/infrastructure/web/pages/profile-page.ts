@@ -6,6 +6,7 @@ import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
+import {CDI} from "../../cdi/CDI";
 
 @customElement('profile-page')
 class ProfilePage extends BasePage {
@@ -15,6 +16,8 @@ class ProfilePage extends BasePage {
 
     @state()
     solidUserProfile: SolidUserProfile | null | undefined;
+
+    private cdi: CDI = CDI.getInstance();
 
     connectedCallback() {
         super.connectedCallback();
@@ -31,7 +34,9 @@ class ProfilePage extends BasePage {
 
     render() {
         return html`
-          <kellermeister-header>Kellermeister Profil</kellermeister-header>
+          <kellermeister-header>Kellermeister Profil
+              <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" class="header-btn" size="small"></kellermeister-button>
+          </kellermeister-header>
           <main>
               <div>
                   WebId: ${this.session.info.webId}
@@ -66,6 +71,11 @@ class ProfilePage extends BasePage {
               <kellermeister-footer></kellermeister-footer>
           </footer>
         `;
+    }
+
+    private handleLogoutClick() {
+        console.log("handleLogoutClick");
+        this.cdi.getSolidService().logout();
     }
 
 }
