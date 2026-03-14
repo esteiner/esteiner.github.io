@@ -284,7 +284,7 @@ class LandingPage extends BasePage {
         const name: string | null = prompt("Name des neuen Kellers", "Keller"+(this.cellars.length+1));
         if (name) {
             const newCellar = await this.cdi.getKellermeisterService().createCellar(name);
-            this.cellars.push(newCellar);
+            this.loadCellars();
         }
     }
 
