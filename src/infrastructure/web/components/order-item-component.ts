@@ -57,7 +57,7 @@ class OrderItemComponent extends BaseComponent {
                     ${this.showOrderQuantity ? html`<button class="bottle-button">${this.orderItem?.orderQuantity}</button>` : nothing}
                     <span @click="${this.expandCollapseProduct}">${this.orderItem?.product?.name} (${this.orderItem?.product?.milliliter})</span>
                 </div>
-                ${this.expanded ? html`<product-component .product="${this.orderItem?.product}">${this.orderItem?.price}</product-component>`: nothing}
+                ${this.expanded ? html`<product-component .product="${this.orderItem?.product}">${this.orderItem?.price} ${this.orderItem?.priceCurrency}</product-component>`: nothing}
             </div>
         `;
     }
