@@ -189,24 +189,21 @@ class LandingPage extends BasePage {
                 <kellermeister-footer></kellermeister-footer>
             `
             : html`
-                <main>
+                <header>
                     <h1 data-testid="page-title">Willkommen beim Kellermeister</h1>
+                </header>        
+                <main class="content">
                     <div>
                         <kellermeister-button ghost icon="house" text="Deine Kellerräume betreten" @click="${this.handleLoginClick}" data-testid="cellars-button"></kellermeister-button>
                     </div>
-                    <div>
+                    <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
                             Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf Altglas nachschauen, welche Weine du im Laufe der Zeit ausgetrunken hast.</p>
-                    </div>
-                    <div>
                         <p>Anhand deiner Weinrechnung werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in Kellerarbeit, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das Altglas buchen.
                             Altglas hat den Vorteil, dass du eine Übersicht über alle deine von dir gekauften Weine hast.
                         </p>
-                    </div>
-                    <div>
-                        <p>Willst du ein neuer Kellermeister werden? Dann erstelle dir einen SOLID Pod. Bei der Neuregistrierung der App kannst du den Link deines Pods eingeben.
-                        </p>
-                    </div>
+                        <p>Willst du ein neuer Kellermeister werden? Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessenden anmelden kannst.</p>
+                    </section>
                 </main>
             `
             }
@@ -296,6 +293,25 @@ class LandingPage extends BasePage {
         return [
             ...super.styles,
             css`
+                header {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 90px;
+                    background-color: transparent;
+                    backdrop-filter: blur(10px);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0 0 0 30px;
+                    z-index: 1000;
+                }
+                
+                .intro {
+                    padding: 16px;    
+                }
+                
                 kellermeister-button {
                     flex: 1;
                     margin: 0 5px;

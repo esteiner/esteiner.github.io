@@ -5,6 +5,7 @@ ToDo
 - [ ] Filter für Text auf Einkäufe Seite
 - [ ] Profil Seite ist Text zu nahe am Rand
 - [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
+- [ ] background color = #f2f2b6
 - [x] Namen optimieren
 - [x] Inventar optimieren
 - [x] Foto-to-Order

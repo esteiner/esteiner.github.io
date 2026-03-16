@@ -20,7 +20,7 @@ class OrdersComponent extends BaseComponent {
     protected render() {
         if (this.orders) {
             return html`
-                <span>${this.month?.toLocaleString('de-DE', {month: 'long'})} ${this.month?.getFullYear()}</span>
+                <div>${this.month?.toLocaleString('de-DE', {month: 'long'})} ${this.month?.getFullYear()}</div>
                 <ul>
                     ${this.orders.map(
                             order => html`<order-component .order="${order}"></order-component>`
