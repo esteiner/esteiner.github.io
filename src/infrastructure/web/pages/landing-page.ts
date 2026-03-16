@@ -299,13 +299,11 @@ class LandingPage extends BasePage {
                     left: 0;
                     right: 0;
                     height: 90px;
-                    background-color: transparent;
-                    backdrop-filter: blur(10px);
+                    color: #003300;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: 0 0 0 30px;
-                    z-index: 1000;
+                    padding: 0 16px;
                 }
                 
                 .intro {
