@@ -1,4 +1,4 @@
-import { html } from 'lit';
+import { html, css } from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import { BasePage } from "../common/base-page.ts";
 import '../components/kellermeister-header.ts';
@@ -38,32 +38,41 @@ class ProfilePage extends BasePage {
               <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" class="header-btn" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
-              <div>
-                  WebId: ${this.session.info.webId}
+              <div class="group">
+                  <label>WebId:</label>
+                  <div>${this.session.info.webId}</div>
               </div>
-              <div>
-                  Name: ${this.solidUserProfile?.name}
+              <div class="group">
+                  <label>Name:</label>
+                  <div>${this.solidUserProfile?.name}</div>
               </div>
-              <div>
-                  StorageUrls: ${this.solidUserProfile?.storageUrls}
+              <div class="group">
+                  <label>StorageUrls:</label>
+                  <div>${this.solidUserProfile?.storageUrls}</div>
               </div>
-              <div>
-                  WritableProfileUrl: ${this.solidUserProfile?.writableProfileUrl}
+              <div class="group">
+                  <label>WritableProfileUrl:</label>
+                  <div>${this.solidUserProfile?.writableProfileUrl}</div>
               </div>
-              <div>
-                  OIDCIssuerUrl: ${this.solidUserProfile?.oidcIssuerUrl}
+              <div class="group">
+                  <label>OIDCIssuerUrl:</label>
+                  <div>${this.solidUserProfile?.oidcIssuerUrl}</div>
               </div>
-              <div>
-                  PublicTypeIndexUrl: ${this.solidUserProfile?.publicTypeIndexUrl}
+              <div class="group">
+                  <label>PublicTypeIndexUrl:</label>
+                  <div>${this.solidUserProfile?.publicTypeIndexUrl}</div>
               </div>
-              <div>
-                  PrivateTypeIndexUrl: ${this.solidUserProfile?.privateTypeIndexUrl}
+              <div class="group">
+                  <label>PrivateTypeIndexUrl:</label>
+                  <div>${this.solidUserProfile?.privateTypeIndexUrl}</div>
               </div>
-              <div>
-                  ClientAppId: ${this.session.info.clientAppId}
+              <div class="group">
+                  <label>ClientAppId:</label>
+                  <div>${this.session.info.clientAppId}</div>
               </div>
-              <div>
-                  SessionId: ${this.session.info.sessionId}
+              <div class="group">
+                  <label>SessionId:</label>
+                  <div>${this.session.info.sessionId}</div>
               </div>
               <a target="_blank" href="https://solid-file-manager.theodi.org/">Solid File Manager</a>
           </main>
@@ -76,6 +85,22 @@ class ProfilePage extends BasePage {
     private handleLogoutClick() {
         console.log("handleLogoutClick");
         this.cdi.getSolidService().logout();
+    }
+
+    static get styles() {
+        return [
+            ...super.styles,
+            css`
+                label {
+                    color: oklch(55.1% 0.027 264.364);
+                    font-size: 11px;
+                }
+                .group {
+                    margin: 10px;
+                    background-color: whitesmoke;
+                }
+            `
+        ];
     }
 
 }
