@@ -198,11 +198,24 @@ class LandingPage extends BasePage {
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
-                            Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf Altglas nachschauen, welche Weine du im Laufe der Zeit ausgetrunken hast.</p>
-                        <p>Anhand deiner Weinrechnung werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in Kellerarbeit, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das Altglas buchen.
-                            Altglas hat den Vorteil, dass du eine Übersicht über alle deine von dir gekauften Weine hast.
-                        </p>
-                        <p>Willst du ein neuer Kellermeister werden? Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessenden anmelden kannst.</p>
+                            Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf <em>Altglas</em> nachschauen, welche Weine du im Laufe der Zeit ausgetrunken hast.</p>
+                        <p>Wie funktioniert die Kellermeister App?</p>
+                        <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen. <em>Altglas</em> hat den Vorteil, dass du eine Übersicht über alle deine von dir getrunkenen Weine hast.</p>
+                        <p>Willst du ein neuer Kellermeister werden?</p>
+                        <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessenden anmelden kannst.<br>
+                            Anschliessend melde dich bei xxx um deinen Weineingang zu konfigurieren.</p>
+                        <p>Lust deinen gesamten Weinkeller zu erfassen?</p>
+                        <p>Dann erstelle ein email mit einer Tabelle um alle deine Weine zu erfassen. Nur wenige Daten sind nötig:
+                            hersteller, weinname, jahrgang, weinart, preis, anzahl und Flaschengrösse zB: Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750. Falls du den Preis nicht mehr kennst, lass ihn leer und unser agent geht auf die Suche.</p>
+                        <p>Wie kann ich eine Weinrechnung übernehmen?</p>
+                        <p>Leite dein Email mit deiner Weinrechnungen an die Emailadresse kellermeister.wein@gmail.com
+                            Anschliessend wird sie von unserem agent verarbeitet und um fehlende Informationen angereichert. Die Rechnung kann als Text im Email ersichtlich sein (Flaschenpost) oder als pdf Anhang (Millesima).</p>
+                        <p>Wie kann ich einen Wein anhand eines Fotos übernehmen?</p>
+                        <p>Sende das Foto des Etiketts (Vorderseite oder Vorder- und Rückseite) an die Emailadresse kellermeister.wein@gmail.com
+                            Anschliessend wird sie von unserem agent verarbeitet und um fehlende Informationen angereichert.
+                            Wenn du möchtest, sende im Betreff den Ort wo du sie gekauft oder getrunken hast sowie den Preis im Format Restaurant Maihöffli Luzern: 95.50 CHF.
+                            Falls der Preis nicht angegeben wird, versucht unser agent den Preis im Internet zu finden.</p>
+                        <p>Noch weitere Fragen? Melde dich bei xxx</p>
                     </section>
                 </main>
             `
@@ -304,6 +317,10 @@ class LandingPage extends BasePage {
                     justify-content: center;
                     align-items: center;
                     padding: 0 16px;
+                }
+                
+                h1 {
+                    font-size: 1.5em;
                 }
                 
                 .intro {
