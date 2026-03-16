@@ -21,13 +21,15 @@ class BottleComponent extends BaseComponent {
         return [
             ...super.styles,
             css`
-                button {
-                    background-color: transparent;
-                    color: grey;
-                    border: none;
-                }
                 .card1 {
-                    margin: 15px;
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+                    padding: 11px 16px;
+                    min-height: 44px;
+                }
+                span {
+                    padding-left: 8px;
                 }
             `
         ];
@@ -38,8 +40,8 @@ class BottleComponent extends BaseComponent {
             return html`
                 <div>
                     <div class="card1">
-                        <span @click="${this.expandCollapseProduct}">${this.bottle.product.name}</span>
                         <slot name="count"></slot>
+                        <span @click="${this.expandCollapseProduct}">${this.bottle.product.name}</span>
                     </div>
                     ${this.expanded ? html`
                         <product-component .product="${this.bottle.product}"><slot></slot></product-component>

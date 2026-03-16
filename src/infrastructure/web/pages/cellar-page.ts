@@ -179,17 +179,51 @@ class CellarPage extends BasePage {
         return [
             ...super.styles,
             css`
+                :host {
+                    display: block;
+                    background: #F2F2F7;
+                }
+
+                main {
+                    padding: 0 16px 16px 16px;
+                }
+
                 .filter {
                     display: flex;
                     justify-content: space-evenly;
                     align-items: center;
-                    padding: 0 0 10px 0;
+                    padding: 10px 0 10px 0;
                 }
-                
+
                 .bottles {
-                    padding: 0 8px;    
+                    padding: 0;
+                    background: white;
+                    border-radius: 10px;
+                    overflow: hidden;
                 }
-                
+
+                li {
+                    list-style: none;
+                    display: block;
+                    background: white;
+                }
+
+                li:not(:last-child) {
+                    border-bottom: 0.5px solid #C6C6C8;
+                }
+
+                .bottle-button {
+                    background: #E5E5EA;
+                    color: #3C3C43;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 2px 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    min-width: 24px;
+                    cursor: pointer;
+                }
+
                 .search-bar {
                     position: fixed;
                     top: 90px;
