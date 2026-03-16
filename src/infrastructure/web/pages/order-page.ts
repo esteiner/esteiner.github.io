@@ -1,4 +1,4 @@
-import {html} from 'lit';
+import {css, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {BasePage} from "../common/base-page.ts";
@@ -34,6 +34,22 @@ class OrderPage extends BasePage {
             this.orders = await this.cdi.getKellermeisterService().ordersGroupedByMonth();
 
         }
+    }
+
+    static get styles() {
+        return [
+            ...super.styles,
+            css`
+                :host {
+                    display: block;
+                    background: #F2F2F7;
+                }
+
+                main {
+                    padding: 16px;
+                }
+            `
+        ];
     }
 
     render() {

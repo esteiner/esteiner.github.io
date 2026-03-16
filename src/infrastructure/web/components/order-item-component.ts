@@ -1,6 +1,6 @@
 import {customElement, property, state} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
-import {html, nothing} from "lit";
+import {css, html, nothing} from "lit";
 import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
 import "./product-component.ts";
 
@@ -20,12 +20,41 @@ class OrderItemComponent extends BaseComponent {
         super();
     }
 
+    static get styles() {
+        return [
+            ...super.styles,
+            css`
+                :host {
+                    display: block;
+                }
+                .bottle-button {
+                    background: #E5E5EA;
+                    color: #3C3C43;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 2px 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    min-width: 24px;
+                    cursor: pointer;
+                }
+                .collapsed {
+                    display: flex;
+                    align-items: center;
+                    padding: 11px 16px;
+                    min-height: 44px;
+                    gap: 8px;
+                }
+            `
+        ];
+    }
+
     protected render() {
         console.log("render: showOrderQuantity:", this.showOrderQuantity);
         return html`
             <div>
                 <div class="collapsed">
-                    ${this.showOrderQuantity ? html`<span> [${this.orderItem?.orderQuantity}]</span>` : nothing}
+                    ${this.showOrderQuantity ? html`<button class="bottle-button">${this.orderItem?.orderQuantity}</button>` : nothing}
                     <span @click="${this.expandCollapseProduct}">${this.orderItem?.product?.name} (${this.orderItem?.product?.milliliter})</span>
                 </div>
                 ${this.expanded ? html`<product-component .product="${this.orderItem?.product}">${this.orderItem?.price}</product-component>`: nothing}

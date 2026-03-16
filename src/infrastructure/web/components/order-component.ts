@@ -1,4 +1,4 @@
-import {html} from "lit";
+import {css, html} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Order} from "../../../domain/Order/Order.ts";
@@ -15,6 +15,33 @@ class OrderComponent extends BaseComponent {
 
     constructor() {
         super();
+    }
+
+    static get styles() {
+        return [
+            ...super.styles,
+            css`
+                :host {
+                    display: block;
+                }
+
+                ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                li {
+                    list-style: none;
+                    display: block;
+                    background: white;
+                }
+
+                li:not(:last-child) {
+                    border-bottom: 0.5px solid #C6C6C8;
+                }
+            `
+        ];
     }
 
     protected render() {
