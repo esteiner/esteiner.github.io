@@ -98,6 +98,7 @@ class CellarWorkPage extends BasePage {
                 
                 span.column2 {
                     text-align: center;
+                    align-content: start;
                 }
 
                 .search-bar {
