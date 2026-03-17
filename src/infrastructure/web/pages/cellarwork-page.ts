@@ -98,7 +98,13 @@ class CellarWorkPage extends BasePage {
                 
                 span.column2 {
                     text-align: center;
-                    align-content: start;
+                    align-content: center;
+                }
+
+                input[type="radio"] {
+                    width: 32px;
+                    height: 32px;
+                    cursor: pointer;
                 }
 
                 .search-overlay {
