@@ -38,3 +38,11 @@ body {
     padding-top: 84px;
     padding-bottom: 84px;
 }
+
+/* Restore cancel button in iOS 9 Safari */
+input[type="search"]::-webkit-search-cancel-button {
+    /* Re-enable native styling */
+    -webkit-appearance: searchfield-cancel-button;
+    /* Ensure the button is visible */
+    display: inline-block;
+}
