@@ -7,6 +7,7 @@ import '../components/kellermeister-footer.ts';
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
 import {CDI} from "../../cdi/CDI";
+import {getBuildVersion} from "../utils";
 
 @customElement('profile-page')
 class ProfilePage extends BasePage {
@@ -38,6 +39,10 @@ class ProfilePage extends BasePage {
               <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" class="header-btn" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
+              <div class="group">
+                  <label>AppVersion::</label>
+                  <div>${getBuildVersion()}</div>
+              </div>
               <div class="group">
                   <label>WebId:</label>
                   <div>${this.session.info.webId}</div>
