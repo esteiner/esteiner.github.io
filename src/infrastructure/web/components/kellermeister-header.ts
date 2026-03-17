@@ -33,7 +33,6 @@ class KellermeisterHeader extends BaseComponent {
                     white-space: nowrap;
                 }
                div {
-                    padding: 10px 14px;
                     background-color: transparent;
                     backdrop-filter: blur(10px);
                     color: #007aff;
