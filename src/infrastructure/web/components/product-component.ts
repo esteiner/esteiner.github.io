@@ -23,7 +23,7 @@ class ProductComponent extends BaseComponent {
                 }
                 .group {
                     margin: 10px;
-                    background-color: whitesmoke;
+                    padding: 0 6px 0 6px;
                 }
             `
         ];
