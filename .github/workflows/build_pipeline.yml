@@ -36,6 +36,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#example-usage-of-the-steps-context
+      - name: Determine build version
+        run: |
+          echo "PACKAGE_VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "GITHUB_SHA_SHORT=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Save build version
+        run: echo "BUILD_VERSION=${{ env.PACKAGE_VERSION }}-${{ env.BUILD_DATE }}-${{ github.run_number }}-${{ env.GITHUB_SHA_SHORT }}" >> $GITHUB_ENV
+
+      - name: Setup build time variables
+        run: |
+          echo "VITE_BUILD_VERSION=${{ env.BUILD_VERSION }}" >> .env
+
       - name: Build application
         run: npm run build
         env:
