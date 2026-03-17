@@ -25,10 +25,11 @@ import iconWineRose from '../images/icons/wine-rose.svg?raw';
 import iconWineBubble from '../images/icons/wine-bubbles.svg?raw';
 import iconSearch from '../images/icons/search.svg?raw';
 import iconShopping from '../images/icons/shopping.svg?raw';
+import iconGabelstapler from '../images/icons/gabelstapler.svg?raw';
 
 import { BaseComponent } from '../common/base-component.js';
 
-type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'wine-shelf' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash';
+type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'wine-shelf' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash' | 'gabelstapler';
 
 @customElement('kellermeister-button')
 class KellermeisterButton extends BaseComponent {
@@ -195,6 +196,8 @@ class KellermeisterButton extends BaseComponent {
         return unsafeHTML(iconSearch);
       case 'shopping':
         return unsafeHTML(iconShopping);
+      case 'gabelstapler':
+        return unsafeHTML(iconGabelstapler);
       case 'trash':
         return unsafeHTML(iconTrash);
       default:

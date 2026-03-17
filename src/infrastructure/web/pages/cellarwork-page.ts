@@ -186,7 +186,7 @@ class CellarWorkPage extends BasePage {
         return html`
             <kellermeister-header>Kellerarbeit ${this.sourceCellar?.name}
                 <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
-                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="wine-shelf"
+                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="gabelstapler"
                                       size="small"></kellermeister-button>
             </kellermeister-header>
             <div class="filter">
