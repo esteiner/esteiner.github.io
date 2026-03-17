@@ -25,14 +25,11 @@ class KellermeisterFooter extends BaseComponent {
             css`
                 kellermeister-button {
                     flex: 1;
-                    margin: 0 5px;
-                    padding: 12px 16px;
-                    color: #007aff;
-                    font-size: 14px;
-                    font-weight: 600;
-                    border-radius: 8px;
+                    padding: 0;
+                    font-size: 11px;
+                    font-weight: 400;
+                    color: var(--app-primary-on-white-background);
                     cursor: pointer;
-                    transition: all 0.3s ease;
                     text-align: center;
                     max-width: 120px;
                 }

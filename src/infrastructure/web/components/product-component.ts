@@ -22,7 +22,7 @@ class ProductComponent extends BaseComponent {
                     font-size: 11px;
                 }
                 .group {
-                    margin: 10px;
+                    margin: 16px;
                     padding: 0 6px 0 6px;
                 }
             `

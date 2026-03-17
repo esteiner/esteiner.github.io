@@ -86,6 +86,7 @@ class KellermeisterButton extends BaseComponent {
           height: 64px;
           display: flex;
           border: none;
+          background: transparent;
           cursor: pointer;
         }
 
