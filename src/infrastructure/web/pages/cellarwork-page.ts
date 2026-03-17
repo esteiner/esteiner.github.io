@@ -101,32 +101,34 @@ class CellarWorkPage extends BasePage {
                     align-content: start;
                 }
 
-                .search-bar {
+                .search-overlay {
                     position: fixed;
-                    top: 90px;
-                    left: 0;
-                    right: 0;
-                    padding: 8px 16px;
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(8px);
-                    border-bottom: 1px solid #e0e0e0;
-                    z-index: 999;
-                    box-sizing: border-box;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 2000;
+                    display: flex;
+                    align-items: flex-start;
+                    padding-top: 104px;
+                }
+
+                .search-container {
+                    width: calc(100% - 32px);
+                    margin: 0 16px;
+                    background: white;
+                    border-radius: 12px;
+                    padding: 12px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
                 }
 
                 .search-input {
                     width: 100%;
                     box-sizing: border-box;
-                    padding: 8px 12px;
+                    padding: 9px 12px;
                     border-radius: 8px;
-                    border: 1px solid #ccc;
-                    background: #f9f9f9;
-                    font-size: 15px;
+                    border: none;
+                    background: #F2F2F7;
+                    font-size: 16px;
                     outline: none;
-                }
-
-                .search-input:focus {
-                    border-color: #007aff;
                 }
             `
         ];
@@ -189,16 +191,18 @@ class CellarWorkPage extends BasePage {
 
             </div>
             ${this.showSearchInput ? html`
-              <div class="search-bar">
-                  <input
-                      class="search-input"
-                      type="search"
-                      .value="${this.searchText}"
-                      @input="${(e: InputEvent) => this.searchText = (e.target as HTMLInputElement).value}"
-                      @keydown="${(e: KeyboardEvent) => e.key === 'Enter' && this.handleSearchCommit()}"
-                      @search="${this.handleSearchClear}"
-                      placeholder="Suchen..."
-                  />
+              <div class="search-overlay" @click="${this.handleSearchClose}">
+                  <div class="search-container" @click="${(e: Event) => e.stopPropagation()}">
+                      <input
+                          class="search-input"
+                          type="search"
+                          .value="${this.searchText}"
+                          @input="${this.handleSearchInput}"
+                          @keydown="${(e: KeyboardEvent) => e.key === 'Escape' && this.handleSearchClose()}"
+                          @search="${this.handleSearchClear}"
+                          placeholder="Suchen..."
+                      />
+                  </div>
               </div>
           ` : ''}
             <main>
@@ -290,17 +294,22 @@ class CellarWorkPage extends BasePage {
         }
     }
 
-    private async handleSearchCommit(): Promise<void> {
-        this.showSearchInput = false;
+    private async handleSearchInput(e: InputEvent): Promise<void> {
+        this.searchText = (e.target as HTMLInputElement).value;
         this.filter.textFilter = this.searchText || null;
         this.filter.isText = !!this.searchText;
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
-    private async handleSearchClear() {
+    private handleSearchClose(): void {
+        this.showSearchInput = false;
+    }
+
+    private async handleSearchClear(): Promise<void> {
         this.showSearchInput = false;
         this.filter.textFilter = null;
         this.filter.isText = false;
+        this.searchText = '';
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
