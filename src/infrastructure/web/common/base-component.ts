@@ -10,16 +10,19 @@ export abstract class BaseComponent extends LitElement {
         css`
             kellermeister-header {
                 position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 90px;
-                background-color: transparent;
-                backdrop-filter: blur(10px);
+                top: 10px;
+                left: 12px;
+                right: 12px;
+                height: 64px;
+                background-color: rgba(255, 255, 255, 0.75);
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 20px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 0 16px 0 30px;
+                padding: 0 16px;
                 z-index: 1000;
             }
             

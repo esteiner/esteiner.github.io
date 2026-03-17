@@ -108,7 +108,7 @@ class CellarWorkPage extends BasePage {
                     z-index: 2000;
                     display: flex;
                     align-items: flex-start;
-                    padding-top: 104px;
+                    padding-top: 90px;
                 }
 
                 .search-container {
