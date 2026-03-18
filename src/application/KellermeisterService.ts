@@ -223,8 +223,8 @@ export class KellermeisterService {
     }
 
     private filterOrder(order: Order, filter: ProductFilter): Order | null {
-        const orderItems = order.positions.filter(position => filter.filterProduct(position.product));
-        if (orderItems.length > 0) {
+        const orderItems = order.positions?.filter(position => filter.filterProduct(position.product));
+        if (orderItems && orderItems.length > 0) {
             const filteredOrder = new Order();
             filteredOrder.orderDate = order.orderDate;
             filteredOrder.orderNumber = order.orderNumber;

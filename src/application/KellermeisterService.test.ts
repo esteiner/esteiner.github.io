@@ -183,7 +183,7 @@ describe('KellermeisterService', () => {
             const jan2 = makeOrder(new Date(2024, 0, 20));
             vi.mocked(orderRepo.fetchOrders).mockResolvedValue([jan1, jan2]);
 
-            const grouped = await service.ordersGroupedByMonth();
+            const grouped = await service.ordersGroupedByMonth(new ProductFilter());
             expect(grouped.size).toBe(1);
             const [, orders] = [...grouped.entries()][0];
             expect(orders).toHaveLength(2);
@@ -195,7 +195,7 @@ describe('KellermeisterService', () => {
             const mar = makeOrder(new Date(2024, 2, 10));
             vi.mocked(orderRepo.fetchOrders).mockResolvedValue([jan, feb, mar]);
 
-            const grouped = await service.ordersGroupedByMonth();
+            const grouped = await service.ordersGroupedByMonth(new ProductFilter());
             expect(grouped.size).toBe(3);
         });
 
@@ -205,7 +205,7 @@ describe('KellermeisterService', () => {
             const jun = makeOrder(new Date(2024, 5, 1));
             vi.mocked(orderRepo.fetchOrders).mockResolvedValue([jan, dec, jun]);
 
-            const keys = [...(await service.ordersGroupedByMonth()).keys()];
+            const keys = [...(await service.ordersGroupedByMonth(new ProductFilter())).keys()];
             expect(keys[0].getFullYear()).toBe(2024);
             expect(keys[0].getMonth()).toBe(5); // June
             expect(keys[1].getFullYear()).toBe(2024);
@@ -219,7 +219,7 @@ describe('KellermeisterService', () => {
             const o2 = makeOrder(undefined);
             vi.mocked(orderRepo.fetchOrders).mockResolvedValue([o1, o2]);
 
-            const grouped = await service.ordersGroupedByMonth();
+            const grouped = await service.ordersGroupedByMonth(new ProductFilter());
             expect(grouped.size).toBe(1);
             const [key] = [...grouped.keys()];
             expect(key.getFullYear()).toBe(1900);
@@ -230,7 +230,7 @@ describe('KellermeisterService', () => {
             const o2 = makeOrder(new Date(2024, 3, 30));
             vi.mocked(orderRepo.fetchOrders).mockResolvedValue([o1, o2]);
 
-            const grouped = await service.ordersGroupedByMonth();
+            const grouped = await service.ordersGroupedByMonth(new ProductFilter());
             const keys = [...grouped.keys()];
             expect(keys).toHaveLength(1);
             expect(keys[0].getDate()).toBe(1); // normalised to 1st of month

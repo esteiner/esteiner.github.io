@@ -116,14 +116,14 @@ class OrderPage extends BasePage {
         await this.fetchOrders();
     }
 
-    private handleTextFilterClick(): void {
-        if (this.showSearchInput) {
-            this.showSearchInput = false;
-        } else {
-            this.searchText = this.filter.textFilter?.toString() ?? '';
-            this.showSearchInput = true;
-        }
-    }
+    // private handleTextFilterClick(): void {
+    //     if (this.showSearchInput) {
+    //         this.showSearchInput = false;
+    //     } else {
+    //         this.searchText = this.filter.textFilter?.toString() ?? '';
+    //         this.showSearchInput = true;
+    //     }
+    // }
 
 }
 

@@ -43,9 +43,9 @@ export class SolidPodService {
         let url: URL = new URL(this.storageUrl.toString() + inboxKellermeisterContainerPath);
         const resourceInfo = await getResourceInfo(url.toString(), { fetch: fetch });
         //console.log("setInboxKellermeisterAppendable:", resourceInfo);
-        let aclServerResourceInfo = await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
+        await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
         //console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
-        let accessModes = await universalAccess.setPublicAccess(
+        await universalAccess.setPublicAccess(
             url.toString(),
             { append: true },   // grant append; leave read/write/control untouched
             { fetch: fetch }
