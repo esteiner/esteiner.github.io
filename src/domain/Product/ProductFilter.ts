@@ -1,6 +1,6 @@
 import {Weinart} from "./Weinart.ts";
 import {Weinfarbe} from "./Weinfarbe.ts";
-import {Bottle} from "../Bottle/Bottle.ts";
+import {Product} from "../Product/Product.ts";
 
 export class ProductFilter {
 
@@ -40,36 +40,40 @@ export class ProductFilter {
         this.isText = !this.isText;
     }
 
-    public filterBottle(bottle: Bottle): boolean {
+    public hasRestrictions(): boolean {
+        return (this.isSprudel || this.isDessert || this.isWhite || this.isRed || this.isRose || this.isText);
+    }
+
+    public filterProduct(product: Product): boolean {
         let result: boolean = true;
         // Weinart
         if (this.isSprudel) {
-            result = result && Weinart.Schaumwein.equals(bottle.product.weinart);
+            result = result && Weinart.Schaumwein.equals(product.weinart);
         }
         if (this.isDessert) {
-            result = result && Weinart.Dessertwein.equals(bottle.product.weinart);
+            result = result && Weinart.Dessertwein.equals(product.weinart);
         }
         // Weinfarbe
         if (this.isWhite) {
-            result = result && Weinfarbe.Weiss.equals(bottle.product.weinfarbe);
+            result = result && Weinfarbe.Weiss.equals(product.weinfarbe);
         }
         if (this.isRed) {
-            result = result && Weinfarbe.Rot.equals(bottle.product.weinfarbe);
+            result = result && Weinfarbe.Rot.equals(product.weinfarbe);
         }
         if (this.isRose) {
-            result = result && Weinfarbe.Rose.equals(bottle.product.weinfarbe);
+            result = result && Weinfarbe.Rose.equals(product.weinfarbe);
         }
         // Text
         if (this.isText) {
             if (this.textFilter) {
                 result = result && (
-                    bottle.product.name?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || bottle.product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
-                    || bottle.product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || bottle.product.alkoholgehalt?.includes(this.textFilter)
-                    || bottle.product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || bottle.product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || bottle.product.trinkfensterBis === undefined ? true : bottle.product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
+                    product.name?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
+                    || product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || product.alkoholgehalt?.includes(this.textFilter)
+                    || product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
+                    || product.trinkfensterBis === undefined ? true : product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
                 );
             }
         }

@@ -19,6 +19,7 @@ import { fetch } from "@inrupt/solid-client-authn-browser";
 export class KellermeisterService {
 
     private bottlesContainer: BottlesContainer | null = null;
+    private cachedOrders: Order[] | null = null;
 
     constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory) {
     }
@@ -49,16 +50,6 @@ export class KellermeisterService {
         }
     }
 
-    async filterBottles(): Promise<Bottle[]> {
-        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        if (bottlesContainer) {
-            return bottlesContainer.bottles;
-        } else {
-            console.log("getAllBottles: bottles container not found")
-            return new Array();
-        }
-    }
-
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
@@ -67,7 +58,7 @@ export class KellermeisterService {
         const grouped = new Map<string, Bottle[]>();
 
         for (const bottle of bottles) {
-            if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && this.isBottleInFilter(bottle, filter)) {
+            if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.product)) {
                 if (!grouped.has(bottle.product.id)) {
                     grouped.set(bottle.product.id, []);
                 }
@@ -82,7 +73,7 @@ export class KellermeisterService {
      */
     async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
         const bottles = await this.getAllBottles();
-        return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterBottle(bottle))
+        return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterProduct(bottle.product))
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.product, b.product));
     }
 
@@ -126,11 +117,20 @@ export class KellermeisterService {
     }
 
     async getAllOrders(): Promise<Order[]> {
-        return this.orderRespository.fetchOrders();
+        if (this.cachedOrders) {
+            return this.cachedOrders;
+        }
+        this.cachedOrders = await this.orderRespository.fetchOrders();
+        return this.cachedOrders;
     }
 
-    async ordersGroupedByMonth(): Promise<Map<Date, Order[]>> {
+    async ordersGroupedByMonth(filter: ProductFilter): Promise<Map<Date, Order[]>> {
         const orders = await this.getAllOrders();
+        if (filter.hasRestrictions()) {
+            console.log("ordersGroupedByMonth: with filter", filter);
+            let filteredOrders: Order[] = orders.map(order => this.filterOrder(order, filter)).filter(order => order != null);
+            return this.groupOrdersByMonth(filteredOrders);
+        }
         return this.groupOrdersByMonth(orders);
     }
 
@@ -222,11 +222,18 @@ export class KellermeisterService {
         return false;
     }
 
-    private isBottleInFilter(bottle: Bottle, filter: ProductFilter) {
-        if (filter) {
-            return filter.filterBottle(bottle);
+    private filterOrder(order: Order, filter: ProductFilter): Order | null {
+        const orderItems = order.positions.filter(position => filter.filterProduct(position.product));
+        if (orderItems.length > 0) {
+            const filteredOrder = new Order();
+            filteredOrder.orderDate = order.orderDate;
+            filteredOrder.orderNumber = order.orderNumber;
+            filteredOrder.seller = order.seller;
+            filteredOrder.customer = order.customer;
+            filteredOrder.positions = orderItems;
+            return filteredOrder;
         }
-        return true;
+        return null;
     }
 
     private groupOrdersByMonth(orders: Order[]): Map<Date, Order[]> {
@@ -305,7 +312,7 @@ export class KellermeisterService {
     private async moveProcessedOrder(unprocessedOrder: Order) {
         console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
         await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
-
+        this.cachedOrders = null;
         // Delete from source
         if (unprocessedOrder.getSourceDocumentUrl()) {
             await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
