@@ -50,7 +50,6 @@ class OrderItemComponent extends BaseComponent {
     }
 
     protected render() {
-        console.log("render: showOrderQuantity:", this.showOrderQuantity);
         return html`
             <div>
                 <div class="collapsed">

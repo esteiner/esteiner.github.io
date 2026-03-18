@@ -16,7 +16,7 @@ export class SolidPodService {
     }
 
     async setupPodForKellermeister(): Promise<void> {
-        console.log("setupPodForKellermeister");
+        //console.log("setupPodForKellermeister");
         await this.setupFolder(inboxKellermeisterContainerPath);
         await this.setInboxKellermeisterAppendable(); // ACR or ACL
         await this.setupFolder(cellarsContainerPath);
@@ -31,7 +31,7 @@ export class SolidPodService {
                 await createContainerAt(url.toString(), { fetch: fetch });
                 console.log("setupFolder: path created", url.toString());
             } else {
-                console.log("setupFolder: path exists", url.toString());
+                //console.log("setupFolder: path exists", url.toString());
             }
         }
         catch (e) {
@@ -42,15 +42,15 @@ export class SolidPodService {
     async setInboxKellermeisterAppendable() {
         let url: URL = new URL(this.storageUrl.toString() + inboxKellermeisterContainerPath);
         const resourceInfo = await getResourceInfo(url.toString(), { fetch: fetch });
-        console.log("setInboxKellermeisterAppendable:", resourceInfo);
+        //console.log("setInboxKellermeisterAppendable:", resourceInfo);
         let aclServerResourceInfo = await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
-        console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
+        //console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
         let accessModes = await universalAccess.setPublicAccess(
             url.toString(),
             { append: true },   // grant append; leave read/write/control untouched
             { fetch: fetch }
         );
-        console.log("setInboxKellermeisterAppendable:", accessModes);
+        //console.log("setInboxKellermeisterAppendable:", accessModes);
     }
 
 }
