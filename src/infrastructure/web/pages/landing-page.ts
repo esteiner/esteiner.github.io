@@ -178,7 +178,7 @@ class LandingPage extends BasePage {
                         ${this.cellars.map(
                                 cellar =>
                                         html`
-                                            <kellermeister-button text="${cellar.name}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="wine-shelf"></kellermeister-button>
+                                            <kellermeister-button text="${cellar.name}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="cellar"></kellermeister-button>
                                         `
                         )}
                         
@@ -194,7 +194,7 @@ class LandingPage extends BasePage {
                 </header>        
                 <main class="content">
                     <div>
-                        <kellermeister-button ghost icon="house" text="Deine Kellerräume betreten" @click="${this.handleLoginClick}" data-testid="cellars-button"></kellermeister-button>
+                        <kellermeister-button ghost icon="cellars" text="Deine Kellerräume betreten" @click="${this.handleLoginClick}" data-testid="cellars-button"></kellermeister-button>
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.

@@ -186,8 +186,7 @@ class CellarWorkPage extends BasePage {
         return html`
             <kellermeister-header>Kellerarbeit ${this.sourceCellar?.name}
                 <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
-                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="gabelstapler"
-                                      size="small"></kellermeister-button>
+                <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="umbuchen" size="small"></kellermeister-button>
             </kellermeister-header>
             <div class="filter">
                 <kellermeister-button text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
@@ -217,7 +216,7 @@ class CellarWorkPage extends BasePage {
                         <div class="header-row">
                             <span class="column1">${this.bottles.length} Flaschen zum umbuchen</span>
                             ${repeat(this.cellars, (cellar) => cellar.id, (cellar) =>  html`
-                                <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.id)}" class="column2" icon="wine-shelf" ghost size="small" text="${cellar.name}"></kellermeister-button></span>
+                                <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.id)}" class="column2" icon="cellar" ghost size="small" text="${cellar.name}"></kellermeister-button></span>
                             `)}
                         </div>
                         <div class="data-row">

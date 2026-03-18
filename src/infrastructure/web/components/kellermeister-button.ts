@@ -16,8 +16,9 @@ import iconHouse from '../images/icons/house.svg?raw';
 import iconWallet from '../images/icons/wallet.svg?raw';
 import iconProfile from '../images/icons/settings.svg?raw';
 import iconPlus from '../images/icons/plus.svg?raw';
-import iconWineShelf from '../images/icons/wine-shelf.svg?raw';
-import iconWork from '../images/icons/hand-coins.svg?raw';
+import iconCellar from '../images/icons/cellar.svg?raw';
+import iconCellars from '../images/icons/cellars.svg?raw';
+import iconWork from '../images/icons/Kellermeister.svg?raw';
 import iconLogout from '../images/icons/hiker.svg?raw';
 import iconWineRed from '../images/icons/wine-red.svg?raw';
 import iconWineWhite from '../images/icons/wine-white.svg?raw';
@@ -25,11 +26,11 @@ import iconWineRose from '../images/icons/wine-rose.svg?raw';
 import iconWineBubble from '../images/icons/wine-bubbles.svg?raw';
 import iconSearch from '../images/icons/search.svg?raw';
 import iconShopping from '../images/icons/shopping.svg?raw';
-import iconGabelstapler from '../images/icons/gabelstapler.svg?raw';
+import iconBottle from '../images/icons/wine-bottle-with-label.svg?raw';
 
 import { BaseComponent } from '../common/base-component.js';
 
-type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'wine-shelf' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash' | 'gabelstapler';
+type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'cellar' | 'cellars' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash' | 'umbuchen';
 
 @customElement('kellermeister-button')
 class KellermeisterButton extends BaseComponent {
@@ -178,8 +179,10 @@ class KellermeisterButton extends BaseComponent {
         return unsafeHTML(iconProfile);
       case 'plus':
         return unsafeHTML(iconPlus);
-      case 'wine-shelf':
-        return unsafeHTML(iconWineShelf);
+      case 'cellar':
+        return unsafeHTML(iconCellar);
+      case 'cellars':
+        return unsafeHTML(iconCellars);
       case 'work':
         return unsafeHTML(iconWork);
       case 'logout':
@@ -196,8 +199,8 @@ class KellermeisterButton extends BaseComponent {
         return unsafeHTML(iconSearch);
       case 'shopping':
         return unsafeHTML(iconShopping);
-      case 'gabelstapler':
-        return unsafeHTML(iconGabelstapler);
+      case 'umbuchen':
+        return unsafeHTML(iconBottle);
       case 'trash':
         return unsafeHTML(iconTrash);
       default:

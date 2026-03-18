@@ -166,7 +166,7 @@ export class KellermeisterService {
                 .flatMap(orderItems => orderItems);
 
             const products: Product[] = bottlesContainer.products();
-            console.log("ingestOrderItems: existing products:", products);
+            //console.log("ingestOrderItems: existing products:", products);
             var processedOrderItem: OrderItem | undefined = undefined;
             for (var i = 0; i < unprocessedOrderItems.length; i++) {
                 if (cellarForCellarwork != undefined) {

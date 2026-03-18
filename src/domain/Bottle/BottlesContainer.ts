@@ -25,7 +25,7 @@ export class BottlesContainer extends Model {
     }
 
     public products(): Product[] {
-        console.log("products: bottles:", this.bottles);
+        //console.log("products: bottles:", this.bottles);
         return Array.from(this.bottles.map(bottle => bottle.product).values());
     }
 
