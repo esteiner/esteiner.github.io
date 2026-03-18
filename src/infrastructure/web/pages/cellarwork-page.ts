@@ -98,7 +98,7 @@ class CellarWorkPage extends BasePage {
                 
                 span.column2 {
                     text-align: center;
-                    align-content: center;
+                    align-content: start;
                 }
 
                 input[type="radio"] {
