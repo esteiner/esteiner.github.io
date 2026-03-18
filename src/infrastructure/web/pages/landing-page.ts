@@ -11,6 +11,7 @@ import type {WebIDProfile} from "../../../domain/Solid/WebIDProfile.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
+import {getBuildVersion} from "../utils";
 
 @customElement('landing-page')
 class LandingPage extends BasePage {
@@ -234,6 +235,10 @@ class LandingPage extends BasePage {
                         <p>Noch weitere Fragen? Melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a></p>
                     </section>
                 </main>
+                <div class="version-info">
+                    <div class="version-label">Version</div>
+                    <div class="version-number">${getBuildVersion()}</div>
+                </div>
             `
             }
         `
@@ -455,6 +460,18 @@ class LandingPage extends BasePage {
 
                 .dialog-btn-ok:hover:not(:disabled) {
                     opacity: 0.85;
+                }
+                .version-info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .version-number {
+                    flex: 1 1 0%;
+                    text-align: right;
+                    font-family: var(--app-font-family-monospace);
+                    font-size: 0.875rem;
+                    -webkit-font-smoothing: antialiased;
                 }
             `
         ];
