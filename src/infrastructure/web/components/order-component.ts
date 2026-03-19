@@ -34,11 +34,11 @@ class OrderComponent extends BaseComponent {
                 li {
                     list-style: none;
                     display: block;
-                    background: white;
+                    background: var(--km-surface, white);
                 }
 
                 li:not(:last-child) {
-                    border-bottom: 0.5px solid #C6C6C8;
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
                 }
             `
         ];

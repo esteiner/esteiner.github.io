@@ -23,13 +23,25 @@ class BottleComponent extends BaseComponent {
             css`
                 .card1 {
                     display: flex;
-                    justify-content: left;
+                    justify-content: flex-start;
                     align-items: center;
-                    padding: 11px 16px;
-                    min-height: 44px;
+                    padding: 8px 16px;
+                    min-height: 48px;
+                    gap: 12px;
                 }
-                span {
-                    padding-left: 8px;
+
+                .product-name {
+                    flex: 1;
+                    font-size: 15px;
+                    font-weight: 400;
+                    color: var(--km-text, #1A1917);
+                    letter-spacing: 0.01em;
+                    cursor: pointer;
+                    line-height: 1.35;
+                }
+
+                .product-name:active {
+                    opacity: 0.6;
                 }
             `
         ];
@@ -41,7 +53,7 @@ class BottleComponent extends BaseComponent {
                 <div>
                     <div class="card1">
                         <slot name="count"></slot>
-                        <span @click="${this.expandCollapseProduct}">${this.bottle.product.name}</span>
+                        <span class="product-name" @click="${this.expandCollapseProduct}">${this.bottle.product.name}</span>
                     </div>
                     ${this.expanded ? html`
                         <product-component .product="${this.bottle.product}"><slot></slot></product-component>

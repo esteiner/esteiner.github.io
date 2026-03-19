@@ -60,13 +60,18 @@ class CellarWorkPage extends BasePage {
         return [
             ...super.styles,
             css`
+                :host {
+                    display: block;
+                    background: var(--km-bg, #F7F5F1);
+                }
+
                 .filter {
                     display: flex;
                     justify-content: space-evenly;
                     align-items: center;
-                    padding: 0 0 10px 0;
+                    padding: 12px 8px;
                 }
-                
+
                 .table {
                     display: grid;
                     grid-template-columns: 60% repeat(var(--cellar-columns, 2), 1fr);
@@ -77,64 +82,79 @@ class CellarWorkPage extends BasePage {
                     display: contents;
                     padding: 0 8px;
                 }
-                
+
                 .header-row span {
-                    font-weight: bold;
-                    background-color: white;
-                    padding: 8px 8px 8px 16px;
-                    border-bottom: 2px solid #333;
+                    font-size: 12px;
+                    font-weight: 600;
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                    color: var(--km-text-muted, #8A8278);
+                    background-color: var(--km-surface, white);
+                    padding: 10px 8px 10px 16px;
+                    border-bottom: 1.5px solid var(--km-border-strong, #C9C3B8);
                     align-content: center;
                 }
 
                 .data-row span {
                     padding: 8px;
-                    border-bottom: 1px solid #ddd;
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
+                    background: var(--km-surface, white);
                     align-content: center;
                 }
 
                 span:empty {
                     display: none;
                 }
-                
+
                 span.column2 {
                     text-align: center;
                     align-content: start;
                 }
 
                 input[type="radio"] {
-                    width: 32px;
-                    height: 32px;
+                    width: 28px;
+                    height: 28px;
                     cursor: pointer;
+                    accent-color: var(--app-color-primary, #3A6B28);
                 }
 
                 .search-overlay {
                     position: fixed;
                     inset: 0;
-                    background: rgba(0, 0, 0, 0.4);
+                    background: rgba(26, 25, 23, 0.4);
                     z-index: 2000;
                     display: flex;
                     align-items: flex-start;
                     padding-top: 90px;
+                    backdrop-filter: blur(4px);
                 }
 
                 .search-container {
                     width: calc(100% - 32px);
                     margin: 0 16px;
-                    background: white;
+                    background: var(--km-surface, white);
                     border-radius: 12px;
+                    border: 1px solid var(--km-border, #E4DFD7);
                     padding: 12px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 16px 48px rgba(26, 25, 23, 0.15);
                 }
 
                 .search-input {
                     width: 100%;
                     box-sizing: border-box;
-                    padding: 9px 12px;
+                    padding: 10px 14px;
                     border-radius: 8px;
-                    border: none;
-                    background: #F2F2F7;
-                    font-size: 16px;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    color: var(--km-text, #1A1917);
                     outline: none;
+                    transition: border-color 0.2s ease;
+                }
+
+                .search-input:focus {
+                    border-color: var(--app-color-primary, #3A6B28);
                 }
             `
         ];

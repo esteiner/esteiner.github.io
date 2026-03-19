@@ -47,18 +47,18 @@ class OrderPage extends BasePage {
             css`
                 :host {
                     display: block;
-                    background: #F2F2F7;
+                    background: var(--km-bg, #F7F5F1);
                 }
 
                 .filter {
                     display: flex;
                     justify-content: space-evenly;
                     align-items: center;
-                    padding: 10px 0 10px 0;
+                    padding: 12px 8px;
                 }
 
                 main {
-                    padding: 16px;
+                    padding: 8px 16px 16px;
                 }
             `
         ];

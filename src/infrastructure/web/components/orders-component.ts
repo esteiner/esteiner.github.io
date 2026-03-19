@@ -23,29 +23,31 @@ class OrdersComponent extends BaseComponent {
             css`
                 :host {
                     display: block;
-                    margin-bottom: 28px;
+                    margin-bottom: 24px;
                 }
 
                 .section-header {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: var(--app-color-primary);
-                    text-transform: uppercase;
-                    padding: 0 4px 6px 4px;
-                    letter-spacing: 0.04em;
+                    font-family: var(--app-font-family-display, 'Cormorant Garamond', Georgia, serif);
+                    font-size: 17px;
+                    font-weight: 500;
+                    font-style: italic;
+                    color: var(--app-color-primary, #3A6B28);
+                    padding: 0 4px 8px 4px;
+                    letter-spacing: 0.01em;
                 }
 
                 ul {
                     list-style: none;
                     padding: 0;
                     margin: 0;
-                    background: white;
-                    border-radius: 10px;
+                    background: var(--km-surface, white);
+                    border-radius: 12px;
                     overflow: hidden;
+                    border: 1px solid var(--km-border, #E4DFD7);
                 }
 
                 order-component + order-component {
-                    border-top: 0.5px solid #C6C6C8;
+                    border-top: 1px solid var(--km-border, #E4DFD7);
                 }
             `
         ];

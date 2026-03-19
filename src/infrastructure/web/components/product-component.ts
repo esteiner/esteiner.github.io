@@ -17,13 +17,32 @@ class ProductComponent extends BaseComponent {
         return [
             ...super.styles,
             css`
-                label {
-                    color: oklch(55.1% 0.027 264.364);
-                    font-size: 11px;
+                .expanded {
+                    background: var(--km-bg, #F7F5F1);
+                    border-top: 1px solid var(--km-border, #E4DFD7);
+                    padding: 4px 0 8px;
                 }
+
                 .group {
-                    margin: 16px;
-                    padding: 0 6px 0 6px;
+                    display: grid;
+                    grid-template-columns: 130px 1fr;
+                    gap: 4px;
+                    padding: 8px 16px;
+                    align-items: baseline;
+                }
+
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    color: var(--km-text-muted, #8A8278);
+                }
+
+                .value {
+                    font-size: 14px;
+                    color: var(--km-text, #1A1917);
+                    font-weight: 400;
                 }
             `
         ];
@@ -33,67 +52,63 @@ class ProductComponent extends BaseComponent {
         return html`
             <div class="expanded">
                 <div class="group">
-                    <label>Preis pro Flasche:</label>
-                    <div>
-                        <slot></slot>
-                    </div>
+                    <label>Preis / Flasche</label>
+                    <span class="value"><slot></slot></span>
                 </div>
                 <div class="group">
-                    <label>Jahrgang:</label>
-                    <div>${this.renderDate(this.product?.productionDate)}</div>
+                    <label>Jahrgang</label>
+                    <span class="value">${this.renderDate(this.product?.productionDate)}</span>
                 </div>
                 <div class="group">
-                    <label>Flaschengrösse:</label>
-                    <div>${this.product?.milliliter}</div>
+                    <label>Flaschengrösse</label>
+                    <span class="value">${this.product?.milliliter ? `${this.product.milliliter} ml` : ''}</span>
                 </div>
                 <div class="group">
-                    <label>Weinart:</label>
-                    <div>${this.product?.weinart}</div>
+                    <label>Weinart</label>
+                    <span class="value">${this.product?.weinart}</span>
                 </div>
                 <div class="group">
-                    <label>Weinfarbe:</label>
-                    <div>${this.product?.weinfarbe}</div>
+                    <label>Weinfarbe</label>
+                    <span class="value">${this.product?.weinfarbe}</span>
                 </div>
                 <div class="group">
-                    <label>Region:</label>
-                    <div>${this.product?.region}</div>
+                    <label>Region</label>
+                    <span class="value">${this.product?.region}</span>
                 </div>
                 <div class="group">
-                    <label>Land:</label>
-                    <div>${this.product?.land}</div>
+                    <label>Land</label>
+                    <span class="value">${this.product?.land}</span>
                 </div>
                 <div class="group">
-                    <label>Traubensorte:</label>
-                    <div>${this.product?.traubensorte}</div>
+                    <label>Traubensorte</label>
+                    <span class="value">${this.product?.traubensorte}</span>
                 </div>
                 <div class="group">
-                    <label>Klassifikation:</label>
-                    <div>${this.product?.klassifikation}</div>
+                    <label>Klassifikation</label>
+                    <span class="value">${this.product?.klassifikation}</span>
                 </div>
                 <div class="group">
-                    <label>Alkoholgehalt:</label>
-                    <div>${this.product?.alkoholgehalt}</div>
+                    <label>Alkohol</label>
+                    <span class="value">${this.product?.alkoholgehalt}</span>
                 </div>
                 <div class="group">
-                    <label>Ausbau:</label>
-                    <div>${this.product?.ausbau}</div>
+                    <label>Ausbau</label>
+                    <span class="value">${this.product?.ausbau}</span>
                 </div>
                 <div class="group">
-                    <label>Biologisch:</label>
-                    <div>${this.product?.biologisch}</div>
+                    <label>Biologisch</label>
+                    <span class="value">${this.product?.biologisch}</span>
                 </div>
                 <div class="group">
-                    <label>Trinkfenster:</label>
-                    <div>${this.renderDate(this.product?.trinkfensterVon)} - ${this.renderDate(this.product?.trinkfensterBis)}</div>
+                    <label>Trinkfenster</label>
+                    <span class="value">${this.renderDate(this.product?.trinkfensterVon)} – ${this.renderDate(this.product?.trinkfensterBis)}</span>
                 </div>
             </div>
         `
     }
 
     private renderDate(date: Date | undefined) {
-        return html`
-            ${date?.getFullYear()}
-        `;
+        return html`${date?.getFullYear()}`;
     }
 
 }

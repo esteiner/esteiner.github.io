@@ -174,15 +174,14 @@ class LandingPage extends BasePage {
                 <kellermeister-header>Kellermeister
                     <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
                 </kellermeister-header>
-                <main class="content">
-                    <div>
+                <main>
+                    <div class="cellar-grid">
                         ${this.cellars.map(
                                 cellar =>
                                         html`
                                             <kellermeister-button text="${cellar.name}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="cellar"></kellermeister-button>
                                         `
                         )}
-                        
                         <kellermeister-button text="Kellerarbeit" @click="${this.handleCellarWorkClick}" ghost icon="work"></kellermeister-button>
                         <kellermeister-button text="Altglass" @click="${() => this.handleCellarClick(this.cdi?.getKellermeisterService().getAltglassId())}" ghost icon="trash"></kellermeister-button>
                     </div>
@@ -192,52 +191,46 @@ class LandingPage extends BasePage {
             : html`
                 <header>
                     <h1 data-testid="page-title">Willkommen beim Kellermeister</h1>
-                </header>        
+                </header>
                 <main class="content">
-                    <div>
-                        <kellermeister-button ghost icon="cellars" text="Deine Kellerräume betreten" @click="${this.handleLoginClick}" data-testid="cellars-button"></kellermeister-button>
+                    <div class="login-cta">
+                        <kellermeister-button ghost icon="cellars" text="Anmelden" @click="${this.handleLoginClick}" data-testid="cellars-button" size="large"></kellermeister-button>
+                        <span class="login-cta-label">Deine Kellerräume betreten</span>
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
                             Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf <em>Altglas</em> nachschauen, welche Weine du im Laufe der Zeit ausgetrunken hast.</p>
-                        
+
                         <details>
                             <summary>Wie funktioniert die Kellermeister App?</summary>
-                            <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen. <em>Altglas</em> hat den Vorteil, dass du eine Übersicht über alle deine von dir getrunkenen Weine hast.</p>
+                            <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen.</p>
                         </details>
-                        <br/>
                         <details>
                             <summary>Willst du ein neuer Kellermeister werden?</summary>
-                            <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessenden anmelden kannst.<br>
+                            <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessend anmelden kannst.
                                 Anschliessend melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a> um deinen Weineingang zu konfigurieren.</p>
                         </details>
-                        <br/>
                         <details>
                             <summary>Wie kann ich eine Weinrechnung übernehmen?</summary>
-                            <p>Leite dein Email mit deiner Weinrechnungen an die Emailadresse <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>
-                                Anschliessend wird sie von unserem agent verarbeitet und um fehlende Informationen angereichert. Die Rechnung kann als Text im Email ersichtlich sein (Flaschenpost) oder als pdf Anhang (Millesima).</p>
+                            <p>Leite dein Email mit deiner Weinrechnung an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
+                                Unser Agent verarbeitet sie und reichert fehlende Informationen an.</p>
                         </details>
-                        <br/>
                         <details>
                             <summary>Wie kann ich einen Wein anhand eines Fotos übernehmen?</summary>
-                            <p>Sende das Foto des Etiketts (Vorderseite oder Vorder- und Rückseite) an die Emailadresse <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>
-                                Anschliessend wird sie von unserem agent verarbeitet und um fehlende Informationen angereichert.
-                                Wenn du möchtest, sende im Betreff den Ort wo du sie gekauft oder getrunken hast sowie den Preis im Format Restaurant Maihöffli Luzern: 95.50 CHF.
-                                Falls der Preis nicht angegeben wird, versucht unser agent den Preis im Internet zu finden.</p>
+                            <p>Sende das Foto des Etiketts an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
+                                Optional kannst du im Betreff Ort und Preis angeben, z. B. <em>Restaurant Maihöffli Luzern: 95.50 CHF</em>.</p>
                         </details>
-                        <br/>
                         <details>
                             <summary>Lust deinen gesamten Weinkeller zu erfassen?</summary>
-                            <p>Dann erstelle ein email mit einer Tabelle um alle deine Weine zu erfassen. Nur wenige Daten sind nötig:
-                            hersteller, weinname, jahrgang, weinart, preis, anzahl und Flaschengrösse zB: Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750. Falls du den Preis nicht mehr kennst, lass ihn leer und unser agent geht auf die Suche.</p>
+                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750</em>.</p>
                         </details>
-                        <br/>
+
                         <p>Noch weitere Fragen? Melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a></p>
                     </section>
                 </main>
                 <div class="version-info">
-                    <div class="version-label">Version</div>
-                    <div class="version-number">${getBuildVersion()}</div>
+                    <span class="version-label">Version</span>
+                    <span class="version-number">${getBuildVersion()}</span>
                 </div>
             `
             }
@@ -328,91 +321,175 @@ class LandingPage extends BasePage {
             ...super.styles,
             css`
                 header {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: 90px;
-                    color: #003300;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: 0 16px;
-                }
-                
-                h1 {
-                    font-size: 1.4em;
-                }
-                
-                .intro {
-                    padding: 16px;    
-                }
-                
-                kellermeister-button {
-                    flex: 1;
-                    margin: 0 5px;
-                    padding: 12px 16px;
-                    background-color: transparent;
-                    backdrop-filter: blur(10px);
-                    color: yellow;
-                    font-size: 14px;
-                    font-weight: 600;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    text-align: center;
+                    z-index: 100;
                 }
 
+                h1 {
+                    font-family: var(--app-font-family-display);
+                    font-style: italic;
+                    font-size: 36px;
+                    font-weight: 500;
+                    color: var(--app-color-primary, #3A6B28);
+                }
+
+                /* Cellar grid layout (logged in) */
+                .cellar-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 20px;
+                    padding: 24px 20px;
+                    max-width: 480px;
+                    margin: 0 auto;
+                    justify-items: center;
+                }
+
+                /* Login CTA section */
+                .login-cta {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 32px 20px 20px;
+                    gap: 8px;
+                }
+
+                .login-cta-label {
+                    font-size: 13px;
+                    font-weight: 500;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                    color: var(--km-text-muted, #8A8278);
+                }
+
+                /* Intro section */
+                .intro {
+                    padding: 8px 20px 24px;
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+
+                .intro p {
+                    font-size: 15px;
+                    line-height: 1.75;
+                    color: var(--app-primary-on-white-background, #8A8278);
+                    margin-bottom: 20px;
+                }
+
+                .intro em {
+                    font-style: italic;
+                    color: var(--app-color-primary, #3A6B28);
+                }
+
+                .intro a {
+                    color: var(--app-color-primary, #3A6B28);
+                    text-decoration: none;
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
+                }
+
+                details {
+                    border-top: 1px solid var(--km-border, #E4DFD7);
+                    padding: 0;
+                }
+
+                details:last-of-type {
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
+                    margin-bottom: 20px;
+                }
+
+                summary {
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: var(--app-primary-on-white-background, #1A1917);
+                    padding: 14px 4px;
+                    cursor: pointer;
+                    list-style: none;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    letter-spacing: 0.01em;
+                }
+
+                summary::after {
+                    content: '+';
+                    font-size: 18px;
+                    font-weight: 300;
+                    color: var(--km-text-muted, #8A8278);
+                    transition: transform 0.2s ease;
+                }
+
+                details[open] summary::after {
+                    transform: rotate(45deg);
+                }
+
+                details p {
+                    padding: 0 4px 16px;
+                    font-size: 14px;
+                    line-height: 1.75;
+                    color: var(--km-text-muted, #8A8278);
+                }
+
+                /* Dialog */
                 .dialog-overlay {
                     position: fixed;
                     inset: 0;
-                    background: rgba(0, 0, 0, 0.6);
+                    background: rgba(26, 25, 23, 0.5);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     z-index: 2000;
+                    backdrop-filter: blur(4px);
                 }
 
                 .dialog {
-                    background: #fff;
-                    border-radius: 12px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-                    padding: 28px 24px 20px;
-                    width: min(480px, 90vw);
-                    color: #222;
+                    background: var(--km-surface, #fff);
+                    border-radius: 16px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    box-shadow: 0 20px 60px rgba(26, 25, 23, 0.15);
+                    padding: 32px 28px 24px;
+                    width: min(440px, 92vw);
+                    color: var(--km-text, #1A1917);
                     display: flex;
                     flex-direction: column;
-                    gap: 12px;
+                    gap: 14px;
                 }
 
                 .dialog h2 {
+                    font-family: var(--app-font-family-display, Georgia, serif);
+                    font-size: 22px;
+                    font-weight: 500;
+                    font-style: italic;
+                    color: var(--app-color-primary, #3A6B28);
                     margin: 0;
-                    font-size: 18px;
-                    color: #333;
+                    letter-spacing: 0.01em;
                 }
 
                 .dialog p {
                     margin: 0;
                     font-size: 14px;
-                    color: #666;
+                    color: var(--km-text-muted, #8A8278);
+                    line-height: 1.6;
                 }
 
                 .dialog-select,
                 .dialog-input {
                     width: 100%;
                     box-sizing: border-box;
-                    padding: 10px 12px;
+                    padding: 11px 14px;
                     border-radius: 8px;
-                    border: 1px solid #ccc;
-                    background: #f9f9f9;
-                    color: #222;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text, #1A1917);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
                     font-size: 14px;
                     outline: none;
+                    transition: border-color 0.2s ease;
                 }
 
                 .dialog-select:focus,
                 .dialog-input:focus {
-                    border-color: #007aff;
+                    border-color: var(--app-color-primary, #3A6B28);
                 }
 
                 .dialog-select:disabled,
@@ -423,7 +500,7 @@ class LandingPage extends BasePage {
                 .dialog-error {
                     margin: 0;
                     font-size: 13px;
-                    color: #d0021b;
+                    color: #b91c1c;
                 }
 
                 .dialog-actions {
@@ -434,44 +511,63 @@ class LandingPage extends BasePage {
                 }
 
                 .dialog-btn {
-                    padding: 8px 20px;
+                    padding: 10px 22px;
                     border-radius: 8px;
                     border: none;
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
                     font-size: 14px;
-                    font-weight: 600;
+                    font-weight: 500;
                     cursor: pointer;
-                    transition: opacity 0.2s;
+                    transition: opacity 0.2s ease, transform 0.1s ease;
+                    letter-spacing: 0.02em;
+                }
+
+                .dialog-btn:active {
+                    transform: scale(0.97);
                 }
 
                 .dialog-btn:disabled {
-                    opacity: 0.5;
+                    opacity: 0.45;
                     cursor: not-allowed;
                 }
 
                 .dialog-btn-cancel {
-                    background: #e9e9e9;
-                    color: #555;
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text-muted, #8A8278);
+                    border: 1px solid var(--km-border, #E4DFD7);
                 }
 
                 .dialog-btn-ok {
-                    background: #007aff;
+                    background: var(--app-color-primary, #3A6B28);
                     color: #fff;
                 }
 
                 .dialog-btn-ok:hover:not(:disabled) {
                     opacity: 0.85;
                 }
+
+                /* Version info */
                 .version-info {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
                     align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    padding: 20px;
+                    color: var(--km-text-muted, #8A8278);
                 }
+
+                .version-label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                }
+
                 .version-number {
-                    flex: 1 1 0%;
-                    text-align: right;
                     font-family: var(--app-font-family-monospace);
-                    font-size: 0.875rem;
-                    -webkit-font-smoothing: antialiased;
+                    font-size: 11px;
+                    opacity: 0.7;
                 }
             `
         ];

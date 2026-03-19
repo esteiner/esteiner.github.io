@@ -188,7 +188,7 @@ class CellarPage extends BasePage {
             css`
                 :host {
                     display: block;
-                    background: #F2F2F7;
+                    background: var(--km-bg, #F7F5F1);
                 }
 
                 main {
@@ -199,66 +199,78 @@ class CellarPage extends BasePage {
                     display: flex;
                     justify-content: space-evenly;
                     align-items: center;
-                    padding: 10px 0 10px 0;
+                    padding: 12px 8px;
                 }
 
                 .bottles {
                     padding: 0;
-                    background: white;
-                    border-radius: 10px;
+                    background: var(--km-surface, white);
+                    border-radius: 12px;
                     overflow: hidden;
+                    border: 1px solid var(--km-border, #E4DFD7);
                 }
 
                 li {
                     list-style: none;
                     display: block;
-                    background: white;
+                    background: var(--km-surface, white);
                 }
 
                 li:not(:last-child) {
-                    border-bottom: 0.5px solid #C6C6C8;
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
                 }
 
                 .bottle-button {
-                    background: #E5E5EA;
-                    color: #3C3C43;
-                    border: none;
-                    border-radius: 10px;
-                    padding: 2px 8px;
-                    font-size: 13px;
-                    font-weight: 600;
-                    min-width: 24px;
-                    cursor: pointer;
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text-muted, #8A8278);
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    border-radius: 20px;
+                    padding: 3px 10px;
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 12px;
+                    font-weight: 500;
+                    min-width: 28px;
+                    cursor: default;
+                    letter-spacing: 0.02em;
                 }
 
                 .search-overlay {
                     position: fixed;
                     inset: 0;
-                    background: rgba(0, 0, 0, 0.4);
+                    background: rgba(26, 25, 23, 0.4);
                     z-index: 2000;
                     display: flex;
                     align-items: flex-start;
                     padding-top: 90px;
+                    backdrop-filter: blur(4px);
                 }
 
                 .search-container {
                     width: calc(100% - 32px);
                     margin: 0 16px;
-                    background: white;
+                    background: var(--km-surface, white);
                     border-radius: 12px;
+                    border: 1px solid var(--km-border, #E4DFD7);
                     padding: 12px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 16px 48px rgba(26, 25, 23, 0.15);
                 }
 
                 .search-input {
                     width: 100%;
                     box-sizing: border-box;
-                    padding: 9px 12px;
+                    padding: 10px 14px;
                     border-radius: 8px;
-                    border: none;
-                    background: #F2F2F7;
-                    font-size: 16px;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    color: var(--km-text, #1A1917);
                     outline: none;
+                    transition: border-color 0.2s ease;
+                }
+
+                .search-input:focus {
+                    border-color: var(--app-color-primary, #3A6B28);
                 }
             `
         ];

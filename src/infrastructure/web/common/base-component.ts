@@ -14,37 +14,35 @@ export abstract class BaseComponent extends LitElement {
                 left: 12px;
                 right: 12px;
                 height: 64px;
-                background-color: rgba(255, 255, 255, 0.75);
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(20px);
+                background-color: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 border-radius: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 padding: 4px 16px 8px 16px;
                 z-index: 1000;
             }
-            
+
             kellermeister-footer {
                 position: fixed;
                 bottom: 10px;
                 left: 12px;
                 right: 12px;
                 height: 64px;
-                background-color: rgba(255, 255, 255, 0.75);
-                backdrop-filter: blur(5px);
-                -webkit-backdrop-filter: blur(20px);
+                background-color: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 border-radius: 20px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
                 display: flex;
                 justify-content: space-around;
                 align-items: center;
                 padding: 0 8px;
                 z-index: 1000;
             }
-
-            .header-btn:active,
 
             .button {
                 background-color: white;
@@ -55,35 +53,37 @@ export abstract class BaseComponent extends LitElement {
             }
 
             .content {
-                padding: 0px;
+                padding: 0;
                 max-width: 600px;
                 margin: 0 auto;
             }
 
             .content h1 {
-                color: #333;
+                font-family: var(--app-font-family-display, Georgia, serif);
+                color: var(--km-text, #1A1917);
                 margin-bottom: 20px;
                 font-size: 28px;
+                font-weight: 500;
             }
 
             .content p {
-                color: #666;
-                line-height: 1.6;
+                color: var(--km-text-muted, #8A8278);
+                line-height: 1.7;
                 margin-bottom: 15px;
-                font-size: 16px;
+                font-size: 15px;
             }
 
             .card {
-                background: #f8f9fa;
-                border-radius: 12px;
+                background: var(--km-surface, #fff);
+                border-radius: 8px;
                 padding: 20px;
-                margin-bottom: 15px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                margin-bottom: 12px;
+                border: 1px solid var(--km-border, #E4DFD7);
             }
 
             .card h2 {
-                color: #007aff;
-                font-size: 20px;
+                color: var(--app-color-primary, #3A6B28);
+                font-size: 18px;
                 margin-bottom: 10px;
             }
         `

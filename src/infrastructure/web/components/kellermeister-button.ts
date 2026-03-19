@@ -90,11 +90,20 @@ class KellermeisterButton extends BaseComponent {
           border: none;
           background: transparent;
           cursor: pointer;
+          transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
-        .button:hover,
+        .button:active {
+          transform: scale(0.94);
+          opacity: 0.75;
+        }
+
+        .button:hover {
+          opacity: 0.85;
+        }
+
         .button.cta {
-          box-shadow: 0 0 0 0 rgb(from var(--app-color-primary) r g b / 0.5);
+          box-shadow: 0 0 0 0 rgb(from var(--app-color-primary) r g b / 0.4);
           animation: pulse 2s calc(1);
         }
 
@@ -108,8 +117,14 @@ class KellermeisterButton extends BaseComponent {
         }
 
         .button.ghost {
-          background: transparent;
-          border: 1px solid var(--app-color-primary);
+          background: var(--km-surface, #fff);
+          border: 1.5px solid var(--km-border, #E4DFD7);
+          transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .button.ghost:hover {
+          border-color: var(--app-color-primary, #3A6B28);
+          box-shadow: 0 2px 8px rgba(58, 107, 40, 0.1);
         }
 
         .button.ghost svg path,
@@ -133,21 +148,26 @@ class KellermeisterButton extends BaseComponent {
         }
 
         .button.small svg {
-          width: 32px;
-          height: 32px;
+          width: 28px;
+          height: 28px;
         }
 
         svg {
           margin: auto;
-          width: 42px;
+          width: 38px;
         }
-        
+
         svg path {
           stroke: var(--app-color-primary);
         }
 
         .label {
-          color: var(--app-primary-on-white-background);
+          font-family: var(--app-font-family, 'DM Sans', sans-serif);
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          color: var(--app-primary-on-white-background, #2E5420);
+          text-align: center;
         }
       `
     ];
