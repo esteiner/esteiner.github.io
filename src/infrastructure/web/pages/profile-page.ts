@@ -35,51 +35,45 @@ class ProfilePage extends BasePage {
 
     render() {
         return html`
-          <kellermeister-header>Kellermeister Profil
-              <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" class="header-btn" size="small"></kellermeister-button>
+          <kellermeister-header>Profil
+              <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
-              <div class="group">
-                  <label>AppVersion::</label>
-                  <div>${getBuildVersion()}</div>
+              <div class="card">
+                  <div class="group">
+                      <label>Version</label>
+                      <span class="value">${getBuildVersion()}</span>
+                  </div>
+                  <div class="group">
+                      <label>Name</label>
+                      <span class="value">${this.solidUserProfile?.name}</span>
+                  </div>
+                  <div class="group">
+                      <label>WebID</label>
+                      <span class="value url">${this.session.info.webId}</span>
+                  </div>
+                  <div class="group">
+                      <label>Storage</label>
+                      <span class="value url">${this.solidUserProfile?.storageUrls}</span>
+                  </div>
+                  <div class="group">
+                      <label>OIDC Issuer</label>
+                      <span class="value url">${this.solidUserProfile?.oidcIssuerUrl}</span>
+                  </div>
+                  <div class="group">
+                      <label>Public Index</label>
+                      <span class="value url">${this.solidUserProfile?.publicTypeIndexUrl}</span>
+                  </div>
+                  <div class="group">
+                      <label>Private Index</label>
+                      <span class="value url">${this.solidUserProfile?.privateTypeIndexUrl}</span>
+                  </div>
+                  <div class="group">
+                      <label>Session</label>
+                      <span class="value url">${this.session.info.sessionId}</span>
+                  </div>
               </div>
-              <div class="group">
-                  <label>WebId:</label>
-                  <div>${this.session.info.webId}</div>
-              </div>
-              <div class="group">
-                  <label>Name:</label>
-                  <div>${this.solidUserProfile?.name}</div>
-              </div>
-              <div class="group">
-                  <label>StorageUrls:</label>
-                  <div>${this.solidUserProfile?.storageUrls}</div>
-              </div>
-              <div class="group">
-                  <label>WritableProfileUrl:</label>
-                  <div>${this.solidUserProfile?.writableProfileUrl}</div>
-              </div>
-              <div class="group">
-                  <label>OIDCIssuerUrl:</label>
-                  <div>${this.solidUserProfile?.oidcIssuerUrl}</div>
-              </div>
-              <div class="group">
-                  <label>PublicTypeIndexUrl:</label>
-                  <div>${this.solidUserProfile?.publicTypeIndexUrl}</div>
-              </div>
-              <div class="group">
-                  <label>PrivateTypeIndexUrl:</label>
-                  <div>${this.solidUserProfile?.privateTypeIndexUrl}</div>
-              </div>
-              <div class="group">
-                  <label>ClientAppId:</label>
-                  <div>${this.session.info.clientAppId}</div>
-              </div>
-              <div class="group">
-                  <label>SessionId:</label>
-                  <div>${this.session.info.sessionId}</div>
-              </div>
-              <a target="_blank" href="https://solid-file-manager.theodi.org/">Solid File Manager</a>
+              <a class="link" target="_blank" href="https://solid-file-manager.theodi.org/">Solid File Manager →</a>
           </main>
           <footer>
               <kellermeister-footer></kellermeister-footer>
@@ -96,13 +90,62 @@ class ProfilePage extends BasePage {
         return [
             ...super.styles,
             css`
-                label {
-                    color: oklch(55.1% 0.027 264.364);
-                    font-size: 11px;
+                :host {
+                    display: block;
+                    background: var(--km-bg, #F7F5F1);
                 }
+
+                main {
+                    padding: 16px;
+                }
+
+                .card {
+                    background: var(--km-surface, #fff);
+                    border-radius: 12px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    overflow: hidden;
+                    margin-bottom: 16px;
+                }
+
                 .group {
-                    margin: 10px;
-                    background-color: whitesmoke;
+                    display: grid;
+                    grid-template-columns: 110px 1fr;
+                    gap: 4px;
+                    padding: 10px 16px;
+                    align-items: baseline;
+                }
+
+                .group:not(:last-child) {
+                    border-bottom: 1px solid var(--km-border, #E4DFD7);
+                }
+
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    letter-spacing: 0.05em;
+                    text-transform: uppercase;
+                    color: var(--km-text-muted, #8A8278);
+                    white-space: nowrap;
+                }
+
+                .value {
+                    font-family: var(--app-font-family-monospace);
+                    font-size: 11px;
+                    word-break: break-all;
+                    color: var(--km-text, #1A1917);
+                }
+
+                .link {
+                    display: inline-block;
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: var(--app-color-primary, #3A6B28);
+                    text-decoration: none;
+                    padding: 4px 0;
+                }
+
+                .link:hover {
+                    text-decoration: underline;
                 }
             `
         ];
