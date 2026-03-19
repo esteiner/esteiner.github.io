@@ -43,6 +43,9 @@ class LandingPage extends BasePage {
     @state()
     private webIdLoading: boolean = false;
 
+    @state()
+    private showImageLightbox: boolean = false;
+
     private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
 
     private static readonly WEBID_HISTORY_KEY = 'kellermeister_webid_history';
@@ -132,6 +135,11 @@ class LandingPage extends BasePage {
 
     render() {
         return html`
+            ${this.showImageLightbox ? html`
+                <div class="lightbox-overlay" @click="${() => this.showImageLightbox = false}">
+                    <img class="lightbox-img" src="/Prozess_Foto.png" />
+                </div>
+            ` : ''}
             ${this.showWebIdDialog ? html`
                 <div class="dialog-overlay" @click="${this.handleWebIdCancel}">
                     <div class="dialog" role="dialog" aria-modal="true" aria-label="WebID eingeben" @click="${(e: Event) => e.stopPropagation()}">
@@ -219,7 +227,7 @@ class LandingPage extends BasePage {
                             <summary>Wie kann ich einen Wein anhand eines Fotos übernehmen?</summary>
                             <p>Sende das Foto des Etiketts (mit Vorder- und falls vorhanden Rückseite) an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
                                 Optional kannst du im Betreff Ort und Preis angeben, z. B. <em>Restaurant Maihöffli Luzern: 95.50 CHF</em>.</p>
-                            <img width="100vh" src="/Prozess_Foto.png"/>
+                            <img class="process-img" src="/Prozess_Foto.png" @click="${() => this.showImageLightbox = true}" />
                         </details>
                         <details>
                             <summary>Lust deinen gesamten Weinkeller zu erfassen?</summary>
@@ -577,6 +585,43 @@ class LandingPage extends BasePage {
                     font-family: var(--app-font-family-monospace);
                     font-size: 11px;
                     opacity: 0.7;
+                }
+
+                /* Process image thumbnail */
+                .process-img {
+                    display: block;
+                    max-width: 100%;
+                    width: 100%;
+                    border-radius: 8px;
+                    margin-top: 10px;
+                    cursor: zoom-in;
+                    transition: opacity 0.15s ease;
+                }
+
+                .process-img:hover {
+                    opacity: 0.85;
+                }
+
+                /* Lightbox overlay */
+                .lightbox-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(26, 25, 23, 0.88);
+                    z-index: 3000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: zoom-out;
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
+                }
+
+                .lightbox-img {
+                    max-width: 95vw;
+                    max-height: 95vh;
+                    object-fit: contain;
+                    border-radius: 8px;
+                    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
                 }
             `
         ];
