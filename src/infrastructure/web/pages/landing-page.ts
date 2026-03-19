@@ -217,12 +217,13 @@ class LandingPage extends BasePage {
                         </details>
                         <details>
                             <summary>Wie kann ich einen Wein anhand eines Fotos übernehmen?</summary>
-                            <p>Sende das Foto des Etiketts an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
+                            <p>Sende das Foto des Etiketts (mit Vorder- und falls vorhanden Rückseite) an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
                                 Optional kannst du im Betreff Ort und Preis angeben, z. B. <em>Restaurant Maihöffli Luzern: 95.50 CHF</em>.</p>
+                            <img width="100vh" src="/Prozess_Foto.png"/>
                         </details>
                         <details>
                             <summary>Lust deinen gesamten Weinkeller zu erfassen?</summary>
-                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750</em>.</p>
+                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750</em> und sende es an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.</p>
                         </details>
 
                         <p>Noch weitere Fragen? Melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a></p>
@@ -321,18 +322,28 @@ class LandingPage extends BasePage {
             ...super.styles,
             css`
                 header {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 100;
+                    display: contents;
                 }
 
                 h1 {
+                    position: fixed;
+                    top: 10px;
+                    left: 12px;
+                    right: 12px;
+                    height: 64px;
+                    background-color: var(--km-bg);
+                    backdrop-filter: blur(5px);
+                    -webkit-backdrop-filter: blur(20px);
+                    border-radius: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: var(--app-color-primary, #3A6B28);
                     font-family: var(--app-font-family-display);
                     font-style: italic;
-                    font-size: 36px;
+                    font-size: 30px;
                     font-weight: 500;
-                    color: var(--app-color-primary, #3A6B28);
+                    z-index: 1000;
                 }
 
                 /* Cellar grid layout (logged in) */
