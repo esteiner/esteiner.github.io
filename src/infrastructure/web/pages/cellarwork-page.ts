@@ -63,6 +63,11 @@ class CellarWorkPage extends BasePage {
                 :host {
                     display: block;
                     background: var(--km-bg, #F7F5F1);
+                    overflow-x: hidden;
+                }
+
+                main {
+                    overflow-x: auto;
                 }
 
                 .filter {
