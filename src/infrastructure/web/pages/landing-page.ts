@@ -337,13 +337,11 @@ class LandingPage extends BasePage {
 
                 /* Cellar grid layout (logged in) */
                 .cellar-grid {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
                     gap: 20px;
                     padding: 24px 20px;
-                    max-width: 480px;
-                    margin: 0 auto;
-                    justify-items: center;
                 }
 
                 /* Login CTA section */
