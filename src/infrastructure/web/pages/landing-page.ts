@@ -234,6 +234,12 @@ class LandingPage extends BasePage {
                             <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750</em> und sende es an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.</p>
                         </details>
 
+                        <details>
+                            <summary>Kann ich die Kellermeister App weitergeben?</summary>
+                            <p>Ja, sehr gerne!<br>Hier ist der QR-Code für <a href="https://kellermeister.ch">https://kellermeister.ch</a></p>
+                            <img src="/Kellermeister_QR-Code.png"/>
+                        </details>
+
                         <p>Noch weitere Fragen? Melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a></p>
                     </section>
                 </main>
