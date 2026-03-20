@@ -10,6 +10,9 @@ class BottleComponent extends BaseComponent {
     @property()
     bottle: Bottle | undefined;
 
+    @property()
+    expandable: boolean = true;
+
     @state()
     expanded: boolean = false;
 
@@ -70,7 +73,9 @@ class BottleComponent extends BaseComponent {
     }
 
     private expandCollapseProduct() {
-        this.expanded = !this.expanded;
+        if (this.expandable) {
+            this.expanded = !this.expanded;
+        }
     }
 
 }
