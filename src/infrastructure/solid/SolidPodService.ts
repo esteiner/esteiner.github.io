@@ -1,7 +1,8 @@
-import {isContainer, createContainerAt, universalAccess, getResourceInfo} from "@inrupt/solid-client";
+import {getSolidDataset, createContainerAt, universalAccess, getResourceInfo} from "@inrupt/solid-client";
 import {fetch} from "@inrupt/solid-client-authn-browser";
 import {getAclServerResourceInfo} from "@inrupt/solid-client/universal";
 
+const inboxContainerPath: string = 'inbox/';
 const inboxKellermeisterContainerPath: string = 'inbox/kellermeister/';
 const ordersContainerPath: string = 'private/kellermeister/orders/';
 const cellarsContainerPath: string = 'private/kellermeister/cellars/';
@@ -16,7 +17,8 @@ export class SolidPodService {
     }
 
     async setupPodForKellermeister(): Promise<void> {
-        //console.log("setupPodForKellermeister");
+        console.log("setupPodForKellermeister");
+        await this.setupFolder(inboxContainerPath);
         await this.setupFolder(inboxKellermeisterContainerPath);
         await this.setInboxKellermeisterAppendable(); // ACR or ACL
         await this.setupFolder(cellarsContainerPath);
@@ -26,31 +28,45 @@ export class SolidPodService {
 
     async setupFolder(urlPath: String) {
         let url: URL = new URL(this.storageUrl.toString() + urlPath);
+        // check if folder exists
+        let folder = null;
         try {
-            if (!isContainer(url.toString())) {
+            folder = await getSolidDataset(url.toString(), { fetch: fetch });
+        }
+        catch (e) {
+            console.log("setupFolder: folder doesn't yet exist: ",urlPath);
+        }
+        // create folder
+        try {
+            if (!folder) {
                 await createContainerAt(url.toString(), { fetch: fetch });
-                console.log("setupFolder: path created", url.toString());
-            } else {
-                //console.log("setupFolder: path exists", url.toString());
+                console.log("setupFolder: folder created", url.toString());
             }
         }
         catch (e) {
-            console.log("setupFolder: failed to create path", url.toString(), e);
+            console.log("setupFolder: failed to create folder", url.toString(), e);
         }
     }
 
     async setInboxKellermeisterAppendable() {
-        let url: URL = new URL(this.storageUrl.toString() + inboxKellermeisterContainerPath);
-        const resourceInfo = await getResourceInfo(url.toString(), { fetch: fetch });
-        //console.log("setInboxKellermeisterAppendable:", resourceInfo);
-        await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
-        //console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
-        await universalAccess.setPublicAccess(
-            url.toString(),
-            { append: true },   // grant append; leave read/write/control untouched
-            { fetch: fetch }
-        );
-        //console.log("setInboxKellermeisterAppendable:", accessModes);
+        try {
+            let url: URL = new URL(this.storageUrl.toString() + inboxKellermeisterContainerPath);
+            console.log("setInboxKellermeisterAppendable: url", url.toString());
+            const resourceInfo = await getResourceInfo(url.toString(), { fetch: fetch });
+            console.log("setInboxKellermeisterAppendable: resourceInfo", resourceInfo);
+            // WAC or ACP ???
+            const aclServerResourceInfo = await getAclServerResourceInfo(resourceInfo, { fetch: fetch });
+            console.log("setInboxKellermeisterAppendable: aclServerResourceInfo:", aclServerResourceInfo);
+            const accessModes = await universalAccess.setPublicAccess(
+                url.toString(),
+                { append: true },   // grant append; leave read/write/control untouched
+                { fetch: fetch }
+            )
+            console.log("setInboxKellermeisterAppendable: accessMode", accessModes);
+        }
+        catch (e) {
+            console.log("setInboxKellermeisterAppendable: failed", e);
+        }
     }
 
 }
