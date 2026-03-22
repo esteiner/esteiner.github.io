@@ -207,11 +207,12 @@ class LandingPage extends BasePage {
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
-                            Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf <em>Altglas</em> nachschauen, welche Weine du im Laufe der Zeit ausgetrunken hast.</p>
+                            Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf <em>Altglas</em> nachschauen, welche Weine du im Laufe der Zeit getrunken hast.</p>
 
                         <details>
                             <summary>Wie funktioniert die Kellermeister App?</summary>
                             <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen.</p>
+                            <img class="gif-responsive" src="/Weine-einbuchen.gif"/>
                         </details>
                         <details>
                             <summary>Willst du ein neuer Kellermeister werden?</summary>
@@ -628,6 +629,12 @@ class LandingPage extends BasePage {
                     object-fit: contain;
                     border-radius: 8px;
                     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+                }
+
+                .gif-responsive {
+                    width: 100%;
+                    max-width: 430px;
+                    height: auto;
                 }
             `
         ];
