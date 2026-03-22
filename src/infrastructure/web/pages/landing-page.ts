@@ -203,7 +203,7 @@ class LandingPage extends BasePage {
                 <main class="content">
                     <div class="login-cta">
                         <kellermeister-button ghost icon="cellars" text="Anmelden" @click="${this.handleLoginClick}" data-testid="cellars-button" size="large"></kellermeister-button>
-                        <span class="login-cta-label">Deine Kellerräume betreten</span>
+                        <span class="login-cta-label">Deine Keller(t)räume betreten</span>
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
