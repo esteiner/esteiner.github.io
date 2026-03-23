@@ -42,10 +42,6 @@ class ProfilePage extends BasePage {
               <div class="section-header"><p>Solid Profil</p></div>
               <div class="card">
                   <div class="group">
-                      <label>Version</label>
-                      <span class="value">${getBuildVersion()}</span>
-                  </div>
-                  <div class="group">
                       <label>Name</label>
                       <span class="value">${this.solidUserProfile?.name}</span>
                   </div>
