@@ -211,28 +211,28 @@ class LandingPage extends BasePage {
 
                         <details>
                             <summary>Wie funktioniert die Kellermeister App?</summary>
-                            <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten angereichert. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen.</p>
+                            <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten erfasst. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen.</p>
                             <img class="gif-responsive" src="/Weine-einbuchen.gif"/>
                         </details>
                         <details>
                             <summary>Willst du ein neuer Kellermeister werden?</summary>
-                            <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anschliessend anmelden kannst.
-                                Anschliessend melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a> um deinen Weineingang zu konfigurieren.</p>
+                            <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anmelden kannst.
+                                Anschliessend schreib an <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a> um deinen Weineingang zu konfigurieren.</p>
                         </details>
                         <details>
-                            <summary>Wie kann ich eine Weinrechnung übernehmen?</summary>
+                            <summary>Wie kann ich die Weine aus einer Rechnung übernehmen?</summary>
                             <p>Leite dein Email mit deiner Weinrechnung an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
                                 Unser Agent verarbeitet sie und reichert fehlende Informationen an.</p>
                         </details>
                         <details>
                             <summary>Wie kann ich einen Wein anhand eines Fotos übernehmen?</summary>
-                            <p>Sende das Foto des Etiketts (mit Vorder- und falls vorhanden Rückseite) an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
+                            <p>Sende das Foto des Etiketts (mit Vorder- und falls vorhandener Rückseite) an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
                                 Optional kannst du im Betreff Ort und Preis angeben, z. B. <em>Restaurant Maihöffli Luzern: 95.50 CHF</em>.</p>
                             <img class="process-img" src="/Prozess_Foto.png" @click="${() => this.showImageLightbox = true}" />
                         </details>
                         <details>
                             <summary>Lust deinen gesamten Weinkeller zu erfassen?</summary>
-                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, Schaumwein, 1, 99, 750</em> und sende es an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.</p>
+                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, 2012, Schaumwein, 99, 1, 750</em> und sende es an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.</p>
                         </details>
 
                         <details>
