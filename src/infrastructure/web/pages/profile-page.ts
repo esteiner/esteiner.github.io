@@ -39,6 +39,7 @@ class ProfilePage extends BasePage {
               <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
+              <div class="section-header"><p>Solid Profil</p></div>
               <div class="card">
                   <div class="group">
                       <label>Version</label>
@@ -73,7 +74,24 @@ class ProfilePage extends BasePage {
                       <span class="value url">${this.session.info.sessionId}</span>
                   </div>
               </div>
-              <a class="link" target="_blank" href="https://solid-file-manager.theodi.org/">Solid File Manager →</a>
+              <div class="section-header"><p>Kellermeister</p></div>
+              <div class="card">
+                  <div class="group">
+                      <label>Version</label>
+                      <span class="value">${getBuildVersion()}</span>
+                  </div>
+              </div>
+              <div class="section-header"><p>Solid Apps</p></div>
+              <div class="card">
+                  <div class="group">
+                      <label>Solid File Manager</label>
+                      <div class="value"><a class="link" target="_blank" href="https://solid-file-manager.theodi.org/">https://solid-file-manager.theodi.org/</a></div>
+                  </div>
+                  <div class="group">
+                      <label>SolidOS Databrowser</label>
+                      <div class="value"><a class="link" target="_blank" href="https://solidos.github.io/mashlib/dist/browse.html">https://solidos.github.io/mashlib/dist/browse.html?</a></div>
+                  </div>
+              </div>
           </main>
           <footer>
               <kellermeister-footer></kellermeister-footer>
@@ -125,7 +143,6 @@ class ProfilePage extends BasePage {
                     letter-spacing: 0.05em;
                     text-transform: uppercase;
                     color: var(--km-text-muted, #8A8278);
-                    white-space: nowrap;
                 }
 
                 .value {
@@ -137,9 +154,8 @@ class ProfilePage extends BasePage {
 
                 .link {
                     display: inline-block;
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: var(--app-color-primary, #3A6B28);
+                    font-size: 11px;
+                    color: var(--km-text, #1A1917);
                     text-decoration: none;
                     padding: 4px 0;
                 }
