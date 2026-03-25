@@ -140,7 +140,7 @@ describe('KellermeisterService', () => {
         it('getCellarById delegates to the repository', async () => {
             const { service, cellarRepo } = makeService();
             const cellar = makeCellar('c1');
-            vi.mocked(cellarRepo.fetchCellarById).mockResolvedValue(cellar);
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
             expect(await service.getCellarById('c1')).toEqual(cellar);
         });
 
@@ -150,6 +150,80 @@ describe('KellermeisterService', () => {
             vi.mocked(cellarRepo.createCellar).mockResolvedValue(newCellar);
             expect(await service.createCellar('Neuer Keller')).toEqual(newCellar);
             expect(cellarRepo.createCellar).toHaveBeenCalledWith('Neuer Keller');
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // cellar caching
+    // -----------------------------------------------------------------------
+
+    describe('cellar caching', () => {
+        it('getAllCellars fetches from repository only once and caches on subsequent calls', async () => {
+            const { service, cellarRepo } = makeService();
+            const cellars = [makeCellar('c1'), makeCellar('c2')];
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue(cellars);
+
+            await service.getAllCellars();
+            await service.getAllCellars();
+
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
+        });
+
+        it('getCellarById returns the matching cellar from cache without re-fetching', async () => {
+            const { service, cellarRepo } = makeService();
+            const c1 = makeCellar('c1');
+            const c2 = makeCellar('c2');
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([c1, c2]);
+
+            expect(await service.getCellarById('c1')).toBe(c1);
+            expect(await service.getCellarById('c2')).toBe(c2);
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
+        });
+
+        it('getCellarById returns null when id is not found', async () => {
+            const { service, cellarRepo } = makeService();
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([makeCellar('c1')]);
+            expect(await service.getCellarById('unknown')).toBeNull();
+        });
+
+        it('createCellar invalidates the cache so the next getAllCellars re-fetches', async () => {
+            const { service, cellarRepo } = makeService();
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([makeCellar('c1')]);
+            vi.mocked(cellarRepo.createCellar).mockResolvedValue(makeCellar('c2'));
+
+            await service.getAllCellars();
+            await service.createCellar('Neuer Keller');
+            await service.getAllCellars();
+
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledTimes(2);
+        });
+
+        it('removeCellar invalidates the cache when the cellar is empty and gets deleted', async () => {
+            const { service, cellarRepo, bottlesContainerRepo } = makeService();
+            const cellar = makeCellar('c1');
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
+            vi.mocked(bottlesContainerRepo.fetchBottles).mockResolvedValue(makeBottlesContainer([]));
+
+            await service.getAllCellars();
+            await service.removeCellar(cellar);
+            await service.getAllCellars();
+
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledTimes(2);
+        });
+
+        it('removeCellar does NOT invalidate the cache when the cellar is not empty', async () => {
+            const { service, cellarRepo, bottlesContainerRepo } = makeService();
+            const cellar = makeCellar('c1');
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
+            vi.mocked(bottlesContainerRepo.fetchBottles).mockResolvedValue(
+                makeBottlesContainer([makeBottle('p1', 'c1', 'Merlot')])
+            );
+
+            await service.getAllCellars();
+            await service.removeCellar(cellar);
+            await service.getAllCellars();
+
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
         });
     });
 

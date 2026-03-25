@@ -19,6 +19,7 @@ import { fetch } from "@inrupt/solid-client-authn-browser";
 export class KellermeisterService {
 
     private bottlesContainer: BottlesContainer | null = null;
+    private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
     constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory) {
@@ -97,21 +98,29 @@ export class KellermeisterService {
     }
 
     async getAllCellars(): Promise<Cellar[]> {
-        return this.cellarRepository.fetchCellars();
+        if (this.cachedCellars) {
+            return this.cachedCellars;
+        }
+        this.cachedCellars = await this.cellarRepository.fetchCellars();
+        return this.cachedCellars;
     }
 
     async getCellarById(cellarId: string): Promise<Cellar | null> {
-        return this.cellarRepository.fetchCellarById(cellarId);
+        const cellars = await this.getAllCellars();
+        return cellars.find(cellar => cellar.id === cellarId) ?? null;
     }
 
     async createCellar(name: string): Promise<Cellar> {
-        return this.cellarRepository.createCellar(name);
+        const cellar = await this.cellarRepository.createCellar(name);
+        this.cachedCellars = null;
+        return cellar;
     }
 
     async removeCellar(cellar: Cellar | undefined): Promise<void> {
         if (cellar) {
             if (await this.isEmpty(cellar)) {
                 this.cellarRepository.deleteCellar(cellar);
+                this.cachedCellars = null;
             }
         }
     }
