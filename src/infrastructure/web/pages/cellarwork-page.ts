@@ -179,6 +179,10 @@ class CellarWorkPage extends BasePage {
 
     async onBeforeEnter(location: RouterLocation) {
         const { cellarId } = location.params;
+        this.filter = ProductFilter.fromSearchParams(new URLSearchParams(location.search));
+        if (this.filter.textFilter) {
+            this.searchText = this.filter.textFilter;
+        }
         await this.loadCellar(cellarId as string);
     }
 
@@ -297,23 +301,33 @@ class CellarWorkPage extends BasePage {
         console.log("handleCellarClick: ", this.cellarIds);
     }
 
+    private updateUrl(): void {
+        const params = this.filter.toSearchParams();
+        const search = params.toString() ? '?' + params.toString() : '';
+        history.replaceState(null, '', window.location.pathname + search);
+    }
+
     private async handleSprudelFilterClick(): Promise<void> {
         this.filter.toggleSprudelFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
     private async handleRedFilterClick(): Promise<void> {
         this.filter.toggleRedFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
     private async handleWhiteFilterClick(): Promise<void> {
         this.filter.toggleWhiteFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
     private async handleRoseFilterClick(): Promise<void> {
         this.filter.toggleRoseFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
@@ -330,6 +344,7 @@ class CellarWorkPage extends BasePage {
         this.searchText = (e.target as HTMLInputElement).value;
         this.filter.textFilter = this.searchText || null;
         this.filter.isText = !!this.searchText;
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 
@@ -342,6 +357,7 @@ class CellarWorkPage extends BasePage {
         this.filter.textFilter = null;
         this.filter.isText = false;
         this.searchText = '';
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
     }
 

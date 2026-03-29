@@ -50,6 +50,10 @@ class CellarPage extends BasePage {
 
     async onBeforeEnter(location: RouterLocation) {
         const { cellarId } = location.params;
+        this.filter = ProductFilter.fromSearchParams(new URLSearchParams(location.search));
+        if (this.filter.textFilter) {
+            this.searchText = this.filter.textFilter;
+        }
         await this.loadCellar(cellarId as string);
         await this.loadBottles();
     }
@@ -128,29 +132,41 @@ class CellarPage extends BasePage {
         }
     }
 
+    private updateUrl(): void {
+        const params = this.filter.toSearchParams();
+        const search = params.toString() ? '?' + params.toString() : '';
+        history.replaceState(null, '', window.location.pathname + search);
+    }
+
     private handleCellarworkClick() {
         if (this.cellar) {
-            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cellar.id}`}));
+            const params = this.filter.toSearchParams();
+            const search = params.toString() ? '?' + params.toString() : '';
+            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cellar.id}`}) + search);
         }
     }
 
     private async handleSprudelFilterClick(): Promise<void> {
         this.filter.toggleSprudelFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
     private async handleRedFilterClick(): Promise<void> {
         this.filter.toggleRedFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
     private async handleWhiteFilterClick(): Promise<void> {
         this.filter.toggleWhiteFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
     private async handleRoseFilterClick(): Promise<void> {
         this.filter.toggleRoseFilter();
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
@@ -167,6 +183,7 @@ class CellarPage extends BasePage {
         this.searchText = (e.target as HTMLInputElement).value;
         this.filter.textFilter = this.searchText || null;
         this.filter.isText = !!this.searchText;
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
@@ -179,6 +196,7 @@ class CellarPage extends BasePage {
         this.filter.textFilter = null;
         this.filter.isText = false;
         this.searchText = '';
+        this.updateUrl();
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 

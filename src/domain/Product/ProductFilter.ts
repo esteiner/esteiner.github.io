@@ -40,6 +40,32 @@ export class ProductFilter {
         this.isText = !this.isText;
     }
 
+    public toSearchParams(): URLSearchParams {
+        const params = new URLSearchParams();
+        if (this.isSprudel) params.set('sprudel', '1');
+        if (this.isDessert) params.set('dessert', '1');
+        if (this.isWhite) params.set('weiss', '1');
+        if (this.isRed) params.set('rot', '1');
+        if (this.isRose) params.set('rose', '1');
+        if (this.isText && this.textFilter) params.set('text', this.textFilter);
+        return params;
+    }
+
+    public static fromSearchParams(params: URLSearchParams): ProductFilter {
+        const filter = new ProductFilter();
+        filter.isSprudel = params.has('sprudel');
+        filter.isDessert = params.has('dessert');
+        filter.isWhite = params.has('weiss');
+        filter.isRed = params.has('rot');
+        filter.isRose = params.has('rose');
+        const text = params.get('text');
+        if (text) {
+            filter.isText = true;
+            filter.textFilter = text;
+        }
+        return filter;
+    }
+
     public hasRestrictions(): boolean {
         return (this.isSprudel || this.isDessert || this.isWhite || this.isRed || this.isRose || this.isText);
     }
