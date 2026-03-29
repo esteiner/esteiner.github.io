@@ -99,15 +99,25 @@ export class KellermeisterService {
 
     async getAllCellars(): Promise<Cellar[]> {
         if (this.cachedCellars) {
-            return this.cachedCellars;
+            return this.cachedCellars.filter(cellar => this.isVisible(cellar));
         }
         this.cachedCellars = await this.cellarRepository.fetchCellars();
-        return this.cachedCellars;
+        return this.cachedCellars.filter(cellar => this.isVisible(cellar));
+    }
+
+    isVisible(cellar: Cellar): boolean {
+        if (cellar.displayOrder) {
+            return cellar.displayOrder > 0;
+        }
+        return true;
     }
 
     async getCellarById(cellarId: string): Promise<Cellar | null> {
-        const cellars = await this.getAllCellars();
-        return cellars.find(cellar => cellar.id === cellarId) ?? null;
+        if (this.cachedCellars) {
+            return this.cachedCellars.find(cellar => cellar.id === cellarId) ?? null;
+        }
+        this.cachedCellars = await this.cellarRepository.fetchCellars();
+        return this.cachedCellars.find(cellar => cellar.id === cellarId) ?? null;
     }
 
     async createCellar(name: string): Promise<Cellar> {

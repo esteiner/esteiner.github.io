@@ -25,8 +25,7 @@ export class SolidCellarRepository implements CellarRepository {
     }
 
     async fetchCellars(): Promise<Cellar[]> {
-        const cellars = await Cellar.from(this.cellarUrl).all();
-        return cellars.filter(cellar => this.isVisible(cellar));
+        return await Cellar.from(this.cellarUrl).all();
     }
 
     isVisible(cellar: Cellar): boolean {
