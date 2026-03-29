@@ -85,7 +85,7 @@ class ProfilePage extends BasePage {
                   </div>
                   <div class="group">
                       <label>SolidOS Databrowser</label>
-                      <div class="value"><a class="link" target="_blank" href="https://solidos.github.io/mashlib/dist/browse.html">https://solidos.github.io/mashlib/dist/browse.html?</a></div>
+                      <div class="value"><a class="link" target="_blank" href="https://solidos.github.io/mashlib/dist/browse.html?uri=${this.solidUserProfile?.storageUrls}">https://solidos.github.io/mashlib/dist/browse.html</a></div>
                   </div>
               </div>
           </main>
