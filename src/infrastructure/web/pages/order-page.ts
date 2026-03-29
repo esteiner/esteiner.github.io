@@ -21,12 +21,24 @@ class OrderPage extends BasePage {
     @state()
     filter: ProductFilter;
 
+    @state()
+    private showSearchInput: boolean = false;
+
+    @state()
+    private searchText: string = '';
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
         super();
         this.filter = new ProductFilter();
         this.orders = new Map<Date, Order[]>;
+    }
+
+    updated(changedProperties: Map<string, unknown>) {
+        if (changedProperties.has('showSearchInput') && this.showSearchInput) {
+            this.shadowRoot?.querySelector<HTMLInputElement>('.search-input')?.focus();
+        }
     }
 
     connectedCallback() {
@@ -60,6 +72,45 @@ class OrderPage extends BasePage {
                 main {
                     padding: 8px 16px 16px;
                 }
+
+                .search-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(26, 25, 23, 0.4);
+                    z-index: 2000;
+                    display: flex;
+                    align-items: flex-start;
+                    padding-top: 90px;
+                    backdrop-filter: blur(4px);
+                }
+
+                .search-container {
+                    width: calc(100% - 32px);
+                    margin: 0 16px;
+                    background: var(--km-surface, white);
+                    border-radius: 12px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    padding: 12px;
+                    box-shadow: 0 16px 48px rgba(26, 25, 23, 0.15);
+                }
+
+                .search-input {
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 10px 14px;
+                    border-radius: 8px;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    color: var(--km-text, #1A1917);
+                    outline: none;
+                    transition: border-color 0.2s ease;
+                }
+
+                .search-input:focus {
+                    border-color: var(--app-color-primary, #3A6B28);
+                }
             `
         ];
     }
@@ -67,8 +118,23 @@ class OrderPage extends BasePage {
     render() {
         return html`
             <kellermeister-header>Kellermeister Einkäufe
-                <kellermeister-button slot="actions" text="Search" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
+                <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
             </kellermeister-header>
+            ${this.showSearchInput ? html`
+              <div class="search-overlay" @click="${this.handleSearchClose}">
+                  <div class="search-container" @click="${(e: Event) => e.stopPropagation()}">
+                      <input
+                          class="search-input"
+                          type="search"
+                          .value="${this.searchText}"
+                          @input="${this.handleSearchInput}"
+                          @keydown="${(e: KeyboardEvent) => e.key === 'Escape' && this.handleSearchClose()}"
+                          @search="${this.handleSearchClear}"
+                          placeholder="Suchen..."
+                      />
+                  </div>
+              </div>
+          ` : ''}
             <div class="filter">
                 <kellermeister-button text="Sprudel" @click="${this.handleSprudelFilterClick}" .ghost=${this.filter.isSprudel} icon="wine-bubble" size="small"></kellermeister-button>
                 <kellermeister-button text="Rot" @click="${this.handleRedFilterClick}" .ghost=${this.filter.isRed} icon="wine-red" size="small"></kellermeister-button>
@@ -116,14 +182,33 @@ class OrderPage extends BasePage {
         await this.fetchOrders();
     }
 
-    // private handleTextFilterClick(): void {
-    //     if (this.showSearchInput) {
-    //         this.showSearchInput = false;
-    //     } else {
-    //         this.searchText = this.filter.textFilter?.toString() ?? '';
-    //         this.showSearchInput = true;
-    //     }
-    // }
+    private handleTextFilterClick(): void {
+        if (this.showSearchInput) {
+            this.showSearchInput = false;
+        } else {
+            this.searchText = this.filter.textFilter?.toString() ?? '';
+            this.showSearchInput = true;
+        }
+    }
+
+    private async handleSearchInput(e: InputEvent): Promise<void> {
+        this.searchText = (e.target as HTMLInputElement).value;
+        this.filter.textFilter = this.searchText || null;
+        this.filter.isText = !!this.searchText;
+        await this.fetchOrders();
+    }
+
+    private handleSearchClose(): void {
+        this.showSearchInput = false;
+    }
+
+    private async handleSearchClear(): Promise<void> {
+        this.showSearchInput = false;
+        this.filter.textFilter = null;
+        this.filter.isText = false;
+        this.searchText = '';
+        await this.fetchOrders();
+    }
 
 }
 
