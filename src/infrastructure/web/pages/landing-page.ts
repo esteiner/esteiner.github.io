@@ -408,6 +408,7 @@ class LandingPage extends BasePage {
 
                 .intro a {
                     color: var(--app-color-primary, #3A6B28);
+                    font-weight: bold;
                     text-decoration: none;
                     border-bottom: 1px solid var(--km-border, #E4DFD7);
                 }
