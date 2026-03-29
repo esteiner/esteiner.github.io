@@ -240,7 +240,7 @@ class CellarWorkPage extends BasePage {
                       />
                   </div>
               </div>
-          ` : ''}
+            ` : ''}
             <main>
                 <form @submit="${this.handleIngestClick}">
                     <div class="table" style="--cellar-columns: ${this.cellars.length};">
@@ -256,7 +256,7 @@ class CellarWorkPage extends BasePage {
                                     <bottle-component .bottle="${bottle}" .expandable=${this.expandable}>${bottle.price}</bottle-component>
                                 </span>
                                 ${repeat(this.cellars, (cellar) => cellar.id, (cellar, cellarIndex) =>  html`
-                                    <span class="column2"><input @input="${this.handleCellarSelectionClick}" ${cellarIndex}" type="radio" id="${index}" name="${index}" value="${cellar.id}" .checked=${this.cellarIds[cellarIndex] === cellar.id}/></span>
+                                    <span class="column2"><input @input="${this.handleCellarSelectionClick}" ${cellarIndex}" type="radio" id="${index}" name="${index}" value="${cellar.id}" .checked=${this.cellarIds[index] == cellar.id}></input></span>
                                 `)}
                             `)}
                         </div>
@@ -296,9 +296,9 @@ class CellarWorkPage extends BasePage {
     }
 
     private handleCellarClick(cellarId: string) {
-        console.log("handleCellarClick: to cellar:", cellarId);
+        //console.log("handleCellarClick: to cellar:", cellarId);
         this.cellarIds = Array(this.bottles.length).fill(cellarId, 0);
-        console.log("handleCellarClick: ", this.cellarIds);
+        console.log("handleCellarClick: cellarIds", this.cellarIds);
     }
 
     private updateUrl(): void {
