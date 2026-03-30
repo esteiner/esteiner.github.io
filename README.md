@@ -146,6 +146,7 @@ UI Komponenten Library
 [Web Awesome] ?
 
 
+[Solid Data Modelling Skill]: https://github.com/solid/solid-llm-skills/blob/main/solid/data-modelling.md
 [Wine Ontology]: https://github.com/UCDavisLibrary/wine-ontology/blob/master/wine-ontology.org
 [Beverage Ontology]: https://ceur-ws.org/Vol-2969/paper45-FoisShowCase.pdf
 [Inrupt Solid Authentication]: https://docs.inrupt.com/guides/authentication-in-solid
