@@ -34,6 +34,12 @@ export const routes: Route[] = [
     action: async () => (await import('./pages/cellarwork-page.js')) as ActionResult,
   },
   {
+    path: '/search',
+    component: 'search-page',
+    name: 'search-page',
+    action: async () => (await import('./pages/search-page.js')) as ActionResult,
+  },
+  {
     path: '(.*)',
     component: 'page-404',
     name: '404',

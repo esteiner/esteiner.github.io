@@ -163,8 +163,8 @@ describe('KellermeisterService', () => {
             const cellars = [makeCellar('c1'), makeCellar('c2')];
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue(cellars);
 
-            await service.getAllCellars();
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
+            await service.getAllVisibleCellars();
 
             expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
         });
@@ -191,9 +191,9 @@ describe('KellermeisterService', () => {
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([makeCellar('c1')]);
             vi.mocked(cellarRepo.createCellar).mockResolvedValue(makeCellar('c2'));
 
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
             await service.createCellar('Neuer Keller');
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
 
             expect(cellarRepo.fetchCellars).toHaveBeenCalledTimes(2);
         });
@@ -204,9 +204,9 @@ describe('KellermeisterService', () => {
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
             vi.mocked(bottlesContainerRepo.fetchBottles).mockResolvedValue(makeBottlesContainer([]));
 
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
             await service.removeCellar(cellar);
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
 
             expect(cellarRepo.fetchCellars).toHaveBeenCalledTimes(2);
         });
@@ -219,9 +219,9 @@ describe('KellermeisterService', () => {
                 makeBottlesContainer([makeBottle('p1', 'c1', 'Merlot')])
             );
 
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
             await service.removeCellar(cellar);
-            await service.getAllCellars();
+            await service.getAllVisibleCellars();
 
             expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
         });

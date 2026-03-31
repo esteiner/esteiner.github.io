@@ -106,7 +106,7 @@ export class ProductFilter {
         return result;
     }
 
-    private isIncludedIn(filter: string, value: string): boolean {
+    private isIncludedIn(filter: string, value: string | undefined): boolean {
         if (value === undefined) {
             return false;
         }

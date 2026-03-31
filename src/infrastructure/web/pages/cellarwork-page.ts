@@ -202,7 +202,7 @@ class CellarWorkPage extends BasePage {
 
     async fetchCellars() {
         if (this.session.info.isLoggedIn) {
-            const customCellars = await this.cdi.getKellermeisterService().getAllCellars();
+            const customCellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
             const destinationCellars = customCellars.filter(cellar => cellar.id != this.sourceCellar?.id);
             const altglass = await this.cdi.getKellermeisterService().getCellarAltglass();
             if (altglass && altglass.id != this.sourceCellar?.id) {

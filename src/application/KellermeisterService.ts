@@ -54,6 +54,46 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
+    async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, Bottle[]>>> {
+        const [bottles, cellars] = await Promise.all([this.getAllBottles(), this.getAllCellars()]);
+        const cellarMap = new Map<string, Cellar>(cellars.map(c => [c.id, c]));
+        const grouped = new Map<string, Map<string, Bottle[]>>();
+
+        for (const bottle of bottles) {
+            if (bottle.product && bottle.cellar && filter.filterProduct(bottle.product)) {
+                if (!grouped.has(bottle.cellar)) {
+                    grouped.set(bottle.cellar, new Map());
+                }
+                const byProduct = grouped.get(bottle.cellar)!;
+                if (!byProduct.has(bottle.product.id)) {
+                    byProduct.set(bottle.product.id, []);
+                }
+                byProduct.get(bottle.product.id)!.push(bottle);
+            }
+        }
+
+        const result = new Map<Cellar, Map<string, Bottle[]>>();
+        const toSortKey = (c: Cellar) => {
+            const d = c.displayOrder ?? 0;
+            return d < 0 ? Number.MAX_SAFE_INTEGER : d;
+        };
+        const sortedCellarIds = [...grouped.keys()].sort((a, b) => {
+            const ca = cellarMap.get(a);
+            const cb = cellarMap.get(b);
+            if (!ca || !cb) return 0;
+            const orderDiff = toSortKey(ca) - toSortKey(cb);
+            if (orderDiff !== 0) return orderDiff;
+            return (ca.name ?? '').localeCompare(cb.name ?? '');
+        });
+        for (const cellarId of sortedCellarIds) {
+            const cellar = cellarMap.get(cellarId);
+            if (cellar) {
+                result.set(cellar, grouped.get(cellarId)!);
+            }
+        }
+        return result;
+    }
+
     async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
         const bottles = await this.getAllBottles();
         const grouped = new Map<string, Bottle[]>();
@@ -98,6 +138,14 @@ export class KellermeisterService {
     }
 
     async getAllCellars(): Promise<Cellar[]> {
+        if (this.cachedCellars) {
+            return this.cachedCellars;
+        }
+        this.cachedCellars = await this.cellarRepository.fetchCellars();
+        return this.cachedCellars;
+    }
+
+    async getAllVisibleCellars(): Promise<Cellar[]> {
         if (this.cachedCellars) {
             return this.cachedCellars.filter(cellar => this.isVisible(cellar));
         }

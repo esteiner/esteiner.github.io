@@ -11,6 +11,10 @@ class KellermeisterFooter extends BaseComponent {
         Router.go(router.urlForName('landing-page'));
     }
 
+    private handleSearchClick() {
+        Router.go(router.urlForName('search-page'));
+    }
+
     private handleOrderClick() {
         Router.go(router.urlForName('order-page'));
     }
@@ -40,6 +44,7 @@ class KellermeisterFooter extends BaseComponent {
     render() {
         return html`
             <kellermeister-button text="Übersicht" @click="${this.handleOverviewClick}" icon="house" size="small"></kellermeister-button>
+            <kellermeister-button text="Suche" @click="${this.handleSearchClick}" icon="search" size="small"></kellermeister-button>
             <kellermeister-button text="Einkäufe" @click="${this.handleOrderClick}" icon="shopping" size="small"></kellermeister-button>
             <kellermeister-button text="Profil" @click="${this.handleProfileClick}" icon="profile" size="small"></kellermeister-button>
         `;

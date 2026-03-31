@@ -129,7 +129,7 @@ class LandingPage extends BasePage {
 
     async loadCellars() {
         if (this.isLoggedIn) {
-            this.cellars = await this.cdi.getKellermeisterService().getAllCellars();
+            this.cellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
         }
     }
 

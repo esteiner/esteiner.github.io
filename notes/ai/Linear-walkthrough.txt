@@ -144,7 +144,7 @@
 
   This is where business logic lives, combining repositories with domain operations.
 
-  getAllCellars() — simple delegation to cellarRepository.fetchCellars().
+  getAllVisibleCellars() — simple delegation to cellarRepository.fetchCellars().
 
   bottlesFromCellarGroupedByProduct(cellar) — fetches the entire BottlesContainer (all bottles in one shot), filters by bottle.cellar === cellar.id, then groups into a Map<productId, Bottle[]>. The map is
   sorted by product ID descending. This is how the cellar page knows to show "3x Barolo" as one row.
