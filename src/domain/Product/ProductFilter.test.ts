@@ -245,13 +245,10 @@ describe('ProductFilter', () => {
             expect(filter.filterProduct(makeBottle({ name: 'anything', trinkfensterBis: new Date(2030, 0, 1) }))).toBe(true);
         });
 
-        // Documents the operator-precedence behaviour: because the ternary has lower
-        // precedence than ||, a bottle with trinkfensterBis === undefined always
-        // satisfies the text filter regardless of the search term.
         it('passes any text filter when trinkfensterBis is undefined (operator precedence)', () => {
             filter.textFilter = 'xyz_no_match';
             const bottle = makeBottle({ name: 'Completely Different Wine' }); // no trinkfensterBis
-            expect(filter.filterProduct(bottle)).toBe(true);
+            expect(filter.filterProduct(bottle)).toBe(false);
         });
 
         it('combines text filter with weinfarbe filter using AND logic', () => {

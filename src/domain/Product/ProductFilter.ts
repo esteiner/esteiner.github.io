@@ -100,6 +100,7 @@ export class ProductFilter {
                     || this.isIncludedIn(textFilterLowerCase, product.alkoholgehalt)
                     || this.isIncludedIn(textFilterLowerCase, product.land?.toLowerCase())
                     || this.isIncludedIn(textFilterLowerCase, product.region?.toLowerCase())
+                    || this.isBiggerThan(this.textFilter, product.trinkfensterBis?.getFullYear())
                 );
             }
         }
@@ -111,6 +112,14 @@ export class ProductFilter {
             return false;
         }
         const result = value.includes(filter);
+        return result;
+    }
+
+    private isBiggerThan(filter: string, value: number | undefined): boolean {
+        if (value === undefined) {
+            return false;
+        }
+        const result = value <= Number(filter)
         if (result) {
             console.log("includes", value, filter, result)
         }
