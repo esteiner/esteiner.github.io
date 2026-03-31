@@ -92,16 +92,27 @@ export class ProductFilter {
         // Text
         if (this.isText) {
             if (this.textFilter) {
+                const textFilterLowerCase = this.textFilter.toLowerCase();
                 result = result && (
-                    product.name?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || product.productionDate?.toUTCString().toLowerCase().includes(this.textFilter.toLowerCase())
-                    || product.traubensorte?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || product.alkoholgehalt?.includes(this.textFilter)
-                    || product.land?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || product.region?.toLowerCase().includes(this.textFilter.toLowerCase())
-                    || product.trinkfensterBis === undefined ? true : product.trinkfensterBis.getFullYear() <= Number(this.textFilter)
+                    this.isIncludedIn(textFilterLowerCase, product.name?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.productionDate?.toUTCString().toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.traubensorte?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.alkoholgehalt)
+                    || this.isIncludedIn(textFilterLowerCase, product.land?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.region?.toLowerCase())
                 );
             }
+        }
+        return result;
+    }
+
+    private isIncludedIn(filter: string, value: string): boolean {
+        if (value === undefined) {
+            return false;
+        }
+        const result = value.includes(filter);
+        if (result) {
+            console.log("includes", value, filter, result)
         }
         return result;
     }
