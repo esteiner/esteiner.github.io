@@ -1,17 +1,17 @@
 import {css, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {Task} from '@lit/task';
 import {Router} from "@vaadin/router";
 import {EVENTS, getDefaultSession, Session} from "@inrupt/solid-client-authn-browser";
 import {router} from "../router.ts";
 import {BasePage} from "../common/base-page.ts";
-import {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {Order} from "../../../domain/Order/Order.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import type {WebIDProfile} from "../../../domain/Solid/WebIDProfile.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import {getBuildVersion} from "../utils";
+import {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 @customElement('landing-page')
 class LandingPage extends BasePage {
@@ -21,9 +21,6 @@ class LandingPage extends BasePage {
 
     @property()
     isLoggedIn: boolean = this.session.info.isLoggedIn;
-
-    @state()
-    cellars: Cellar[];
 
     @state()
     private showWebIdDialog: boolean = false;
@@ -67,9 +64,12 @@ class LandingPage extends BasePage {
 
     private cdi: CDI = CDI.getInstance();
 
+    private _cellarsTask = new Task(this, async () => {
+        return await this.cdi.getKellermeisterService().getCellars();
+    });
+
     constructor() {
         super();
-        this.cellars = new Array<Order>;
     }
 
     connectedCallback() {
@@ -127,9 +127,9 @@ class LandingPage extends BasePage {
         }
     }
 
-    async loadCellars() {
+    loadCellars() {
         if (this.isLoggedIn) {
-            this.cellars = await this.cdi.getKellermeisterService().getCellars();
+            this._cellarsTask.run();
         }
     }
 
@@ -184,12 +184,12 @@ class LandingPage extends BasePage {
                 </kellermeister-header>
                 <main>
                     <div class="cellar-grid">
-                        ${this.cellars.map(
-                                cellar =>
-                                        html`
-                                            <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="${this.cellarIconName(cellar.id)}"></kellermeister-button>
-                                        `
-                        )}
+                        ${this._cellarsTask.render({
+                            pending: () => html`<div class="spinner"></div>`,
+                            complete: (cellars) => html`${cellars.map(cellar => html`
+                                <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="${this.cellarIconName(cellar.id)}"></kellermeister-button>
+                            `)}`,
+                        })}
                     </div>
                 </main>
                 <kellermeister-footer></kellermeister-footer>
@@ -341,7 +341,7 @@ class LandingPage extends BasePage {
     }
 
     private async handleNewCellarClick() {
-        const name: string | null = prompt("Name des neuen Kellers", "Keller"+(this.cellars.length-1));
+        const name: string | null = prompt("Name des neuen Kellers", "Keller" + ((this._cellarsTask.value?.length ?? 0) - 1));
         if (name) {
             await this.cdi.getKellermeisterService().createCellar(name);
             this.loadCellars();
@@ -375,6 +375,20 @@ class LandingPage extends BasePage {
                     font-size: 30px;
                     font-weight: 500;
                     z-index: 1000;
+                }
+
+                /* Spinner */
+                .spinner {
+                    width: 28px;
+                    height: 28px;
+                    border: 3px solid var(--km-border, #E4DFD7);
+                    border-top-color: var(--app-color-primary, #3A6B28);
+                    border-radius: 50%;
+                    animation: spin 0.7s linear infinite;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
                 }
 
                 /* Cellar grid layout (logged in) */
