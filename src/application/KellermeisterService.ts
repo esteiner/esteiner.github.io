@@ -227,23 +227,20 @@ export class KellermeisterService {
     async ingestOrder(order: Order, cellarForCellarwork: string, bottlesContainer: BottlesContainer) {
         console.log("ingestOrder: order:", order);
         if (order.positions) {
-            var unprocessedOrderItems: OrderItem[] = order.positions
-                .filter(item => item != undefined)
-                .map(item => this.explode(item))
-                .flatMap(orderItems => orderItems);
-
             const products: Product[] = bottlesContainer.products();
-            //console.log("ingestOrderItems: existing products:", products);
-            var processedOrderItem: OrderItem | undefined = undefined;
+            var unprocessedOrderItems: OrderItem[] = order.positions;
             for (var i = 0; i < unprocessedOrderItems.length; i++) {
                 if (cellarForCellarwork != undefined) {
-                    processedOrderItem = unprocessedOrderItems[i];
-                    const bottle: Bottle = this.bottleFactory.createFromOrderItem(this.getOrCreateProduct(products, processedOrderItem.product), processedOrderItem);
-                    bottle.cellar = cellarForCellarwork;
-                    console.log("ingestOrderItems: bottle:", bottle.product?.name, "to cellar:", bottle.cellar);
-                    bottlesContainer.addBottle(bottle);
+                    const orderItem: OrderItem[] = unprocessedOrderItems[i];
+                    const product: Product = this.createProduct(orderItem.product);
+                    products.push(product);
+                    for (var q = 0; q < orderItem.orderQuantity; q++) {
+                        const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);
+                        bottle.cellar = cellarForCellarwork;
+                        bottlesContainer.addBottle(bottle);
+                    }
                 } else {
-                    console.log("ingestOrderItems: cellar not assigned for:", processedOrderItem);
+                    console.log("ingestOrderItems: cellar cellarwork not found for:", cellarForCellarwork);
                 }
             }
         }
@@ -343,33 +340,25 @@ export class KellermeisterService {
         return true;
     }
 
-    private getOrCreateProduct(products: Product[], productFromOrderItem: Product): Product {
-        console.log("getOrCreateProduct: products:", products);
-        const filtered = products.filter(product => product.name === productFromOrderItem.name);
-        if (filtered.length > 0) {
-            console.log("getOrCreateProduct: found:", filtered[0]);
-            return filtered[0];
-        } else {
-            const newProduct: Product = new Product();
-            newProduct.name = productFromOrderItem.name;
-            newProduct.productionDate = productFromOrderItem.productionDate;
-            newProduct.hersteller = productFromOrderItem.hersteller;
-            newProduct.weinart = productFromOrderItem.weinart;
-            newProduct.weinfarbe = productFromOrderItem.weinfarbe;
-            newProduct.milliliter = productFromOrderItem.milliliter;
-            newProduct.region = productFromOrderItem.region;
-            newProduct.land = productFromOrderItem.land;
-            newProduct.traubensorte = productFromOrderItem.traubensorte;
-            newProduct.klassifikation = productFromOrderItem.klassifikation;
-            newProduct.alkoholgehalt = productFromOrderItem.alkoholgehalt;
-            newProduct.ausbau = productFromOrderItem.ausbau;
-            newProduct.biologisch = productFromOrderItem.biologisch;
-            newProduct.trinkfensterVon = productFromOrderItem.trinkfensterVon;
-            newProduct.trinkfensterBis = productFromOrderItem.trinkfensterBis;
-            console.log("getOrCreateProduct: created:", newProduct);
-            products.push(newProduct);
-            return newProduct;
-        }
+    private createProduct(productFromOrderItem: Product): Product {
+        const newProduct: Product = new Product();
+        newProduct.name = productFromOrderItem.name;
+        newProduct.productionDate = productFromOrderItem.productionDate;
+        newProduct.hersteller = productFromOrderItem.hersteller;
+        newProduct.weinart = productFromOrderItem.weinart;
+        newProduct.weinfarbe = productFromOrderItem.weinfarbe;
+        newProduct.milliliter = productFromOrderItem.milliliter;
+        newProduct.region = productFromOrderItem.region;
+        newProduct.land = productFromOrderItem.land;
+        newProduct.traubensorte = productFromOrderItem.traubensorte;
+        newProduct.klassifikation = productFromOrderItem.klassifikation;
+        newProduct.alkoholgehalt = productFromOrderItem.alkoholgehalt;
+        newProduct.ausbau = productFromOrderItem.ausbau;
+        newProduct.biologisch = productFromOrderItem.biologisch;
+        newProduct.trinkfensterVon = productFromOrderItem.trinkfensterVon;
+        newProduct.trinkfensterBis = productFromOrderItem.trinkfensterBis;
+        console.log("createProduct: created:", newProduct);
+        return newProduct;
     }
 
     private async moveProcessedOrders(unprocessedOrders: Order[]) {
