@@ -258,8 +258,8 @@ export class KellermeisterService {
             }
         }
         if (bottlesContainer?.isDirty) {
-            this.bottlesContainer = null;
             await bottlesContainer.save();
+            this.bottlesContainer = null;
         }
     }
 
