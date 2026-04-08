@@ -102,7 +102,7 @@ class CellarPage extends BasePage {
                             )}
                             `
                             : html`
-                              <p>Es hat noch keine Flaschen in diesem Keller.</p>
+                              <p>Es gibt noch keine Flaschen in diesem Keller.</p>
                             `
                     }
               </div>
