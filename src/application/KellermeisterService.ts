@@ -231,13 +231,15 @@ export class KellermeisterService {
             var unprocessedOrderItems: OrderItem[] = order.positions;
             for (var i = 0; i < unprocessedOrderItems.length; i++) {
                 if (cellarForCellarwork != undefined) {
-                    const orderItem: OrderItem[] = unprocessedOrderItems[i];
-                    const product: Product = this.createProduct(orderItem.product);
-                    products.push(product);
-                    for (var q = 0; q < orderItem.orderQuantity; q++) {
-                        const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);
-                        bottle.cellar = cellarForCellarwork;
-                        bottlesContainer.addBottle(bottle);
+                    const orderItem: OrderItem = unprocessedOrderItems[i];
+                    if (orderItem.orderQuantity) {
+                        const product: Product = this.createProduct(orderItem.product);
+                        products.push(product);
+                        for (var q = 0; q < orderItem.orderQuantity; q++) {
+                            const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);
+                            bottle.cellar = cellarForCellarwork;
+                            bottlesContainer.addBottle(bottle);
+                        }
                     }
                 } else {
                     console.log("ingestOrderItems: cellar cellarwork not found for:", cellarForCellarwork);
@@ -373,16 +375,6 @@ export class KellermeisterService {
         if (unprocessedOrder.getSourceDocumentUrl()) {
             await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
         }
-    }
-
-    private explode(orderItem: OrderItem): OrderItem[] {
-        const orderItems = new Array()
-        if (orderItem.orderQuantity) {
-            for (let i = 0; i < orderItem.orderQuantity; i++) {
-                orderItems.push(orderItem);
-            }
-        }
-        return orderItems;
     }
 
 }

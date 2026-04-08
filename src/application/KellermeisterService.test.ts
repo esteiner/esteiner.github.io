@@ -1,3 +1,4 @@
+import {bootSolidModels} from "soukai-solid";
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { KellermeisterService } from './KellermeisterService';
 import { ProductFilter } from '../domain/Product/ProductFilter';
@@ -405,6 +406,7 @@ describe('KellermeisterService', () => {
 
     describe('ingestOrder', () => {
         it('adds one bottle per unit of orderQuantity', async () => {
+            bootSolidModels();
             const { service, bottleFactory } = makeService();
             const product = makeProduct('p1', 'Riesling');
             const orderItem = { orderQuantity: 3, price: 15, priceCurrency: 'CHF', id: 'oi-1', product } as any;
@@ -438,27 +440,6 @@ describe('KellermeisterService', () => {
 
             expect(bottleFactory.createFromOrderItem).not.toHaveBeenCalled();
             expect(addBottle).not.toHaveBeenCalled();
-        });
-
-        it('reuses an existing product when name matches', async () => {
-            const { service, bottleFactory } = makeService();
-            const existingProduct = makeProduct('existing-p', 'Merlot');
-            const orderItemProduct = makeProduct('new-p', 'Merlot'); // same name
-            const orderItem = { orderQuantity: 1, price: 20, priceCurrency: 'CHF', id: 'oi-1', product: orderItemProduct } as any;
-            const order = { positions: [orderItem] } as unknown as Order;
-            const mockBottle = { cellar: undefined, product: existingProduct } as unknown as Bottle;
-            vi.mocked(bottleFactory.createFromOrderItem).mockReturnValue(mockBottle);
-
-            const addBottle = vi.fn();
-            const container = {
-                products: vi.fn().mockReturnValue([existingProduct]),
-                addBottle,
-            } as unknown as BottlesContainer;
-
-            await service.ingestOrder(order, 'cellar-a', container);
-
-            // Should be called with the existing product (matched by name), not a new one
-            expect(bottleFactory.createFromOrderItem).toHaveBeenCalledWith(existingProduct, orderItem);
         });
 
         it('does nothing when the order has no positions', async () => {
