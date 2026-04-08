@@ -102,7 +102,7 @@ class CellarPage extends BasePage {
                             )}
                             `
                             : html`
-                              <p>Es gibt noch keine Flaschen in diesem Keller.</p>
+                              <p class="no-bottles">Keine Flaschen in diesem Keller gefunden.</p>
                             `
                     }
               </div>
@@ -289,6 +289,10 @@ class CellarPage extends BasePage {
 
                 .search-input:focus {
                     border-color: var(--app-color-primary, #3A6B28);
+                }
+                
+                .no-bottles {
+                    text-align: center;
                 }
             `
         ];
