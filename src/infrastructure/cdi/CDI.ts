@@ -7,6 +7,8 @@ import {SolidOrderRespository} from "../solid/SolidOrderRespository.ts";
 import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
 import {SolidBottlesContainerRepository} from "../solid/SolidBottlesContainerRepository.ts";
 import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
+import {ProductFactory} from "../../domain/Product/ProductFactory.ts";
+import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
 
@@ -25,6 +27,8 @@ export class CDI {
 
     // Factories
     private bottleFactory: BottleFactory;
+    private productFactory: ProductFactory;
+    private orderFactory: OrderFactory;
 
     // Repositories
     private cellarRepository: CellarRepository | null = null;
@@ -39,6 +43,8 @@ export class CDI {
     private constructor() {
         // Initialize factories
         this.bottleFactory = new BottleFactory();
+        this.productFactory = new ProductFactory();
+        this.orderFactory = new OrderFactory();
         // Initialize services
         this.solidService = new InruptSolidService();
     }
@@ -82,7 +88,7 @@ export class CDI {
             this.orderRepository = new SolidOrderRespository(this.storageUrl);
             // Initialize services
             this.solidPodService = new SolidPodService(this.storageUrl);
-            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory);
+            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.productFactory, this.orderFactory);
         }
      }
 

@@ -3,12 +3,14 @@ import type {Cellar} from "../domain/Cellar/Cellar.ts";
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
 import {Order} from "../domain/Order/Order.ts";
+import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import type {OrderItem} from "../domain/Order/OrderItem.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import {Product} from "../domain/Product/Product.ts";
+import {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
 
@@ -22,7 +24,7 @@ export class KellermeisterService {
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
-    constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory) {
+    constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private productFactory: ProductFactory, private orderFactory: OrderFactory) {
     }
 
     getAltglassId(): string {
@@ -210,7 +212,6 @@ export class KellermeisterService {
             const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
             if (bottlesContainer) {
                 unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottlesContainer));
-
                 if (bottlesContainer.isDirty()) {
                     this.bottlesContainer = null;
                     await bottlesContainer.save();
@@ -228,12 +229,13 @@ export class KellermeisterService {
         console.log("ingestOrder: order:", order);
         if (order.positions) {
             const products: Product[] = bottlesContainer.products();
-            var unprocessedOrderItems: OrderItem[] = order.positions;
+            const productOrder: Order = this.orderFactory.createOrder(order);
+            const unprocessedOrderItems: OrderItem[] = order.positions;
             for (var i = 0; i < unprocessedOrderItems.length; i++) {
                 if (cellarForCellarwork != undefined) {
                     const orderItem: OrderItem = unprocessedOrderItems[i];
                     if (orderItem.orderQuantity) {
-                        const product: Product = this.createProduct(orderItem.product);
+                        const product: Product = this.productFactory.createProduct(orderItem.product, productOrder);
                         products.push(product);
                         for (var q = 0; q < orderItem.orderQuantity; q++) {
                             const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);
@@ -340,27 +342,6 @@ export class KellermeisterService {
             return false;
         }
         return true;
-    }
-
-    private createProduct(productFromOrderItem: Product): Product {
-        const newProduct: Product = new Product();
-        newProduct.name = productFromOrderItem.name;
-        newProduct.productionDate = productFromOrderItem.productionDate;
-        newProduct.hersteller = productFromOrderItem.hersteller;
-        newProduct.weinart = productFromOrderItem.weinart;
-        newProduct.weinfarbe = productFromOrderItem.weinfarbe;
-        newProduct.milliliter = productFromOrderItem.milliliter;
-        newProduct.region = productFromOrderItem.region;
-        newProduct.land = productFromOrderItem.land;
-        newProduct.traubensorte = productFromOrderItem.traubensorte;
-        newProduct.klassifikation = productFromOrderItem.klassifikation;
-        newProduct.alkoholgehalt = productFromOrderItem.alkoholgehalt;
-        newProduct.ausbau = productFromOrderItem.ausbau;
-        newProduct.biologisch = productFromOrderItem.biologisch;
-        newProduct.trinkfensterVon = productFromOrderItem.trinkfensterVon;
-        newProduct.trinkfensterBis = productFromOrderItem.trinkfensterBis;
-        console.log("createProduct: created:", newProduct);
-        return newProduct;
     }
 
     private async moveProcessedOrders(unprocessedOrders: Order[]) {

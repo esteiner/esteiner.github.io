@@ -6,6 +6,8 @@ import type { CellarRepository } from '../domain/Cellar/CellarRepository';
 import type { BottlesContainerRepository } from '../domain/Bottle/BottlesContainerRepository';
 import type { OrderRepository } from '../domain/Order/OrderRepository';
 import type { BottleFactory } from '../domain/Bottle/BottleFactory';
+import type { ProductFactory } from '../domain/Product/ProductFactory';
+import type { OrderFactory } from '../domain/Order/OrderFactory';
 import type { Cellar } from '../domain/Cellar/Cellar';
 import type { Bottle } from '../domain/Bottle/Bottle';
 import type { Product } from '../domain/Product/Product';
@@ -72,8 +74,14 @@ function makeService() {
         createFromOrderItem: vi.fn(),
         createFromProduct: vi.fn(),
     };
-    const service = new KellermeisterService(cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory);
-    return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory };
+    const productFactory: ProductFactory = {
+        createProduct: vi.fn(),
+    };
+    const orderFactory: OrderFactory = {
+        createOrder: vi.fn(),
+    };
+    const service = new KellermeisterService(cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, productFactory, orderFactory);
+    return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, productFactory, orderFactory };
 }
 
 // ---------------------------------------------------------------------------

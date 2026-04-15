@@ -71,6 +71,10 @@ export default defineSolidModelSchema({
         trinkfensterBis: {
             type: FieldType.Date,
             rdfProperty: 'km:trinkfensterBis'
+        },
+        orderUrl: {
+            type: FieldType.Key,
+            rdfProperty: 'schema:subjectOf'
         }
     }
 });
