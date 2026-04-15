@@ -16,6 +16,7 @@ export default defineSolidModelSchema({
             rdfProperty: 'schema:subjectOf'
         },
         cellar: FieldType.Key,
-        orderItemId: FieldType.Key
+        orderItemId: FieldType.Key,
+        rating: FieldType.Number
     }
 });

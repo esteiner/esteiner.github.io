@@ -34,6 +34,12 @@ class CellarPage extends BasePage {
     @state()
     private searchText: string = '';
 
+    @state()
+    private ratingBottle?: Bottle = undefined;
+
+    @state()
+    private selectedRating?: number = undefined;
+
     private cdi: CDI = CDI.getInstance();
 
     constructor() {
@@ -85,6 +91,26 @@ class CellarPage extends BasePage {
                   </div>
               </div>
           ` : ''}
+          ${this.ratingBottle ? html`
+              <div class="rating-overlay">
+                  <div class="rating-container">
+                      <div class="rating-title">Bewertung</div>
+                      <div class="rating-product">${this.ratingBottle.product?.name}</div>
+                      <div class="rating-buttons">
+                          ${[0, 1, 2, 3].map(value => html`
+                              <button
+                                  class="rating-button ${this.selectedRating === value ? 'selected' : ''}"
+                                  @click="${() => this.handleRatingSelect(value)}"
+                              >${value}</button>
+                          `)}
+                      </div>
+                      <div class="rating-actions">
+                          <button class="rating-action cancel" @click="${this.handleRatingCancel}">Abbrechen</button>
+                          <button class="rating-action confirm" @click="${this.handleRatingConfirm}">Altglass</button>
+                      </div>
+                  </div>
+              </div>
+          ` : ''}
           <main>
               <div class="bottles">
                     ${this.bottles.size > 0
@@ -95,7 +121,7 @@ class CellarPage extends BasePage {
                                             <li>
                                                 <bottle-component .bottle="${bottles[0]}">
                                                     ${bottles[0].price} ${bottles[0].priceCurrency}
-                                                    <button class="bottle-button" slot="count">${bottles.length}</button>
+                                                    <button @click="${() => this.handleBottleClick(bottles[0])}" class="bottle-button" slot="count">${bottles.length}</button>
                                                 </bottle-component>
                                             </li>
                                       `
@@ -200,6 +226,29 @@ class CellarPage extends BasePage {
         this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
     }
 
+    private handleBottleClick(bottle: Bottle): void {
+        this.ratingBottle = bottle;
+        this.selectedRating = bottle.rating;
+    }
+
+    private handleRatingSelect(rating: number): void {
+        this.selectedRating = rating;
+    }
+
+    private handleRatingCancel(): void {
+        this.ratingBottle = undefined;
+        this.selectedRating = undefined;
+    }
+
+    private async handleRatingConfirm(): Promise<void> {
+        if (this.ratingBottle) {
+            await this.cdi.getKellermeisterService().disposeBottleToAltglass(this.ratingBottle, this.selectedRating);
+            await this.loadBottles();
+        }
+        this.ratingBottle = undefined;
+        this.selectedRating = undefined;
+    }
+
     static get styles() {
         return [
             ...super.styles,
@@ -293,6 +342,113 @@ class CellarPage extends BasePage {
                 
                 .no-bottles {
                     text-align: center;
+                }
+
+                .rating-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(26, 25, 23, 0.4);
+                    z-index: 2000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    backdrop-filter: blur(4px);
+                }
+
+                .rating-container {
+                    width: calc(100% - 64px);
+                    max-width: 360px;
+                    background: var(--km-surface, white);
+                    border-radius: 12px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    padding: 20px;
+                    box-shadow: 0 16px 48px rgba(26, 25, 23, 0.15);
+                }
+
+                .rating-title {
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: var(--km-text, #1A1917);
+                    text-align: center;
+                    margin-bottom: 4px;
+                }
+
+                .rating-product {
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 14px;
+                    color: var(--km-text-muted, #8A8278);
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+
+                .rating-buttons {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 12px;
+                }
+
+                .rating-button {
+                    flex: 1;
+                    aspect-ratio: 1;
+                    border-radius: 50%;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text, #1A1917);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 20px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+                }
+
+                .rating-button:hover {
+                    border-color: var(--app-color-primary, #3A6B28);
+                }
+
+                .rating-button:active {
+                    transform: scale(0.94);
+                }
+
+                .rating-button.selected {
+                    background: var(--app-color-primary, #3A6B28);
+                    color: white;
+                    border-color: var(--app-color-primary, #3A6B28);
+                }
+
+                .rating-actions {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 12px;
+                    margin-top: 20px;
+                }
+
+                .rating-action {
+                    flex: 1;
+                    padding: 10px 16px;
+                    border-radius: 8px;
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: transform 0.15s ease, opacity 0.15s ease;
+                }
+
+                .rating-action:active {
+                    transform: scale(0.97);
+                    opacity: 0.85;
+                }
+
+                .rating-action.cancel {
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text-muted, #8A8278);
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                }
+
+                .rating-action.confirm {
+                    background: var(--app-color-primary, #3A6B28);
+                    color: white;
+                    border: 1.5px solid var(--app-color-primary, #3A6B28);
                 }
             `
         ];

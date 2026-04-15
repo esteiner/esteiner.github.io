@@ -250,6 +250,20 @@ export class KellermeisterService {
         }
     }
 
+    async disposeBottleToAltglass(bottle: Bottle, rating?: number) {
+        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
+        if (bottlesContainer) {
+            if (rating !== undefined) {
+                bottlesContainer.rateBottle(bottle, rating);
+            }
+            bottlesContainer.transferBottle(bottle, this.getAltglassId());
+            if (bottlesContainer.isDirty()) {
+                await bottlesContainer.save();
+                this.bottlesContainer = null;
+            }
+        }
+    }
+
     async transferBottles(bottles: Bottle[], cellarIds: string[]) {
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {

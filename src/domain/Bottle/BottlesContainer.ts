@@ -24,6 +24,10 @@ export class BottlesContainer extends Model {
         this.bottles.filter(bottle => bottle.id === transferedBottle.id).forEach(bottle => bottle.cellar = cellarId);
     }
 
+    public rateBottle(ratedBottle: Bottle, rating: number) {
+        this.bottles.filter(bottle => bottle.id === ratedBottle.id).forEach(bottle => bottle.rating = rating);
+    }
+
     public products(): Product[] {
         //console.log("products: bottles:", this.bottles);
         return Array.from(this.bottles.map(bottle => bottle.product).values());
