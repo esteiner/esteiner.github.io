@@ -236,6 +236,8 @@ export class KellermeisterService {
                     const orderItem: OrderItem = unprocessedOrderItems[i];
                     if (orderItem.orderQuantity) {
                         const product: Product = this.productFactory.createProduct(orderItem.product, productOrder);
+                        product.price = orderItem.price;
+                        product.priceCurrency = orderItem.priceCurrency;
                         products.push(product);
                         for (var q = 0; q < orderItem.orderQuantity; q++) {
                             const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);

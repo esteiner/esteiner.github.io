@@ -9,14 +9,17 @@ export default defineSolidModelSchema({
     rdfsClasses: ['schema:ListItem'],
 
     fields: {
-        price: FieldType.Number,
-        priceCurrency: FieldType.String,
         productUrl: {
             type: FieldType.Key,
             rdfProperty: 'schema:subjectOf'
         },
         cellar: FieldType.Key,
         orderItemId: FieldType.Key,
-        rating: FieldType.Number
+        rating: FieldType.Number,
+        // Legacy: price/priceCurrency moved to Product. Kept here only so old
+        // pods (where these fields were written on the ListItem) remain readable.
+        // New bottles do not write these — see Bottle.getPrice()/getPriceCurrency().
+        price: FieldType.Number,
+        priceCurrency: FieldType.String
     }
 });

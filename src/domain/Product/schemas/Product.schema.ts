@@ -19,6 +19,14 @@ export default defineSolidModelSchema({
             type: FieldType.Date,
             rdfProperty: 'schema:productionDate'
         },
+        price: {
+            type: FieldType.Number,
+            rdfProperty: 'schema:price'
+        },
+        priceCurrency: {
+            type: FieldType.String,
+            rdfProperty: 'schema:priceCurrency'
+        },
         // vocab.kellermeister.ch/wine/
         hersteller: {
             type: FieldType.String,

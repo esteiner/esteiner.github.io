@@ -94,7 +94,7 @@ class SearchPage extends BasePage {
                             ${[...byProduct.values()].map(bottles => html`
                                 <li>
                                     <bottle-component .bottle="${bottles[0]}">
-                                        ${bottles[0].price} ${bottles[0].priceCurrency}
+                                        ${bottles[0].getPrice()} ${bottles[0].getPriceCurrency()}
                                         <button class="bottle-button" slot="count">${bottles.length}</button>
                                     </bottle-component>
                                 </li>

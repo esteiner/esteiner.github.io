@@ -6,8 +6,6 @@ export class BottleFactory {
 
     public createFromOrderItem(product: Product, orderItem: OrderItem): Bottle {
         const bottle = this.createFromProduct(product);
-        bottle.price = orderItem.price;
-        bottle.priceCurrency = orderItem.priceCurrency;
         bottle.orderItemId = orderItem?.id;
         return bottle;
     }

@@ -25,6 +25,14 @@ export class Bottle extends Model {
             .usingSameDocument(true);
     }
 
+    public getPrice(): number | undefined {
+        return this.product?.price ?? this.price;
+    }
+
+    public getPriceCurrency(): string | undefined {
+        return this.product?.priceCurrency ?? this.priceCurrency;
+    }
+
     // public cellarRelationship() : Relation {
     //     return this
     //         .belongsToOne(Cellar, 'cellarUrl')

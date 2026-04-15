@@ -120,7 +120,7 @@ class CellarPage extends BasePage {
                                         html`
                                             <li>
                                                 <bottle-component .bottle="${bottles[0]}">
-                                                    ${bottles[0].price} ${bottles[0].priceCurrency}
+                                                    ${bottles[0].getPrice()} ${bottles[0].getPriceCurrency()}
                                                     <button @click="${() => this.handleBottleClick(bottles[0])}" class="bottle-button" slot="count">${bottles.length}</button>
                                                 </bottle-component>
                                             </li>
