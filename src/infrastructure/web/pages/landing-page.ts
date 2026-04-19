@@ -129,7 +129,7 @@ class LandingPage extends BasePage {
 
     async loadCellars() {
         if (this.isLoggedIn) {
-            this.cellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
+            this.cellars = await this.cdi.getKellermeisterService().getCellars();
         }
     }
 
@@ -187,11 +187,9 @@ class LandingPage extends BasePage {
                         ${this.cellars.map(
                                 cellar =>
                                         html`
-                                            <kellermeister-button text="${cellar.name}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="cellar"></kellermeister-button>
+                                            <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="${this.cellarIconName(cellar.id)}"></kellermeister-button>
                                         `
                         )}
-                        <kellermeister-button text="Kellerarbeit" @click="${this.handleCellarWorkClick}" ghost icon="work"></kellermeister-button>
-                        <kellermeister-button text="Altglass" @click="${() => this.handleCellarClick(this.cdi?.getKellermeisterService().getAltglassId())}" ghost icon="trash"></kellermeister-button>
                     </div>
                 </main>
                 <kellermeister-footer></kellermeister-footer>
@@ -310,6 +308,24 @@ class LandingPage extends BasePage {
         }
     }
 
+    private cellarIconName(cellarId: string): string {
+        if (cellarId === this.cdi?.getKellermeisterService().getCellarWorkId()) {
+            return "work";
+        } else if (cellarId === this.cdi?.getKellermeisterService().getAltglassId()) {
+            return "trash";
+        } else {
+            return "cellar";
+        }
+    }
+
+    private cellarName(cellar: Cellar): string {
+        if (cellar.id === this.cdi?.getKellermeisterService().getCellarWorkId()) {
+            return "Kellerarbeit";
+        } else {
+            return cellar.name;
+        }
+    }
+
     private handleWebIdCancel() {
         this.showWebIdDialog = false;
         this._webIdResolve?.(null);
@@ -317,11 +333,15 @@ class LandingPage extends BasePage {
     }
 
     private async handleCellarClick(cellarId: string) {
-        Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
+        if (cellarId.endsWith("cellarWork#it")) {
+            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cdi?.getKellermeisterService().getCellarWorkId()}`}));
+        } else {
+            Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
+        }
     }
 
     private async handleNewCellarClick() {
-        const name: string | null = prompt("Name des neuen Kellers", "Keller"+(this.cellars.length+1));
+        const name: string | null = prompt("Name des neuen Kellers", "Keller"+(this.cellars.length-1));
         if (name) {
             await this.cdi.getKellermeisterService().createCellar(name);
             this.loadCellars();
