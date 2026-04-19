@@ -24,7 +24,7 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
         }
     }
 
-    async createBottles(): Promise<BottlesContainer> {
+    async createBottles(): Promise<void> {
         console.log("createBottles");
         var bottles = new BottlesContainer({
             url: this.bottlesUrl,

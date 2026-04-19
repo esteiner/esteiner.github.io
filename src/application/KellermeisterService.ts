@@ -154,6 +154,19 @@ export class KellermeisterService {
         return this.cachedCellars.filter(cellar => this.isVisible(cellar));
     }
 
+    async getCellars(): Promise<Cellar[]> {
+        var cellars: Cellar[] = await this.getAllVisibleCellars();
+        const cellarWork = await this.getCellarCellarWork();
+        if (cellarWork) {
+            cellars.push(cellarWork);
+        }
+        const cellarAltglas = await this.getCellarAltglass();
+        if (cellarAltglas) {
+            cellars.push(cellarAltglas);
+        }
+        return cellars;
+    }
+
     isVisible(cellar: Cellar): boolean {
         if (cellar.displayOrder) {
             return cellar.displayOrder > 0;
@@ -209,9 +222,10 @@ export class KellermeisterService {
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
         if (unprocessedOrders.length > 0) {
             await this.loadBottles();
-            if (this.bottlesContainer) {
-                unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, this.bottlesContainer));
-                if (this.bottlesContainer.isDirty()) {
+            const bottles = this.bottlesContainer;
+            if (bottles) {
+                unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottles));
+                if (bottles.isDirty()) {
                     this.saveBottles();
                     this.moveProcessedOrders(unprocessedOrders);
                     console.log("ingestOrdersFromInbox: processed orders:", unprocessedOrders.length);
@@ -293,8 +307,10 @@ export class KellermeisterService {
 
     private async saveBottles(): Promise<void> {
         console.log("saveBottles: to repository");
-        await this.bottlesContainer.save();
-        await this.loadBottles();
+        if (this.bottlesContainer) {
+            await this.bottlesContainer.save();
+            await this.loadBottles();
+        }
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
