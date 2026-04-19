@@ -19,7 +19,8 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
             return bottlesContainer;
         } else {
             console.log("fetchBottlesContainer: not found");
-            return await this.createBottles();
+            await this.createBottles();
+            return this.fetchBottles();
         }
     }
 
@@ -29,6 +30,6 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
             url: this.bottlesUrl,
             name: 'Bottles'
         });
-        return bottles.save();
+        await bottles.save();
     }
 }

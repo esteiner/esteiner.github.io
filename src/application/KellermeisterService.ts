@@ -205,19 +205,16 @@ export class KellermeisterService {
     async ingestOrdersFromInbox(): Promise<Cellar> {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
         const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();
-        console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
 
+        console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
         if (unprocessedOrders.length > 0) {
-            const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-            if (bottlesContainer) {
-                unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottlesContainer));
-                if (bottlesContainer.isDirty()) {
-                    this.bottlesContainer = null;
-                    await bottlesContainer.save();
+            await this.loadBottles();
+            if (this.bottlesContainer) {
+                unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, this.bottlesContainer));
+                if (this.bottlesContainer.isDirty()) {
+                    this.saveBottles();
                     this.moveProcessedOrders(unprocessedOrders);
                     console.log("ingestOrdersFromInbox: processed orders:", unprocessedOrders.length);
-                } else {
-                    console.log("ingestOrderItems: no orders processed");
                 }
             }
         }
@@ -280,6 +277,24 @@ export class KellermeisterService {
                 return null;
             }
         }
+    }
+
+    private async loadBottles(): Promise<BottlesContainer | null> {
+        console.log("loadBottles: from repository");
+        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
+        if (bottlesContainer) {
+            this.bottlesContainer = bottlesContainer;
+            return this.bottlesContainer;
+        } else {
+            console.log("fetchBottles: bottles container not found")
+            return null;
+        }
+    }
+
+    private async saveBottles(): Promise<void> {
+        console.log("saveBottles: to repository");
+        await this.bottlesContainer.save();
+        await this.loadBottles();
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
