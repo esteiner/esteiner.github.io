@@ -57,7 +57,7 @@ class ProductComponent extends BaseComponent {
                 </div>
                 <div class="group">
                     <label>Jahrgang</label>
-                    <span class="value">${this.renderDate(this.product?.productionDate)}</span>
+                    <span class="value">${this.renderYear(this.product?.productionDate)}</span>
                 </div>
                 <div class="group">
                     <label>Flaschengrösse</label>
