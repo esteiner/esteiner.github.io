@@ -322,7 +322,7 @@ class LandingPage extends BasePage {
         if (cellar.id === this.cdi?.getKellermeisterService().getCellarWorkId()) {
             return "Kellerarbeit";
         } else {
-            return cellar.name;
+            return cellar.name as string;
         }
     }
 
@@ -346,10 +346,6 @@ class LandingPage extends BasePage {
             await this.cdi.getKellermeisterService().createCellar(name);
             this.loadCellars();
         }
-    }
-
-    private async handleCellarWorkClick() {
-        Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cdi?.getKellermeisterService().getCellarWorkId()}`}));
     }
 
     static get styles() {

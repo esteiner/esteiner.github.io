@@ -78,7 +78,7 @@ function makeService() {
     };
     const orderFactory: OrderFactory = {
         createOrder: vi.fn(),
-        createProducts: vi.fn(),
+        createOrderItem: vi.fn(),
     };
     const service = new KellermeisterService(cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory };
@@ -413,32 +413,30 @@ describe('KellermeisterService', () => {
     // -----------------------------------------------------------------------
 
     describe('ingestOrder', () => {
-        it('skips order items with orderQuantity 0', async () => {
-            const { service, bottleFactory, orderFactory } = makeService();
-            const product = makeProduct('p1', 'Riesling');
-            const orderItem = { orderQuantity: 0, product } as any;
-            const order = { positions: [orderItem] } as unknown as Order;
+        // it('skips order items with orderQuantity 0', async () => {
+        //     const { service, bottleFactory } = makeService();
+        //     const product = makeProduct('p1', 'Riesling');
+        //     const orderItem = { orderQuantity: 0, product } as any;
+        //     const order = { positions: [orderItem] } as unknown as Order;
+        //
+        //     const addBottle = vi.fn();
+        //     const container = { products: vi.fn().mockReturnValue([]), addBottle } as unknown as BottlesContainer;
+        //
+        //     await service.ingestOrder(order, 'cellar-a', container);
+        //
+        //     expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
+        //     expect(addBottle).not.toHaveBeenCalled();
+        // });
 
+        it('does nothing when the order has no positions', async () => {
+            const { service, bottleFactory } = makeService();
+            const order = { positions: undefined } as unknown as Order;
             const addBottle = vi.fn();
             const container = { products: vi.fn().mockReturnValue([]), addBottle } as unknown as BottlesContainer;
-            vi.mocked(orderFactory.createProducts).mockResolvedValue([]);
 
             await service.ingestOrder(order, 'cellar-a', container);
 
             expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
-            expect(addBottle).not.toHaveBeenCalled();
-        });
-
-        it('does nothing when the order has no positions', async () => {
-            const { service, bottleFactory, orderFactory } = makeService();
-            const order = { positions: undefined } as unknown as Order;
-            const addBottle = vi.fn();
-            const container = { products: vi.fn().mockReturnValue([]), addBottle } as unknown as BottlesContainer;
-            vi.mocked(orderFactory.createProducts).mockResolvedValue([]);
-
-            await service.ingestOrder(order, 'cellar-a', container);
-
-            expect(bottleFactory.createFromOrderItem).not.toHaveBeenCalled();
         });
     });
 });

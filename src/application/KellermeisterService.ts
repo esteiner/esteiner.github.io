@@ -12,6 +12,7 @@ import {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
+import {OrderItem} from "../domain/Order/OrderItem";
 
 /**
  * Application Use Case: Get Profile
@@ -101,6 +102,7 @@ export class KellermeisterService {
 
         for (const bottle of bottles) {
             if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.product)) {
+                console.log("bottlesFromCellarGroupedByProduct", bottle.product.id);
                 if (!grouped.has(bottle.product.id)) {
                     grouped.set(bottle.product.id, []);
                 }
@@ -237,13 +239,30 @@ export class KellermeisterService {
 
     ingestOrder(order: Order, cellarForCellarwork: string, bottlesContainer: BottlesContainer) {
         console.log("ingestOrder: order:", order);
-        const productsOfOrder: Product[] = this.orderFactory.createProducts(order, this.productFactory);
-        for (var i: number = 0; i < productsOfOrder.length; i++) {
-            console.log("ingestOrder2: create bottle for:", productsOfOrder[i]);
-            const bottle: Bottle = this.bottleFactory.createFromProduct(productsOfOrder[i]);
-            bottle.cellar = cellarForCellarwork;
-            bottlesContainer.addBottle(bottle);
+        this.addBottles(bottlesContainer, order, cellarForCellarwork);
+    }
+
+    addBottles(bottlesContainer: BottlesContainer, order: Order, cellarForCellarwork: string) {
+        const newOrder: Order = this.orderFactory.createOrder(order);
+
+        if (order.positions) {
+            const newPositions: OrderItem[] = new Array();
+            for (const orderItem of order.positions) {
+                if (orderItem.orderQuantity) {
+                    const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
+                    newPositions.push(newOrderItem);
+
+                    const product = this.productFactory.createProduct(orderItem.product, newOrderItem);
+                    for (let q = 0; q < orderItem.orderQuantity; q++) {
+                        const bottle: Bottle = this.bottleFactory.createFromProduct(product);
+                        bottle.cellar = cellarForCellarwork;
+                        bottlesContainer.addBottle(bottle);
+                    }
+                }
+            }
+            newOrder.positions = newPositions;
         }
+
     }
 
     async disposeBottleToAltglass(bottle: Bottle, rating?: number) {
