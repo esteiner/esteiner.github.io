@@ -1,9 +1,9 @@
 import {Product} from "./Product.ts";
-import {Order} from "../Order/Order.ts";
+import {OrderItem} from "../Order/OrderItem.ts";
 
 export class ProductFactory {
 
-    public createProduct(product: Product, order:Order): Product {
+    public createProduct(product: Product, orderItem: OrderItem): Product {
         const newProduct: Product = new Product();
         newProduct.name = product.name;
         newProduct.productionDate = product.productionDate;
@@ -20,8 +20,10 @@ export class ProductFactory {
         newProduct.biologisch = product.biologisch;
         newProduct.trinkfensterVon = product.trinkfensterVon;
         newProduct.trinkfensterBis = product.trinkfensterBis;
-        newProduct.relatedOrder.addRelated(order);
-        //const relation = newProduct.getRelation('order');
+
+        newProduct.relatedOrderItem.addRelated(orderItem);
+        newProduct.price = orderItem.price;
+        newProduct.priceCurrency = orderItem.priceCurrency;
         console.log("createProduct: created:", newProduct);
         return newProduct;
     }

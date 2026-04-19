@@ -3,14 +3,13 @@ import type {Cellar} from "../domain/Cellar/Cellar.ts";
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
 import {Order} from "../domain/Order/Order.ts";
-import {OrderFactory} from "../domain/Order/OrderFactory.ts";
-import type {OrderItem} from "../domain/Order/OrderItem.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import {Product} from "../domain/Product/Product.ts";
 import {ProductFactory} from "../domain/Product/ProductFactory.ts";
+import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
 
@@ -24,7 +23,7 @@ export class KellermeisterService {
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
-    constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private productFactory: ProductFactory, private orderFactory: OrderFactory) {
+    constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
 
     getAltglassId(): string {
@@ -225,30 +224,14 @@ export class KellermeisterService {
         return cellarForCellarwork;
     }
 
-    async ingestOrder(order: Order, cellarForCellarwork: string, bottlesContainer: BottlesContainer) {
+    ingestOrder(order: Order, cellarForCellarwork: string, bottlesContainer: BottlesContainer) {
         console.log("ingestOrder: order:", order);
-        if (order.positions) {
-            const products: Product[] = bottlesContainer.products();
-            const productOrder: Order = this.orderFactory.createOrder(order);
-            const unprocessedOrderItems: OrderItem[] = order.positions;
-            for (var i = 0; i < unprocessedOrderItems.length; i++) {
-                if (cellarForCellarwork != undefined) {
-                    const orderItem: OrderItem = unprocessedOrderItems[i];
-                    if (orderItem.orderQuantity) {
-                        const product: Product = this.productFactory.createProduct(orderItem.product, productOrder);
-                        product.price = orderItem.price;
-                        product.priceCurrency = orderItem.priceCurrency;
-                        products.push(product);
-                        for (var q = 0; q < orderItem.orderQuantity; q++) {
-                            const bottle: Bottle = this.bottleFactory.createFromOrderItem(product, orderItem);
-                            bottle.cellar = cellarForCellarwork;
-                            bottlesContainer.addBottle(bottle);
-                        }
-                    }
-                } else {
-                    console.log("ingestOrderItems: cellar cellarwork not found for:", cellarForCellarwork);
-                }
-            }
+        const productsOfOrder: Product[] = this.orderFactory.createProducts(order, this.productFactory);
+        for (var i: number = 0; i < productsOfOrder.length; i++) {
+            console.log("ingestOrder2: create bottle for:", productsOfOrder[i]);
+            const bottle: Bottle = this.bottleFactory.createFromProduct(productsOfOrder[i]);
+            bottle.cellar = cellarForCellarwork;
+            bottlesContainer.addBottle(bottle);
         }
     }
 

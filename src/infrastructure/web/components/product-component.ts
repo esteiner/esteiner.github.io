@@ -1,7 +1,7 @@
+import {css, html, nothing} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Product} from "../../../domain/Product/Product.ts";
-import {css, html} from "lit";
 
 @customElement('product-component')
 class ProductComponent extends BaseComponent {
@@ -101,14 +101,25 @@ class ProductComponent extends BaseComponent {
                 </div>
                 <div class="group">
                     <label>Trinkfenster</label>
-                    <span class="value">${this.renderDate(this.product?.trinkfensterVon)} – ${this.renderDate(this.product?.trinkfensterBis)}</span>
+                    <span class="value">${this.renderYear(this.product?.trinkfensterVon)} – ${this.renderYear(this.product?.trinkfensterBis)}</span>
+                </div>
+                <div class="group">
+                    <label>Quelle</label>
+                    <span class="value">${this.product?.orderItem?.order?.seller?.name}${this.renderDate(this.product?.orderItem?.order?.orderDate)}</span>
                 </div>
             </div>
         `
     }
 
-    private renderDate(date: Date | undefined) {
+    private renderYear(date: Date | undefined) {
         return html`${date?.getFullYear()}`;
+    }
+
+    private renderDate(date: Date | undefined) {
+        return html`${date? 
+            html`, ${date?.getDay()}.${date?.getMonth()}.${date?.getFullYear()}`
+            : nothing
+        }`;
     }
 
 }

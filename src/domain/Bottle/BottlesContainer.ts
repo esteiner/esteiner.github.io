@@ -28,6 +28,7 @@ export class BottlesContainer extends Model {
         this.bottles.filter(bottle => bottle.id === ratedBottle.id).forEach(bottle => bottle.rating = rating);
     }
 
+    // ToDo: delete
     public products(): Product[] {
         //console.log("products: bottles:", this.bottles);
         return Array.from(this.bottles.map(bottle => bottle.product).values());

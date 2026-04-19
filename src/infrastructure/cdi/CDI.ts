@@ -1,16 +1,16 @@
-import {KellermeisterService} from "../../application/KellermeisterService.ts";
-import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {SolidCellarRepository} from "../solid/SolidCellarRepository.ts";
 import {SolidPodService} from "../solid/SolidPodService.ts";
-import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
 import {SolidOrderRespository} from "../solid/SolidOrderRespository.ts";
-import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
-import {SolidBottlesContainerRepository} from "../solid/SolidBottlesContainerRepository.ts";
-import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
-import {ProductFactory} from "../../domain/Product/ProductFactory.ts";
-import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
-import type {SolidService} from "../../application/authentication/SolidService.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
+import {SolidBottlesContainerRepository} from "../solid/SolidBottlesContainerRepository.ts";
+import type {SolidService} from "../../application/authentication/SolidService.ts";
+import {KellermeisterService} from "../../application/KellermeisterService.ts";
+import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
+import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
+import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
+import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
+import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
+import {ProductFactory} from "../../domain/Product/ProductFactory.ts";
 
 /**
  * Dependency Injection Container.
@@ -88,7 +88,7 @@ export class CDI {
             this.orderRepository = new SolidOrderRespository(this.storageUrl);
             // Initialize services
             this.solidPodService = new SolidPodService(this.storageUrl);
-            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.productFactory, this.orderFactory);
+            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
         }
      }
 

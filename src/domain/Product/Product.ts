@@ -1,21 +1,21 @@
 import Model from "./schemas/Product.schema";
-import {Order} from "../Order/Order.ts";
+import {OrderItem} from "../Order/OrderItem.ts";
 import type {Relation} from "soukai";
 import type {SolidBelongsToOneRelation} from "soukai-solid";
 
 export class Product extends Model {
     static history = false;
 
-    declare public order: Order;
-    declare public relatedOrder: SolidBelongsToOneRelation<
+    declare public orderItem: OrderItem;
+    declare public relatedOrderItem: SolidBelongsToOneRelation<
         Product,
-        Order,
-        typeof Order
+        OrderItem,
+        typeof OrderItem
     >;
 
-    public orderRelationship() : Relation {
+    public orderItemRelationship() : Relation {
         return this
-            .belongsToOne(Order, 'orderUrl')
+            .belongsToOne(OrderItem, 'orderItemUrl')
             .usingSameDocument(true);
     }
 

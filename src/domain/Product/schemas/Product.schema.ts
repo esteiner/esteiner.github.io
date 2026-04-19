@@ -80,9 +80,9 @@ export default defineSolidModelSchema({
             type: FieldType.Date,
             rdfProperty: 'km:trinkfensterBis'
         },
-        orderUrl: {
+        orderItemUrl: {
             type: FieldType.Key,
-            rdfProperty: 'schema:subjectOf'
+            rdfProperty: 'km:orderItem'
         }
     }
 });
