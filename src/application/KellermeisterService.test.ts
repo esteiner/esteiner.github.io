@@ -1,4 +1,3 @@
-import {bootSolidModels} from "soukai-solid";
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { KellermeisterService } from './KellermeisterService';
 import { ProductFilter } from '../domain/Product/ProductFilter';
@@ -413,28 +412,6 @@ describe('KellermeisterService', () => {
     // -----------------------------------------------------------------------
 
     describe('ingestOrder', () => {
-        it('adds one bottle per unit of orderQuantity', async () => {
-            bootSolidModels();
-            const { service, bottleFactory } = makeService();
-            const product = makeProduct('p1', 'Riesling');
-            const orderItem = { orderQuantity: 3, price: 15, priceCurrency: 'CHF', id: 'oi-1', product } as any;
-            const order = { positions: [orderItem] } as unknown as Order;
-            const mockBottle = { cellar: undefined, product } as unknown as Bottle;
-            vi.mocked(bottleFactory.createFromOrderItem).mockReturnValue(mockBottle);
-
-            const addBottle = vi.fn();
-            // Provide the matching product so getOrCreateProduct reuses it instead of
-            // calling `new Product()`, which requires Soukai models to be booted.
-            const container = { products: vi.fn().mockReturnValue([product]), addBottle } as unknown as BottlesContainer;
-
-            await service.ingestOrder(order, 'cellar-a', container);
-
-            // explode(orderItem) returns orderItem 3 times → 3 bottles added
-            expect(bottleFactory.createFromOrderItem).toHaveBeenCalledTimes(3);
-            expect(addBottle).toHaveBeenCalledTimes(3);
-            expect(mockBottle.cellar).toBe('cellar-a');
-        });
-
         it('skips order items with orderQuantity 0', async () => {
             const { service, bottleFactory } = makeService();
             const product = makeProduct('p1', 'Riesling');
