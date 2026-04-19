@@ -117,7 +117,7 @@ class ProductComponent extends BaseComponent {
 
     private renderDate(date: Date | undefined) {
         return html`${date? 
-            html`, ${date?.getDay()}.${date?.getMonth()}.${date?.getFullYear()}`
+            html`, ${date.toLocaleDateString()}`
             : nothing
         }`;
     }
