@@ -223,23 +223,24 @@ export class KellermeisterService {
 
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
         if (unprocessedOrders.length > 0) {
-            await this.loadBottles();
-            const bottles = this.bottlesContainer;
-            if (bottles) {
-                unprocessedOrders.forEach(order => this.ingestOrder(order, cellarForCellarwork.id, bottles));
-                if (bottles.isDirty()) {
-                    this.saveBottles();
-                    this.moveProcessedOrders(unprocessedOrders);
-                    console.log("ingestOrdersFromInbox: processed orders:", unprocessedOrders.length);
-                }
+            for (const order of unprocessedOrders) {
+                await this.ingestOrder(order, cellarForCellarwork.id);
             }
         }
         return cellarForCellarwork;
     }
 
-    ingestOrder(order: Order, cellarForCellarwork: string, bottlesContainer: BottlesContainer) {
+    async ingestOrder(order: Order, cellarForCellarwork: string) {
         console.log("ingestOrder: order:", order);
-        this.addBottles(bottlesContainer, order, cellarForCellarwork);
+        const bottlesContainer = await this.loadBottles();
+        if (bottlesContainer) {
+            this.addBottles(bottlesContainer, order, cellarForCellarwork);
+            if (bottlesContainer.isDirty()) {
+                await this.saveBottles();
+                await this.moveProcessedOrders(new Array(order));
+                console.log("ingestOrdersFromInbox: processed order:", order);
+            }
+        }
     }
 
     addBottles(bottlesContainer: BottlesContainer, order: Order, cellarForCellarwork: string) {
@@ -325,9 +326,9 @@ export class KellermeisterService {
     }
 
     private async saveBottles(): Promise<void> {
-        console.log("saveBottles: to repository");
         if (this.bottlesContainer) {
             await this.bottlesContainer.save();
+            console.log("saveBottles: saved to repository");
             await this.loadBottles();
         }
     }
@@ -394,7 +395,9 @@ export class KellermeisterService {
     }
 
     private async moveProcessedOrders(unprocessedOrders: Order[]) {
-        unprocessedOrders.forEach(order => this.moveProcessedOrder(order));
+        for (const order of unprocessedOrders) {
+            await this.moveProcessedOrder(order);
+        }
     }
 
     private async moveProcessedOrder(unprocessedOrder: Order) {

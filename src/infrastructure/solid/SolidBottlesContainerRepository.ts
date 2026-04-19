@@ -14,22 +14,22 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
     }
 
     async fetchBottles(): Promise<BottlesContainer | null> {
+        console.log("fetchBottlesContainer: ", this.bottlesUrl);
         const bottlesContainer: BottlesContainer | null = await BottlesContainer.find(this.bottlesUrl);
         if (bottlesContainer) {
             return bottlesContainer;
         } else {
-            console.log("fetchBottlesContainer: not found");
-            await this.createBottles();
-            return this.fetchBottles();
+            console.log("fetchBottlesContainer: not found", this.bottlesUrl);
+            return await this.createBottles();
         }
     }
 
-    async createBottles(): Promise<void> {
-        console.log("createBottles");
+    async createBottles(): Promise<BottlesContainer> {
+        console.log("createBottles: ", this.bottlesUrl);
         var bottles = new BottlesContainer({
             url: this.bottlesUrl,
             name: 'Bottles'
         });
-        await bottles.save();
+        return await bottles.save();
     }
 }

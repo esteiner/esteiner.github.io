@@ -431,10 +431,8 @@ describe('KellermeisterService', () => {
         it('does nothing when the order has no positions', async () => {
             const { service, bottleFactory } = makeService();
             const order = { positions: undefined } as unknown as Order;
-            const addBottle = vi.fn();
-            const container = { products: vi.fn().mockReturnValue([]), addBottle } as unknown as BottlesContainer;
 
-            await service.ingestOrder(order, 'cellar-a', container);
+            await service.ingestOrder(order, 'cellar-a');
 
             expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
         });

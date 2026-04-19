@@ -42,6 +42,9 @@ export class SolidPodService {
                 await createContainerAt(url.toString(), { fetch: fetch });
                 console.log("setupFolder: folder created", url.toString());
             }
+            else {
+                console.log("setupFolder: folder found", url.toString());
+            }
         }
         catch (e) {
             console.log("setupFolder: failed to create folder", url.toString(), e);
