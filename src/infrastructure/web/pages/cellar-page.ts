@@ -1,5 +1,6 @@
 import {css, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {Cellar} from "../../../domain/Cellar/Cellar.ts";
@@ -23,9 +24,6 @@ class CellarPage extends BasePage {
     cellar?: Cellar = undefined;
 
     @state()
-    bottles: Map<string, Bottle[]>;
-
-    @state()
     filter: ProductFilter;
 
     @state()
@@ -42,10 +40,16 @@ class CellarPage extends BasePage {
 
     private cdi: CDI = CDI.getInstance();
 
+    private _bottlesTask = new Task(this, async () => {
+        if (this.cellar) {
+            return await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        }
+        return new Map<string, Bottle[]>();
+    });
+
     constructor() {
         super();
         this.filter = new ProductFilter();
-        this.bottles = new Map<string, Bottle[]>;
     }
 
     updated(changedProperties: Map<string, unknown>) {
@@ -61,7 +65,7 @@ class CellarPage extends BasePage {
             this.searchText = this.filter.textFilter;
         }
         await this.loadCellar(cellarId as string);
-        await this.loadBottles();
+        this.loadBottles();
     }
 
     render() {
@@ -112,26 +116,26 @@ class CellarPage extends BasePage {
               </div>
           ` : ''}
           <main>
-              <div class="bottles">
-                    ${this.bottles.size > 0
-                            ? html`
-                              ${[...this.bottles.values()].map(
-                                    bottles =>
+                    ${this._bottlesTask.render({
+                        pending: () => html`<div class="spinner"></div>`,
+                        complete: (bottles) => bottles.size > 0
+                            ? html`<div class="bottles">
+                              ${[...bottles.values()].map(
+                                    bottleGroup =>
                                         html`
                                             <li>
-                                                <bottle-component .bottle="${bottles[0]}">
-                                                    ${bottles[0].getPrice()} ${bottles[0].getPriceCurrency()}
-                                                    <button @click="${() => this.handleBottleClick(bottles[0])}" class="bottle-button" slot="count">${bottles.length}</button>
+                                                <bottle-component .bottle="${bottleGroup[0]}">
+                                                    ${bottleGroup[0].getPrice()} ${bottleGroup[0].getPriceCurrency()}
+                                                    <button @click="${() => this.handleBottleClick(bottleGroup[0])}" class="bottle-button" slot="count">${bottleGroup.length}</button>
                                                 </bottle-component>
                                             </li>
                                       `
                             )}
-                            `
+                            </div>`
                             : html`
                               <p class="no-bottles">Keine Flaschen in diesem Keller gefunden.</p>
-                            `
-                    }
-              </div>
+                            `,
+                    })}
           </main>
           <footer>
               <kellermeister-footer></kellermeister-footer>
@@ -139,9 +143,9 @@ class CellarPage extends BasePage {
     `;
     }
 
-    private async loadBottles() {
+    private loadBottles() {
         if (this.cellar) {
-            this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+            this._bottlesTask.run();
         } else {
             console.log("loadBottle: failed, because cellar is undefined!");
         }
@@ -172,28 +176,28 @@ class CellarPage extends BasePage {
         }
     }
 
-    private async handleSprudelFilterClick(): Promise<void> {
+    private handleSprudelFilterClick(): void {
         this.filter.toggleSprudelFilter();
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
-    private async handleRedFilterClick(): Promise<void> {
+    private handleRedFilterClick(): void {
         this.filter.toggleRedFilter();
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
-    private async handleWhiteFilterClick(): Promise<void> {
+    private handleWhiteFilterClick(): void {
         this.filter.toggleWhiteFilter();
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
-    private async handleRoseFilterClick(): Promise<void> {
+    private handleRoseFilterClick(): void {
         this.filter.toggleRoseFilter();
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
     private handleTextFilterClick(): void {
@@ -205,25 +209,25 @@ class CellarPage extends BasePage {
         }
     }
 
-    private async handleSearchInput(e: InputEvent): Promise<void> {
+    private handleSearchInput(e: InputEvent): void {
         this.searchText = (e.target as HTMLInputElement).value;
         this.filter.textFilter = this.searchText || null;
         this.filter.isText = !!this.searchText;
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
     private handleSearchClose(): void {
         this.showSearchInput = false;
     }
 
-    private async handleSearchClear(): Promise<void> {
+    private handleSearchClear(): void {
         this.showSearchInput = false;
         this.filter.textFilter = null;
         this.filter.isText = false;
         this.searchText = '';
         this.updateUrl();
-        this.bottles = await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
+        this.loadBottles();
     }
 
     private handleBottleClick(bottle: Bottle): void {
@@ -243,7 +247,7 @@ class CellarPage extends BasePage {
     private async handleRatingConfirm(): Promise<void> {
         if (this.ratingBottle) {
             await this.cdi.getKellermeisterService().disposeBottleToAltglass(this.ratingBottle, this.selectedRating);
-            await this.loadBottles();
+            this.loadBottles();
         }
         this.ratingBottle = undefined;
         this.selectedRating = undefined;
@@ -340,6 +344,21 @@ class CellarPage extends BasePage {
                     border-color: var(--app-color-primary, #3A6B28);
                 }
                 
+                /* Spinner */
+                .spinner {
+                    width: 28px;
+                    height: 28px;
+                    border: 3px solid var(--km-border, #E4DFD7);
+                    border-top-color: var(--app-color-primary, #3A6B28);
+                    border-radius: 50%;
+                    animation: spin 0.7s linear infinite;
+                    margin: 16px auto;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+
                 .no-bottles {
                     text-align: center;
                 }
