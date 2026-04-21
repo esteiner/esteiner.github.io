@@ -281,16 +281,21 @@ export class KellermeisterService {
     }
 
     async transferBottles(bottles: Bottle[], cellarIds: string[]) {
+        console.log("transferBottles: checking number of bottles", bottles.length);
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
+        var transferred: number = 0;
         if (bottlesContainer) {
             for (var i = 0; i < bottles.length; i++) {
                 if (cellarIds[i] != undefined) {
                     bottlesContainer.transferBottle(bottles[i], cellarIds[i]);
+                    transferred++;
                 }
             }
         }
         if (bottlesContainer?.isDirty) {
+            console.log("transferBottles: saving number of bottles", transferred);
             await bottlesContainer.save();
+            console.log("transferBottles: saved", transferred);
             this.bottlesContainer = null;
         }
     }

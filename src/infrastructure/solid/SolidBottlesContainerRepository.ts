@@ -14,9 +14,10 @@ export class SolidBottlesContainerRepository implements BottlesContainerReposito
     }
 
     async fetchBottles(): Promise<BottlesContainer | null> {
-        console.log("fetchBottlesContainer: ", this.bottlesUrl);
+        console.log("fetchBottlesContainer: from", this.bottlesUrl);
         const bottlesContainer: BottlesContainer | null = await BottlesContainer.find(this.bottlesUrl);
         if (bottlesContainer) {
+            console.log("fetchBottlesContainer: fetched number of bottles", bottlesContainer.bottles.length);
             return bottlesContainer;
         } else {
             console.log("fetchBottlesContainer: not found", this.bottlesUrl);

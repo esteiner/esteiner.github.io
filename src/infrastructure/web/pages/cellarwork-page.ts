@@ -281,6 +281,8 @@ class CellarWorkPage extends BasePage {
     }
 
     private async handleIngestClick(e: Event) {
+        console.log("handleIngestClick: number of bottles: ", this.cellarIds.length);
+        console.log("handleIngestClick: number of bottles: ", this.cellarIds);
         e.preventDefault()
         await this.cdi.getKellermeisterService().transferBottles(this.bottles, this.cellarIds);
         if (this.sourceCellar) {
