@@ -1,3 +1,5 @@
 import Model from "./schemas/Organization.schema";
 
-export class Seller extends Model {}
+export class Seller extends Model {
+    static history = false;
+}

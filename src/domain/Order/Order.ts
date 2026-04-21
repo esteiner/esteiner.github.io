@@ -5,6 +5,7 @@ import {Seller} from "./Seller.ts";
 import type {Customer} from "./Customer.ts";
 
 export class Order extends SolidModel {
+    static history = false;
 
     // relationships can't be defined in schema: https://soukai.js.org/guide/advanced/typescript.html#typescript
     declare public customer?: Customer;

@@ -5,6 +5,7 @@ import type {Product} from "../Product/Product.ts";
 
 export class BottlesContainer extends Model {
     static rdfsClasses = ['https://schema.org/Collection'];
+    static history = false;
 
     declare public bottles: Bottle[];
 

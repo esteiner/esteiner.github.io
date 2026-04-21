@@ -1,3 +1,5 @@
 import Model from "./schemas/Room.schema";
 
-export class Cellar extends Model {}
+export class Cellar extends Model {
+    static history = false;
+}

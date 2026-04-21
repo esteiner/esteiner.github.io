@@ -282,9 +282,10 @@ class CellarWorkPage extends BasePage {
 
     private async handleIngestClick(e: Event) {
         console.log("handleIngestClick: number of bottles: ", this.cellarIds.length);
-        console.log("handleIngestClick: number of bottles: ", this.cellarIds);
         e.preventDefault()
-        await this.cdi.getKellermeisterService().transferBottles(this.bottles, this.cellarIds);
+        var bottlesForUpdate: Bottle[] = this.bottles;
+        this.bottles = new Array();
+        await this.cdi.getKellermeisterService().transferBottles(bottlesForUpdate, this.cellarIds);
         if (this.sourceCellar) {
             this.fetchBottlesFromCellar(this.sourceCellar);
         }
@@ -300,7 +301,7 @@ class CellarWorkPage extends BasePage {
     private handleCellarClick(cellarId: string) {
         //console.log("handleCellarClick: to cellar:", cellarId);
         this.cellarIds = Array(this.bottles.length).fill(cellarId, 0);
-        console.log("handleCellarClick: cellarIds", this.cellarIds);
+        //console.log("handleCellarClick: cellarIds", this.cellarIds);
     }
 
     private updateUrl(): void {

@@ -5,6 +5,7 @@ import type {Relation} from "soukai";
 import type {SolidBelongsToOneRelation} from "soukai-solid";
 
 export class OrderItem extends Model {
+    static history = false;
 
     declare public order: Order;
     declare public product: Product;

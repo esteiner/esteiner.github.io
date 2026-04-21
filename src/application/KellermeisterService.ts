@@ -102,7 +102,7 @@ export class KellermeisterService {
 
         for (const bottle of bottles) {
             if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.product)) {
-                console.log("bottlesFromCellarGroupedByProduct", bottle.product.id);
+                //console.log("bottlesFromCellarGroupedByProduct", bottle.product.id);
                 if (!grouped.has(bottle.product.id)) {
                     grouped.set(bottle.product.id, []);
                 }
@@ -280,7 +280,7 @@ export class KellermeisterService {
         }
     }
 
-    async transferBottles(bottles: Bottle[], cellarIds: string[]) {
+    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
         console.log("transferBottles: checking number of bottles", bottles.length);
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         var transferred: number = 0;
@@ -293,11 +293,12 @@ export class KellermeisterService {
             }
         }
         if (bottlesContainer?.isDirty) {
-            console.log("transferBottles: saving number of bottles", transferred);
-            await bottlesContainer.save();
-            console.log("transferBottles: saved", transferred);
-            this.bottlesContainer = null;
+            console.log("transferBottles: updating number of bottles", transferred);
+            const savedBottlesContainer: BottlesContainer | null = await this.saveBottles();
+            console.log("transferBottles: updated bottles", transferred);
+            return savedBottlesContainer;
         }
+        return bottlesContainer;
     }
 
     // -----------------------------------------------------------------
@@ -330,12 +331,14 @@ export class KellermeisterService {
         }
     }
 
-    private async saveBottles(): Promise<void> {
+    private async saveBottles(): Promise<BottlesContainer | null> {
         if (this.bottlesContainer) {
-            await this.bottlesContainer.save();
-            console.log("saveBottles: saved to repository");
-            await this.loadBottles();
+            console.log("saveBottles: saving number of bottles", this.bottlesContainer.bottles.length);
+            const savedBottlesContainer = await this.bottlesContainer.save();
+            console.log("saveBottles: saved number of bottles", savedBottlesContainer.bottles.length);
+            this.bottlesContainer = savedBottlesContainer;
         }
+        return this.bottlesContainer;
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {

@@ -6,11 +6,6 @@ import type {SolidBelongsToOneRelation} from "soukai-solid";
 export class Bottle extends Model {
     static history = false;
 
-    // initialize(attributes: Attributes, exists: boolean, product: Product) {
-    //     super.initialize(attributes, exists);
-    //     this.getRelation('product')?.attach(product);
-    // }
-
     declare public product: Product;
     declare public relatedProduct: SolidBelongsToOneRelation<
         Bottle,
