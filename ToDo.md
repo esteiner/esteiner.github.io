@@ -2,8 +2,8 @@ ToDo
 ===
 
 - [ ] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
-- [ ] Filter für Text auf Einkäufe Seite
-- [ ] Profil Seite ist Text zu nahe am Rand
+- [x] Filter für Text auf Einkäufe Seite
+- [x] Profil Seite ist Text zu nahe am Rand
 - [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
 - [ ] background color = #f2f2b6
 - [x] Namen optimieren
@@ -16,7 +16,7 @@ ToDo
 
 - [x] Filter für Weinart auf Keller Seite (✔) und Kellerarbeit (✔) Seite
 - [x] Optimierung: Porto, Geschenkpackung, Rabatt, etc. aus Bestellung entfernen
-- [ ] Server von Python auf Quarkus migrieren
+- [x] Server von Python auf Quarkus migrieren
 - [ ] Solid Bootstrapping via WebID -> oidcIssuer(s) / storage(s) -> Type Indices
 
 ### Prio 2
