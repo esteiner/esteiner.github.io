@@ -1,5 +1,5 @@
-import Model from "./schemas/Organization.schema";
-
-export class Seller extends Model {
-    static history = false;
+export interface Seller {
+  getId(): string;
+  getName(): string;
+  getEmail(): string;
 }

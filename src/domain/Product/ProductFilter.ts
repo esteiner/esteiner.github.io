@@ -1,6 +1,6 @@
 import {Weinart} from "./Weinart.ts";
 import {Weinfarbe} from "./Weinfarbe.ts";
-import {Product} from "../Product/Product.ts";
+import {SolidProduct} from "./SolidProduct.ts";
 
 export class ProductFilter {
 
@@ -70,7 +70,7 @@ export class ProductFilter {
         return (this.isSprudel || this.isDessert || this.isWhite || this.isRed || this.isRose || this.isText);
     }
 
-    public filterProduct(product: Product): boolean {
+    public filterProduct(product: SolidProduct): boolean {
         let result: boolean = true;
         // Weinart
         if (this.isSprudel) {

@@ -1,6 +1,6 @@
-import type {BottleModel} from "./BottleModel.ts";
+import type {Bottle} from "./Bottle.ts";
 
 export interface BottlesStorage {
     getId(): string;
-    getBottles(): BottleModel[];
+    getBottles(): Bottle[];
 }

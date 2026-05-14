@@ -2,13 +2,13 @@ import {css, html, nothing} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import "./product-component.ts";
-import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import type {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 
 @customElement('bottle-component')
 class BottleComponent extends BaseComponent {
 
     @property()
-    bottle: Bottle | undefined;
+    bottle: SolidBottle | undefined;
 
     @property()
     expandable: boolean = true;

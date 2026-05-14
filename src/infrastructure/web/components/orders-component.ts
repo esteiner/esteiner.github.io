@@ -1,7 +1,7 @@
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { BaseComponent } from "../common/base-component.ts";
-import type { Order } from "../../../domain/Order/Order.ts";
+import type { SolidOrder } from "../../../domain/Order/SolidOrder.ts";
 import "./order-component.ts";
 
 @customElement('orders-component')
@@ -11,7 +11,7 @@ class OrdersComponent extends BaseComponent {
     month: Date | undefined;
 
     @property()
-    orders: Order[] | undefined;
+    orders: SolidOrder[] | undefined;
 
     constructor() {
         super();

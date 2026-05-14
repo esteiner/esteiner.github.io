@@ -1,10 +1,10 @@
-import {Product} from "./Product.ts";
-import {OrderItem} from "../Order/OrderItem.ts";
+import {SolidProduct} from "./SolidProduct.ts";
+import {SolidOrderItem} from "../Order/SolidOrderItem.ts";
 
 export class ProductFactory {
 
-    public createProduct(product: Product, orderItem: OrderItem): Product {
-        const newProduct: Product = new Product();
+    public createProduct(product: SolidProduct, orderItem: SolidOrderItem): SolidProduct {
+        const newProduct: SolidProduct = new SolidProduct();
         newProduct.name = product.name;
         newProduct.productionDate = product.productionDate;
         newProduct.hersteller = product.hersteller;

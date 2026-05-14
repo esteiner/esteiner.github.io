@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProductFilter } from './ProductFilter';
-import type { Product } from './Product';
+import type { SolidProduct } from './SolidProduct';
 
 // Helper to build a minimal Product-shaped plain object for use in filterProduct().
 function makeBottle(product: {
@@ -13,8 +13,8 @@ function makeBottle(product: {
     region?: string;
     productionDate?: Date;
     trinkfensterBis?: Date;
-}): Product {
-    return product as unknown as Product;
+}): SolidProduct {
+    return product as unknown as SolidProduct;
 }
 
 describe('ProductFilter', () => {

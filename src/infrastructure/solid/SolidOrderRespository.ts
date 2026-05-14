@@ -1,5 +1,5 @@
 import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
-import {Order} from "../../domain/Order/Order.ts";
+import {SolidOrder} from "../../domain/Order/SolidOrder.ts";
 
 export class SolidOrderRespository implements OrderRepository {
 
@@ -11,22 +11,22 @@ export class SolidOrderRespository implements OrderRepository {
         this.orderUrl = storageUrl.toString() + 'private/kellermeister/orders/';
     }
 
-    async fetchOrders(): Promise<Order[]> {
-        const orders = await Order.from(this.orderUrl).all();
-        const inboxOrders = await Order.from(this.orderInboxUrl).all();
+    async fetchOrders(): Promise<SolidOrder[]> {
+        const orders = await SolidOrder.from(this.orderUrl).all();
+        const inboxOrders = await SolidOrder.from(this.orderInboxUrl).all();
         return [...orders, ...inboxOrders];;
     }
-    async fetchUnprocessedOrders(): Promise<Order[]> {
+    async fetchUnprocessedOrders(): Promise<SolidOrder[]> {
         console.log("fetchUnprocessedOrder: from:", this.orderInboxUrl);
-        const orders = await Order.from(this.orderInboxUrl).all();
+        const orders = await SolidOrder.from(this.orderInboxUrl).all();
         return orders;
     }
 
-    async fetchOrderById(orderId: string): Promise<Order | null> {
-        return await Order.find(orderId) ?? null;
+    async fetchOrderById(orderId: string): Promise<SolidOrder | null> {
+        return await SolidOrder.find(orderId) ?? null;
     }
 
-    async saveProcessedOrder(order: Order): Promise<Order> {
+    async saveProcessedOrder(order: SolidOrder): Promise<SolidOrder> {
         console.log("saveProcessedOrder:", order);
         const uuid = globalThis.crypto.randomUUID();
         order.mintUrl(this.orderUrl + uuid, false, 'it');

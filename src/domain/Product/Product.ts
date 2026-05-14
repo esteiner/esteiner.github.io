@@ -1,22 +1,22 @@
-import Model from "./schemas/Product.schema";
-import {OrderItem} from "../Order/OrderItem.ts";
-import type {Relation} from "soukai";
-import type {SolidBelongsToOneRelation} from "soukai-solid";
+import type {OrderItem} from "../Order/OrderItem.ts";
 
-export class Product extends Model {
-    static history = false;
-
-    declare public orderItem: OrderItem;
-    declare public relatedOrderItem: SolidBelongsToOneRelation<
-        Product,
-        OrderItem,
-        typeof OrderItem
-    >;
-
-    public orderItemRelationship() : Relation {
-        return this
-            .belongsToOne(OrderItem, 'orderItemUrl')
-            .usingSameDocument(true);
-    }
-
+export interface Product {
+    getId(): string;
+    getName(): string;
+    getPrice(): number;
+    getPriceCurrency(): string;
+    getProducer(): string;
+    getCountry(): string;
+    getVolumeMl(): number;
+    getRegion(): string;
+    getGrapeVariety(): string;
+    getWineType(): string;
+    getWineColor(): string;
+    getAlcoholContent(): string;
+    getProduction(): string;
+    getOrganic(): string;
+    getClassification(): string;
+    getDrinkingWindowFrom(): string;
+    getDrinkingWindowTo(): string;
+    getOrderItem(): OrderItem;
 }

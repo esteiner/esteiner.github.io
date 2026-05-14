@@ -1,9 +1,9 @@
 import {type SolidBelongsToOneRelation, SolidModel} from "soukai-solid";
-import type { ProductModel } from "../../../domain/Product/ProductModel";
+import type { Product } from "../../../domain/Product/Product";
 import {FieldType, type Relation} from "soukai";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 
-export class SoukaiProduct extends SolidModel implements ProductModel {
+export class SoukaiProduct extends SolidModel implements Product {
     static timestamps = false;
     static rdfContexts = {
         schema: "https://schema.org/",

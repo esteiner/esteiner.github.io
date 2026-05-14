@@ -1,19 +1,19 @@
-import {Bottle} from "../domain/Bottle/Bottle.ts";
+import {SolidBottle} from "../domain/Bottle/SolidBottle.ts";
 import type {Cellar} from "../domain/Cellar/Cellar.ts";
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
-import {Order} from "../domain/Order/Order.ts";
+import {SolidOrder} from "../domain/Order/SolidOrder.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
-import {Product} from "../domain/Product/Product.ts";
+import {SolidProduct} from "../domain/Product/SolidProduct.ts";
 import {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
-import {OrderItem} from "../domain/Order/OrderItem";
+import {SolidOrderItem} from "../domain/Order/SolidOrderItem";
 
 /**
  * Application Use Case: Get Profile
@@ -23,7 +23,7 @@ export class KellermeisterService {
 
     private bottlesContainer: BottlesContainer | null = null;
     private cachedCellars: Cellar[] | null = null;
-    private cachedOrders: Order[] | null = null;
+    private cachedOrders: SolidOrder[] | null = null;
 
     constructor(private cellarRepository: CellarRepository, private bottleStorageRepository: BottlesStorageRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
@@ -44,7 +44,7 @@ export class KellermeisterService {
         return this.cellarRepository.fetchCellarForCellarwork();
     }
 
-    async getAllBottles(): Promise<Bottle[]> {
+    async getAllBottles(): Promise<SolidBottle[]> {
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {
             return bottlesContainer.bottles;
@@ -57,10 +57,10 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, Bottle[]>>> {
+    async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, SolidBottle[]>>> {
         const [bottles, cellars] = await Promise.all([this.getAllBottles(), this.getAllCellars()]);
         const cellarMap = new Map<string, Cellar>(cellars.map(c => [c.id, c]));
-        const grouped = new Map<string, Map<string, Bottle[]>>();
+        const grouped = new Map<string, Map<string, SolidBottle[]>>();
 
         for (const bottle of bottles) {
             if (bottle.product && bottle.cellar && filter.filterProduct(bottle.product)) {
@@ -75,7 +75,7 @@ export class KellermeisterService {
             }
         }
 
-        const result = new Map<Cellar, Map<string, Bottle[]>>();
+        const result = new Map<Cellar, Map<string, SolidBottle[]>>();
         const toSortKey = (c: Cellar) => {
             const d = c.displayOrder ?? 0;
             return d < 0 ? Number.MAX_SAFE_INTEGER : d;
@@ -97,9 +97,9 @@ export class KellermeisterService {
         return result;
     }
 
-    async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
+    async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, SolidBottle[]>> {
         const bottles = await this.getAllBottles();
-        const grouped = new Map<string, Bottle[]>();
+        const grouped = new Map<string, SolidBottle[]>();
 
         for (const bottle of bottles) {
             if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.product)) {
@@ -116,13 +116,13 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
+    async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<SolidBottle[]> {
         const bottles = await this.getAllBottles();
         return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterProduct(bottle.product))
-            .sort((a: Bottle, b: Bottle) => this.productComparator(a.product, b.product));
+            .sort((a: SolidBottle, b: SolidBottle) => this.productComparator(a.product, b.product));
     }
 
-    productComparator(a: Product, b: Product): number {
+    productComparator(a: SolidProduct, b: SolidProduct): number {
         const nameA = a.name;
         const nameB = b.name;
         if (nameB === undefined) {
@@ -200,7 +200,7 @@ export class KellermeisterService {
         }
     }
 
-    async getAllOrders(): Promise<Order[]> {
+    async getAllOrders(): Promise<SolidOrder[]> {
         if (this.cachedOrders) {
             return this.cachedOrders;
         }
@@ -208,11 +208,11 @@ export class KellermeisterService {
         return this.cachedOrders;
     }
 
-    async ordersGroupedByMonth(filter: ProductFilter): Promise<Map<Date, Order[]>> {
+    async ordersGroupedByMonth(filter: ProductFilter): Promise<Map<Date, SolidOrder[]>> {
         const orders = await this.getAllOrders();
         if (filter.hasRestrictions()) {
             console.log("ordersGroupedByMonth: with filter", filter);
-            let filteredOrders: Order[] = orders.map(order => this.filterOrder(order, filter)).filter(order => order != null);
+            let filteredOrders: SolidOrder[] = orders.map(order => this.filterOrder(order, filter)).filter(order => order != null);
             return this.groupOrdersByMonth(filteredOrders);
         }
         return this.groupOrdersByMonth(orders);
@@ -220,7 +220,7 @@ export class KellermeisterService {
 
     async ingestOrdersFromInbox(): Promise<Cellar> {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
-        const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();
+        const unprocessedOrders: SolidOrder[] = await this.orderRespository.fetchUnprocessedOrders();
 
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
         if (unprocessedOrders.length > 0) {
@@ -231,7 +231,7 @@ export class KellermeisterService {
         return cellarForCellarwork;
     }
 
-    async ingestOrder(order: Order, cellarForCellarwork: string) {
+    async ingestOrder(order: SolidOrder, cellarForCellarwork: string) {
         console.log("ingestOrder: order:", order);
         const bottlesContainer = await this.loadBottles();
         if (bottlesContainer) {
@@ -244,11 +244,11 @@ export class KellermeisterService {
         }
     }
 
-    addBottles(bottlesContainer: BottlesContainer, order: Order, cellarForCellarwork: string) {
-        const newOrder: Order = this.orderFactory.createOrder(order);
+    addBottles(bottlesContainer: BottlesContainer, order: SolidOrder, cellarForCellarwork: string) {
+        const newOrder: SolidOrder = this.orderFactory.createOrder(order);
 
         if (order.positions) {
-            const newPositions: OrderItem[] = new Array();
+            const newPositions: SolidOrderItem[] = new Array();
             for (const orderItem of order.positions) {
                 if (orderItem.orderQuantity) {
                     const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
@@ -256,7 +256,7 @@ export class KellermeisterService {
 
                     const product = this.productFactory.createProduct(orderItem.product, newOrderItem);
                     for (let q = 0; q < orderItem.orderQuantity; q++) {
-                        const bottle: Bottle = this.bottleFactory.createFromProduct(product);
+                        const bottle: SolidBottle = this.bottleFactory.createFromProduct(product);
                         bottle.cellar = cellarForCellarwork;
                         bottlesContainer.addBottle(bottle);
                     }
@@ -267,7 +267,7 @@ export class KellermeisterService {
 
     }
 
-    async disposeBottleToAltglass(bottle: Bottle, rating?: number) {
+    async disposeBottleToAltglass(bottle: SolidBottle, rating?: number) {
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {
             if (rating !== undefined) {
@@ -281,7 +281,7 @@ export class KellermeisterService {
         }
     }
 
-    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
+    async transferBottles(bottles: SolidBottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
         console.log("transferBottles: checking number of bottles", bottles.length);
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         var transferred: number = 0;
@@ -345,17 +345,17 @@ export class KellermeisterService {
         return this.bottlesContainer;
     }
 
-    private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
+    private isBottleInThisCellar(bottle: SolidBottle, cellar: Cellar | undefined) {
         if (cellar) {
             return cellar.id == bottle.cellar;
         }
         return false;
     }
 
-    private filterOrder(order: Order, filter: ProductFilter): Order | null {
+    private filterOrder(order: SolidOrder, filter: ProductFilter): SolidOrder | null {
         const orderItems = order.positions?.filter(position => filter.filterProduct(position.product));
         if (orderItems && orderItems.length > 0) {
-            const filteredOrder = new Order();
+            const filteredOrder = new SolidOrder();
             filteredOrder.orderDate = order.orderDate;
             filteredOrder.orderNumber = order.orderNumber;
             filteredOrder.seller = order.seller;
@@ -366,10 +366,10 @@ export class KellermeisterService {
         return null;
     }
 
-    private groupOrdersByMonth(orders: Order[]): Map<Date, Order[]> {
+    private groupOrdersByMonth(orders: SolidOrder[]): Map<Date, SolidOrder[]> {
         const unknownDate = new Date(1900, 0, 1);
         const dates: Map<string, Date> = new Map();
-        const grouped = new Map<Date, Order[]>();
+        const grouped = new Map<Date, SolidOrder[]>();
         for (const order of orders) {
             let dateKey: Date;
             if (order.orderDate) {
@@ -406,13 +406,13 @@ export class KellermeisterService {
         return true;
     }
 
-    private async moveProcessedOrders(unprocessedOrders: Order[]) {
+    private async moveProcessedOrders(unprocessedOrders: SolidOrder[]) {
         for (const order of unprocessedOrders) {
             await this.moveProcessedOrder(order);
         }
     }
 
-    private async moveProcessedOrder(unprocessedOrder: Order) {
+    private async moveProcessedOrder(unprocessedOrder: SolidOrder) {
         console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
         await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
         this.cachedOrders = null;

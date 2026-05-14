@@ -1,11 +1,11 @@
 import {SolidModel} from "soukai-solid";
 import {FieldType, type Relation} from "soukai";
-import type {SellerModel} from "../../../domain/Order/SellerModel.ts";
+import type {Seller} from "../../../domain/Order/Seller.ts";
 import {SoukaiSeller} from "./SoukaiSeller.ts";
-import type {OrderModel} from "../../../domain/Order/OrderModel.ts";
+import type {Order} from "../../../domain/Order/Order.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 
-export class SoukaiOrder extends SolidModel implements OrderModel {
+export class SoukaiOrder extends SolidModel implements Order {
     static timestamps = false;
     static rdfContexts = { schema: "https://schema.org/" };
     static rdfsClasses = ["schema:Order"];
@@ -24,7 +24,7 @@ export class SoukaiOrder extends SolidModel implements OrderModel {
     getOrderNumber(): string {
         return this.getAttribute("orderNumber");
     }
-    getSeller(): SellerModel | undefined {
+    getSeller(): Seller | undefined {
         return this.seller;
     }
 

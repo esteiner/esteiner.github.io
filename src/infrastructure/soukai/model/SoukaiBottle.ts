@@ -1,9 +1,9 @@
 import {type SolidBelongsToOneRelation, SolidModel} from "soukai-solid";
-import type {BottleModel} from "../../../domain/Bottle/BottleModel.ts";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import {FieldType, type Relation} from "soukai";
 import {SoukaiProduct} from "./SoukaiProduct.ts";
 
-export class SoukaiBottle extends SolidModel implements BottleModel {
+export class SoukaiBottle extends SolidModel implements Bottle {
     static timestamps = false;
     static rdfContexts = { schema: "https://schema.org/" };
     static rdfsClasses = ["schema:ListItem"];

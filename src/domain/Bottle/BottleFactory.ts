@@ -1,17 +1,17 @@
-import {Bottle} from "./Bottle.ts";
-import {Product} from "../Product/Product.ts";
-import type {OrderItem} from "../Order/OrderItem.ts";
+import {SolidBottle} from "./SolidBottle.ts";
+import {SolidProduct} from "../Product/SolidProduct.ts";
+import type {SolidOrderItem} from "../Order/SolidOrderItem.ts";
 
 export class BottleFactory {
 
-    public createFromOrderItem(product: Product, orderItem: OrderItem): Bottle {
+    public createFromOrderItem(product: SolidProduct, orderItem: SolidOrderItem): SolidBottle {
         const bottle = this.createFromProduct(product);
         bottle.orderItemId = orderItem?.id;
         return bottle;
     }
 
-    public createFromProduct(product: Product): Bottle {
-        const bottle = new Bottle();
+    public createFromProduct(product: SolidProduct): SolidBottle {
+        const bottle = new SolidBottle();
         bottle.relatedProduct.addRelated(product);
         const relation = bottle.getRelation('product');
         console.log("createFromProduct: relation", relation);

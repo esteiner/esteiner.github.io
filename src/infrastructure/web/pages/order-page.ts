@@ -5,7 +5,7 @@ import {BasePage} from "../common/base-page.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import "../components/orders-component.ts";
-import {Order} from "../../../domain/Order/Order.ts";
+import {SolidOrder} from "../../../domain/Order/SolidOrder.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter";
 
@@ -13,7 +13,7 @@ import {ProductFilter} from "../../../domain/Product/ProductFilter";
 class OrderPage extends BasePage {
 
     @property()
-    orders: Map<Date, Order[]>;
+    orders: Map<Date, SolidOrder[]>;
 
     @state()
     session: Session = getDefaultSession()
@@ -32,7 +32,7 @@ class OrderPage extends BasePage {
     constructor() {
         super();
         this.filter = new ProductFilter();
-        this.orders = new Map<Date, Order[]>;
+        this.orders = new Map<Date, SolidOrder[]>;
     }
 
     updated(changedProperties: Map<string, unknown>) {

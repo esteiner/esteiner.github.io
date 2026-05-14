@@ -8,9 +8,9 @@ import type { BottleFactory } from '../domain/Bottle/BottleFactory';
 import type { ProductFactory } from '../domain/Product/ProductFactory';
 import type { OrderFactory } from '../domain/Order/OrderFactory';
 import type { Cellar } from '../domain/Cellar/Cellar';
-import type { Bottle } from '../domain/Bottle/Bottle';
-import type { Product } from '../domain/Product/Product';
-import type { Order } from '../domain/Order/Order';
+import type { SolidBottle } from '../domain/Bottle/SolidBottle';
+import type { SolidProduct } from '../domain/Product/SolidProduct';
+import type { SolidOrder } from '../domain/Order/SolidOrder';
 import type { BottlesContainer } from '../domain/Bottle/BottlesContainer';
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
@@ -25,22 +25,22 @@ function makeCellar(id: string): Cellar {
     return { id } as unknown as Cellar;
 }
 
-function makeProduct(id: string, name?: string): Product {
-    return { id, name } as unknown as Product;
+function makeProduct(id: string, name?: string): SolidProduct {
+    return { id, name } as unknown as SolidProduct;
 }
 
-function makeBottle(productId: string, cellarId: string, productName?: string): Bottle {
+function makeBottle(productId: string, cellarId: string, productName?: string): SolidBottle {
     return {
         product: makeProduct(productId, productName),
         cellar: cellarId,
-    } as unknown as Bottle;
+    } as unknown as SolidBottle;
 }
 
-function makeOrder(orderDate?: Date): Order {
-    return { orderDate } as unknown as Order;
+function makeOrder(orderDate?: Date): SolidOrder {
+    return { orderDate } as unknown as SolidOrder;
 }
 
-function makeBottlesContainer(bottles: Bottle[]): BottlesContainer {
+function makeBottlesContainer(bottles: SolidBottle[]): BottlesContainer {
     return { bottles } as unknown as BottlesContainer;
 }
 
@@ -332,7 +332,7 @@ describe('KellermeisterService', () => {
             ({ service } = makeService());
         });
 
-        function injectBottles(svc: KellermeisterService, bottles: Bottle[]) {
+        function injectBottles(svc: KellermeisterService, bottles: SolidBottle[]) {
             (svc as any).bottlesContainer = makeBottlesContainer(bottles);
         }
 
@@ -376,7 +376,7 @@ describe('KellermeisterService', () => {
             // so both would pass here. Use a bottle with a trinkfensterBis to avoid that:
             injectBottles(service, [
                 makeBottle('p1', 'cellar-a', 'Merlot'),
-                { product: { id: 'p2', name: 'Chardonnay', trinkfensterBis: new Date(2030, 0, 1) }, cellar: 'cellar-a' } as unknown as Bottle,
+                { product: { id: 'p2', name: 'Chardonnay', trinkfensterBis: new Date(2030, 0, 1) }, cellar: 'cellar-a' } as unknown as SolidBottle,
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, filter);
             expect(result.has('p1')).toBe(true);
@@ -430,7 +430,7 @@ describe('KellermeisterService', () => {
 
         it('does nothing when the order has no positions', async () => {
             const { service, bottleFactory } = makeService();
-            const order = { positions: undefined } as unknown as Order;
+            const order = { positions: undefined } as unknown as SolidOrder;
 
             await service.ingestOrder(order, 'cellar-a');
 

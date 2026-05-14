@@ -4,7 +4,7 @@ import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
@@ -33,7 +33,7 @@ class CellarPage extends BasePage {
     private searchText: string = '';
 
     @state()
-    private ratingBottle?: Bottle = undefined;
+    private ratingBottle?: SolidBottle = undefined;
 
     @state()
     private selectedRating?: number = undefined;
@@ -44,7 +44,7 @@ class CellarPage extends BasePage {
         if (this.cellar) {
             return await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
         }
-        return new Map<string, Bottle[]>();
+        return new Map<string, SolidBottle[]>();
     });
 
     constructor() {
@@ -230,7 +230,7 @@ class CellarPage extends BasePage {
         this.loadBottles();
     }
 
-    private handleBottleClick(bottle: Bottle): void {
+    private handleBottleClick(bottle: SolidBottle): void {
         this.ratingBottle = bottle;
         this.selectedRating = bottle.rating;
     }

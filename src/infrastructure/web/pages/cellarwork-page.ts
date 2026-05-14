@@ -6,7 +6,7 @@ import { BasePage } from "../common/base-page.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import "../components/order-item-component.ts";
@@ -46,7 +46,7 @@ class CellarWorkPage extends BasePage {
         if (this.sourceCellar) {
             return await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
         }
-        return new Array<Bottle>();
+        return new Array<SolidBottle>();
     });
 
     constructor() {
@@ -308,7 +308,7 @@ class CellarWorkPage extends BasePage {
 
     private async handleIngestClick(e: Event) {
         e.preventDefault();
-        const bottlesForUpdate: Bottle[] = this._bottlesTask.value ?? [];
+        const bottlesForUpdate: SolidBottle[] = this._bottlesTask.value ?? [];
         console.log("handleIngestClick: number of bottles: ", bottlesForUpdate.length);
         await this.cdi.getKellermeisterService().transferBottles(bottlesForUpdate, this.cellarIds);
         this.loadBottles();

@@ -4,7 +4,7 @@ import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {router} from "../router.ts";
 import {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
@@ -19,7 +19,7 @@ class SearchPage extends BasePage {
     filter: ProductFilter;
 
     @state()
-    results: Map<Cellar, Map<string, Bottle[]>>;
+    results: Map<Cellar, Map<string, SolidBottle[]>>;
 
     @state()
     private searchText: string = '';

@@ -1,16 +1,16 @@
-import type {Order} from "./Order.ts";
+import type {SolidOrder} from "./SolidOrder.ts";
 
 export interface OrderRepository {
 
     /**
      * Fetches all cellars.
      */
-    fetchOrders(): Promise<Order[]>;
+    fetchOrders(): Promise<SolidOrder[]>;
 
-    fetchUnprocessedOrders(): Promise<Order[]>;
+    fetchUnprocessedOrders(): Promise<SolidOrder[]>;
 
-    fetchOrderById(orderId: string): Promise<Order | null>;
+    fetchOrderById(orderId: string): Promise<SolidOrder | null>;
 
-    saveProcessedOrder(order: Order): Promise<Order>;
+    saveProcessedOrder(order: SolidOrder): Promise<SolidOrder>;
 
 }

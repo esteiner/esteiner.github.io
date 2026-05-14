@@ -1,8 +1,8 @@
 import {css, html} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
-import type {Order} from "../../../domain/Order/Order.ts";
-import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
+import type {SolidOrder} from "../../../domain/Order/SolidOrder.ts";
+import type {SolidOrderItem} from "../../../domain/Order/SolidOrderItem.ts";
 import "./order-item-component.ts";
 
 const showOrderQuantity: boolean = true;
@@ -11,7 +11,7 @@ const showOrderQuantity: boolean = true;
 class OrderComponent extends BaseComponent {
 
     @property()
-    order: Order | undefined;
+    order: SolidOrder | undefined;
 
     constructor() {
         super();
@@ -49,7 +49,7 @@ class OrderComponent extends BaseComponent {
             return html`
                 <ul>
                 ${this.order.positions.map(
-                    (orderItem: OrderItem) => html`
+                    (orderItem: SolidOrderItem) => html`
                         <li>
                             <order-item-component .showOrderQuantity=${showOrderQuantity} .orderItem="${orderItem}"></order-item-component>
                         </li>

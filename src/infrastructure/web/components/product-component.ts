@@ -1,13 +1,13 @@
 import {css, html, nothing} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
-import type {Product} from "../../../domain/Product/Product.ts";
+import type {SolidProduct} from "../../../domain/Product/SolidProduct.ts";
 
 @customElement('product-component')
 class ProductComponent extends BaseComponent {
 
     @property()
-    product: Product | undefined;
+    product: SolidProduct | undefined;
 
     constructor() {
         super();

@@ -1,7 +1,7 @@
 import {customElement, property, state} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import {css, html, nothing} from "lit";
-import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
+import type {SolidOrderItem} from "../../../domain/Order/SolidOrderItem.ts";
 import "./product-component.ts";
 
 @customElement('order-item-component')
@@ -11,7 +11,7 @@ class OrderItemComponent extends BaseComponent {
     showOrderQuantity?: boolean;
 
     @property()
-    orderItem: OrderItem | undefined;
+    orderItem: SolidOrderItem | undefined;
 
     @state()
     expanded: boolean = false;
