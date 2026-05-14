@@ -1,4 +1,3 @@
-import {SolidCellarRepository} from "../solid/SolidCellarRepository.ts";
 import {SolidPodService} from "../solid/SolidPodService.ts";
 import {SolidOrderRespository} from "../solid/SolidOrderRespository.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
@@ -9,10 +8,10 @@ import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
 import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottlesStorageRepository} from "../../domain/Bottle/BottlesStorageRepository.ts";
-import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
 import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
 import {ProductFactory} from "../../domain/Product/ProductFactory.ts";
+import {SoukaiCellarRepository} from "../soukai/SoukaiCellarRepository.ts";
 
 /**
  * Dependency Injection Container.
@@ -34,7 +33,7 @@ export class CDI {
 
     // Repositories
     private bottleStorageRepository: BottlesStorageRepository | null = null;
-    private cellarRepository: CellarRepository | null = null;
+    private cellarRepository: SoukaiCellarRepository | null = null;
     private bottlesContainerRepository: BottlesContainerRepository | null = null;
     private orderRepository: OrderRepository | null = null;
 
@@ -87,7 +86,7 @@ export class CDI {
 
             // Initialize repositories
             this.bottleStorageRepository = new SoukaiBottlesStorageRepository(this.storageUrl);
-            this.cellarRepository = new SolidCellarRepository(this.storageUrl);
+            this.cellarRepository = new SoukaiCellarRepository(this.storageUrl);
             this.bottlesContainerRepository = new SolidBottlesContainerRepository(this.storageUrl);
             this.orderRepository = new SolidOrderRespository(this.storageUrl);
             // Initialize services

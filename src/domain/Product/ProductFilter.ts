@@ -133,7 +133,7 @@ export class ProductFilter {
                 const textFilterLowerCase = this.textFilter.toLowerCase();
                 result = result && (
                     this.isIncludedIn(textFilterLowerCase, product.getName()?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.getProduction()?.toUTCString().toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.getProductionDate()?.toUTCString().toLowerCase())
                     || this.isIncludedIn(textFilterLowerCase, product.getGrapeVariety()?.toLowerCase())
                     || this.isIncludedIn(textFilterLowerCase, product.getAlcoholContent())
                     || this.isIncludedIn(textFilterLowerCase, product.getCountry()?.toLowerCase())

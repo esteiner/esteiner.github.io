@@ -1,5 +1,5 @@
-import Model from "./schemas/Room.schema";
-
-export class Cellar extends Model {
-    static history = false;
+export interface Cellar {
+    getId(): string;
+    getName(): string;
+    getDisplayOrder(): number;
 }

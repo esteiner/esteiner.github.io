@@ -11,7 +11,7 @@ import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import {getBuildVersion} from "../utils";
-import {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 @customElement('landing-page')
 class LandingPage extends BasePage {
@@ -187,7 +187,7 @@ class LandingPage extends BasePage {
                         ${this._cellarsTask.render({
                             pending: () => html`<div class="spinner"></div>`,
                             complete: (cellars) => html`${cellars.map(cellar => html`
-                                <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.id)}" ghost icon="${this.cellarIconName(cellar.id)}"></kellermeister-button>
+                                <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.getId())}" ghost icon="${this.cellarIconName(cellar.getId())}"></kellermeister-button>
                             `)}`,
                         })}
                     </div>
@@ -319,10 +319,10 @@ class LandingPage extends BasePage {
     }
 
     private cellarName(cellar: Cellar): string {
-        if (cellar.id === this.cdi?.getKellermeisterService().getCellarWorkId()) {
+        if (cellar.getId() === this.cdi?.getKellermeisterService().getCellarWorkId()) {
             return "Kellerarbeit";
         } else {
-            return cellar.name as string;
+            return cellar.getName() as string;
         }
     }
 

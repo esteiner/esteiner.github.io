@@ -46,7 +46,7 @@
   - BottleFactory (stateless, no Pod URL needed)
   - InruptSolidService (stateless wrapper around Inrupt's library)
 
-  Everything else (SolidCellarRepository, SolidBottlesContainerRepository, SolidOrderRepository, SolidPodService, KellermeisterService) is null until CDI.setStorageUrl(url) is called. Any page that calls
+  Everything else (SolidCellarRepositoryImpl, SolidBottlesContainerRepository, SolidOrderRepository, SolidPodService, KellermeisterService) is null until CDI.setStorageUrl(url) is called. Any page that calls
   cdi.getKellermeisterService() before login throws.
 
   ---
@@ -129,7 +129,7 @@
   ---
   9. Repositories — Data access layer
 
-  SolidCellarRepository
+  SolidCellarRepositoryImpl
   Cellar.from(cellarUrl).all() — Soukai queries the container and returns all schema:Room resources. Uses Cellar.find(id) for single lookups.
 
   SolidBottlesContainerRepository
@@ -187,7 +187,7 @@
     → restoreSession() → if returning from OIDC: SESSION_RESTORED fires
     → sessionChangedCallback() → CDI.setStorageUrl() gates all services
     → setupPodForKellermeister() → LDP containers exist
-    → loadCellars() → SolidCellarRepository → Cellar.from(url).all() → Pod HTTP GET
+    → loadCellars() → SolidCellarRepositoryImpl → Cellar.from(url).all() → Pod HTTP GET
     → render cellars as links
 
   User navigates to /cellar/:id

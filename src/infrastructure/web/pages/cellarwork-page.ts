@@ -5,7 +5,6 @@ import {Task} from '@lit/task';
 import { BasePage } from "../common/base-page.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
-import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import "../components/order-item-component.ts";
@@ -13,6 +12,7 @@ import "../components/bottle-component.ts";
 import type {RouterLocation} from "@vaadin/router";
 import {ProductFilter} from "../../../domain/Product/ProductFilter";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 @customElement('cellarwork-page')
 class CellarWorkPage extends BasePage {
@@ -188,7 +188,7 @@ class CellarWorkPage extends BasePage {
 
     connectedCallback() {
         super.connectedCallback();
-        if (!this.sourceCellar || this.sourceCellar.id === this.cdi.getKellermeisterService().getCellarWorkId() ) {
+        if (!this.sourceCellar || this.sourceCellar.getId() === this.cdi.getKellermeisterService().getCellarWorkId() ) {
             this.ingestOrdersFromInbox();
         } else {
             this.loadBottles();
@@ -224,9 +224,9 @@ class CellarWorkPage extends BasePage {
     async fetchCellars() {
         if (this.session.info.isLoggedIn) {
             const customCellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
-            const destinationCellars = customCellars.filter(cellar => cellar.id != this.sourceCellar?.id);
+            const destinationCellars = customCellars.filter(cellar => cellar.getId() != this.sourceCellar?.getId());
             const altglass = await this.cdi.getKellermeisterService().getCellarAltglass();
-            if (altglass && altglass.id != this.sourceCellar?.id) {
+            if (altglass && altglass.getId() != this.sourceCellar?.getId()) {
                 this.cellars = destinationCellars.concat([altglass]);
             } else {
                 this.cellars = destinationCellars;
@@ -236,7 +236,7 @@ class CellarWorkPage extends BasePage {
 
     render() {
         return html`
-            <kellermeister-header>Kellerarbeit ${this.sourceCellar?.name}
+            <kellermeister-header>Kellerarbeit ${this.sourceCellar?.getName()}
                 <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
                 <kellermeister-button @click="${this.handleIngestClick}" slot="actions" text="umbuchen" icon="umbuchen" size="small"></kellermeister-button>
             </kellermeister-header>
@@ -270,8 +270,8 @@ class CellarWorkPage extends BasePage {
                             <div class="table" style="--cellar-columns: ${this.cellars.length};">
                                 <div class="header-row">
                                     <span class="column1">${bottles.length} Flaschen zum umbuchen</span>
-                                    ${repeat(this.cellars, (cellar) => cellar.id, (cellar) =>  html`
-                                        <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.id)}" class="column2" icon="cellar" ghost size="small" text="${cellar.name}"></kellermeister-button></span>
+                                    ${repeat(this.cellars, (cellar) => cellar.getId(), (cellar) =>  html`
+                                        <span class="column2"><kellermeister-button @click="${() => this.handleCellarClick(cellar.getId())}" class="column2" icon="cellar" ghost size="small" text="${cellar.getName()}"></kellermeister-button></span>
                                     `)}
                                 </div>
                                 <div class="data-row">
@@ -279,8 +279,8 @@ class CellarWorkPage extends BasePage {
                                         <span class="column1">
                                             <bottle-component .bottle="${bottle}" .expandable=${this.expandable}>${bottle.getPrice()}</bottle-component>
                                         </span>
-                                        ${repeat(this.cellars, (cellar) => cellar.id, (cellar, cellarIndex) =>  html`
-                                            <span class="column2"><input @input="${this.handleCellarSelectionClick}" ${cellarIndex}" type="radio" id="${index}" name="${index}" value="${cellar.id}" .checked=${this.cellarIds[index] == cellar.id}></input></span>
+                                        ${repeat(this.cellars, (cellar) => cellar.getId(), (cellar, cellarIndex) =>  html`
+                                            <span class="column2"><input @input="${this.handleCellarSelectionClick}" ${cellarIndex}" type="radio" id="${index}" name="${index}" value="${cellar.getId()}" .checked=${this.cellarIds[index] == cellar.getId()}></input></span>
                                         `)}
                                     `)}
                                 </div>

@@ -1,17 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { KellermeisterService } from './KellermeisterService';
 import { ProductFilter } from '../domain/Product/ProductFilter';
-import type { CellarRepository } from '../domain/Cellar/CellarRepository';
 import type { BottlesContainerRepository } from '../domain/Bottle/BottlesContainerRepository';
 import type { OrderRepository } from '../domain/Order/OrderRepository';
 import type { BottleFactory } from '../domain/Bottle/BottleFactory';
 import type { ProductFactory } from '../domain/Product/ProductFactory';
 import type { OrderFactory } from '../domain/Order/OrderFactory';
-import type { Cellar } from '../domain/Cellar/Cellar';
 import type { SolidBottle } from '../domain/Bottle/SolidBottle';
-import type { SolidProduct } from '../domain/Product/SolidProduct';
 import type { SolidOrder } from '../domain/Order/SolidOrder';
 import type { BottlesContainer } from '../domain/Bottle/BottlesContainer';
+import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
+import type {Cellar} from "../domain/Cellar/Cellar.ts";
+import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
+import type {Product} from "../domain/Product/Product.ts";
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
 vi.mock('@inrupt/solid-client', () => ({ deleteSolidDataset: vi.fn() }));
@@ -25,8 +26,8 @@ function makeCellar(id: string): Cellar {
     return { id } as unknown as Cellar;
 }
 
-function makeProduct(id: string, name?: string): SolidProduct {
-    return { id, name } as unknown as SolidProduct;
+function makeProduct(id: string, name?: string): Product {
+    return { id, name } as unknown as Product;
 }
 
 function makeBottle(productId: string, cellarId: string, productName?: string): SolidBottle {
@@ -56,12 +57,17 @@ function makeService() {
         deleteCellar: vi.fn(),
         getCellarWorkId: vi.fn().mockReturnValue('cellarwork-id'),
         fetchCellarForCellarwork: vi.fn(),
+        createCellarForAltglass: vi.fn(),
         createCellarForCellarwork: vi.fn(),
         getAltglassId: vi.fn().mockReturnValue('altglass-id'),
         fetchCellarForAltglass: vi.fn(),
     };
     const bottlesContainerRepo: BottlesContainerRepository = {
         fetchBottles: vi.fn(),
+    };
+    const bottlesStorageRepo: BottlesStorageRepository = {
+        fetchBottlesStorage: vi.fn(),
+        save: vi.fn(),
     };
     const orderRepo: OrderRepository = {
         fetchOrders: vi.fn(),
@@ -80,7 +86,7 @@ function makeService() {
         createOrder: vi.fn(),
         createOrderItem: vi.fn(),
     };
-    const service = new KellermeisterService(cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory);
+    const service = new KellermeisterService(cellarRepo, bottlesStorageRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }
 

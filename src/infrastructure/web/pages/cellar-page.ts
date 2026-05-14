@@ -3,7 +3,6 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
-import {Cellar} from "../../../domain/Cellar/Cellar.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
@@ -13,6 +12,7 @@ import '../components/kellermeister-wine-filter.ts';
 import '../components/bottle-component.ts';
 import {router} from "../router.ts";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
+import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 @customElement('cellar-page')
 class CellarPage extends BasePage {
@@ -70,7 +70,7 @@ class CellarPage extends BasePage {
 
     render() {
         return html`
-          <kellermeister-header>Keller ${this.cellar?.name}
+          <kellermeister-header>Keller ${this.cellar?.getName()}
               <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
           </kellermeister-header>
@@ -172,7 +172,7 @@ class CellarPage extends BasePage {
         if (this.cellar) {
             const params = this.filter.toSearchParams();
             const search = params.toString() ? '?' + params.toString() : '';
-            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cellar.id}`}) + search);
+            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cellar.getId()}`}) + search);
         }
     }
 

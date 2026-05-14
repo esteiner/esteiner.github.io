@@ -7,6 +7,19 @@ import type {Cellar} from "./Cellar.ts";
 export interface CellarRepository {
 
     /**
+     * Create a new cellar for the given name.
+     *
+     * @param name of the new cellar to be created
+     */
+    createCellar(name: string): Promise<Cellar>;
+
+    createCellarForAltglass(): Promise<Cellar>;
+
+    createCellarForCellarwork(): Promise<Cellar>;
+
+    deleteCellar(cellar: Cellar): Promise<void>;
+
+    /**
      * Fetches all cellars.
      */
     fetchCellars(): Promise<Cellar[]>;
@@ -16,22 +29,11 @@ export interface CellarRepository {
      */
     fetchCellarById(cellarId: string): Promise<Cellar | null>;
 
-    /**
-     * Create a new cellar for the given name.
-     *
-     * @param name of the new cellar to be created
-     */
-    createCellar(name: string): Promise<Cellar>;
-
-    deleteCellar(cellar: Cellar): Promise<void>;
-
-    getCellarWorkId(): string;
+    fetchCellarForAltglass(): Promise<Cellar>;
 
     fetchCellarForCellarwork(): Promise<Cellar>;
 
-    createCellarForCellarwork(): Promise<Cellar>;
-
     getAltglassId(): string;
 
-    fetchCellarForAltglass(): Promise<Cellar>;
+    getCellarWorkId(): string;
 }

@@ -1,6 +1,4 @@
 import {SolidBottle} from "../domain/Bottle/SolidBottle.ts";
-import type {Cellar} from "../domain/Cellar/Cellar.ts";
-import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
 import {SolidOrder} from "../domain/Order/SolidOrder.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
@@ -8,7 +6,6 @@ import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
 import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
-import {SolidProduct} from "../domain/Product/SolidProduct.ts";
 import {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
@@ -17,6 +14,8 @@ import {SolidOrderItem} from "../domain/Order/SolidOrderItem";
 import type {BottlesStorage} from "../domain/Bottle/BottlesStorage.ts";
 import type {Bottle} from "../domain/Bottle/Bottle.ts";
 import type {Product} from "../domain/Product/Product.ts";
+import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
+import type {Cellar} from "../domain/Cellar/Cellar.ts";
 
 /**
  * Application Use Case: Get Profile
@@ -70,27 +69,27 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, SolidBottle[]>>> {
-        const [bottles, cellars] = await Promise.all([this.getAllBottles(), this.getAllCellars()]);
-        const cellarMap = new Map<string, Cellar>(cellars.map(c => [c.id, c]));
-        const grouped = new Map<string, Map<string, SolidBottle[]>>();
+    async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, Bottle[]>>> {
+        const [bottles, cellars] = await Promise.all([this.getAllBottles2(), this.getAllCellars()]);
+        const cellarMap = new Map<string, Cellar>(cellars.map(c => [c.getId(), c]));
+        const grouped = new Map<string, Map<string, Bottle[]>>();
 
         for (const bottle of bottles) {
-            if (bottle.product && bottle.cellar && filter.filterProduct(bottle.product)) {
-                if (!grouped.has(bottle.cellar)) {
-                    grouped.set(bottle.cellar, new Map());
+            if (bottle.getProduct() && bottle.getCellar() && filter.filterProduct2(bottle.getProduct())) {
+                if (!grouped.has(bottle.getCellar())) {
+                    grouped.set(bottle.getCellar(), new Map());
                 }
-                const byProduct = grouped.get(bottle.cellar)!;
-                if (!byProduct.has(bottle.product.id)) {
-                    byProduct.set(bottle.product.id, []);
+                const byProduct = grouped.get(bottle.getCellar())!;
+                if (!byProduct.has(bottle.getProduct().getId())) {
+                    byProduct.set(bottle.getProduct().getId(), []);
                 }
-                byProduct.get(bottle.product.id)!.push(bottle);
+                byProduct.get(bottle.getProduct().getId())!.push(bottle);
             }
         }
 
-        const result = new Map<Cellar, Map<string, SolidBottle[]>>();
+        const result = new Map<Cellar, Map<string, Bottle[]>>();
         const toSortKey = (c: Cellar) => {
-            const d = c.displayOrder ?? 0;
+            const d = c.getDisplayOrder() ?? 0;
             return d < 0 ? Number.MAX_SAFE_INTEGER : d;
         };
         const sortedCellarIds = [...grouped.keys()].sort((a, b) => {
@@ -99,7 +98,7 @@ export class KellermeisterService {
             if (!ca || !cb) return 0;
             const orderDiff = toSortKey(ca) - toSortKey(cb);
             if (orderDiff !== 0) return orderDiff;
-            return (ca.name ?? '').localeCompare(cb.name ?? '');
+            return (ca.getName() ?? '').localeCompare(cb.getName() ?? '');
         });
         for (const cellarId of sortedCellarIds) {
             const cellar = cellarMap.get(cellarId);
@@ -131,35 +130,11 @@ export class KellermeisterService {
      */
     async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
         const bottles = await this.getAllBottles2();
-        return bottles.filter(bottle => cellar?.id === bottle.getCellar()).filter(bottle => filter.filterProduct2(bottle.getProduct()))
-            .sort((a: Bottle, b: Bottle) => this.productComparator2(a.getProduct(), b.getProduct()));
+        return bottles.filter(bottle => cellar?.getId() === bottle.getCellar()).filter(bottle => filter.filterProduct2(bottle.getProduct()))
+            .sort((a: Bottle, b: Bottle) => this.productComparator(a.getProduct(), b.getProduct()));
     }
 
-    async bottlesFromCellar2(cellar: Cellar | undefined, filter: ProductFilter): Promise<SolidBottle[]> {
-        const bottles = await this.getAllBottles();
-        return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterProduct(bottle.product))
-            .sort((a: SolidBottle, b: SolidBottle) => this.productComparator(a.product, b.product));
-    }
-
-    productComparator(a: SolidProduct, b: SolidProduct): number {
-        const nameA = a.name;
-        const nameB = b.name;
-        if (nameB === undefined) {
-            return -1
-        }
-        if (nameA === undefined) {
-            return 1;
-        }
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        // names must be equal
-        return 0;
-    }
-    productComparator2(a: Product, b: Product): number {
+    productComparator(a: Product, b: Product): number {
         const nameA = a.getName();
         const nameB = b.getName();
         if (nameB === undefined) {
@@ -208,18 +183,18 @@ export class KellermeisterService {
     }
 
     isVisible(cellar: Cellar): boolean {
-        if (cellar.displayOrder) {
-            return cellar.displayOrder > 0;
+        if (cellar.getDisplayOrder()) {
+            return cellar.getDisplayOrder() > 0;
         }
         return true;
     }
 
     async getCellarById(cellarId: string): Promise<Cellar | null> {
         if (this.cachedCellars) {
-            return this.cachedCellars.find(cellar => cellar.id === cellarId) ?? null;
+            return this.cachedCellars.find(cellar => cellar.getId() === cellarId) ?? null;
         }
         this.cachedCellars = await this.cellarRepository.fetchCellars();
-        return this.cachedCellars.find(cellar => cellar.id === cellarId) ?? null;
+        return this.cachedCellars.find(cellar => cellar.getId() === cellarId) ?? null;
     }
 
     async createCellar(name: string): Promise<Cellar> {
@@ -259,10 +234,10 @@ export class KellermeisterService {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
         const unprocessedOrders: SolidOrder[] = await this.orderRespository.fetchUnprocessedOrders();
 
-        console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.id}`);
+        console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.getId()}`);
         if (unprocessedOrders.length > 0) {
             for (const order of unprocessedOrders) {
-                await this.ingestOrder(order, cellarForCellarwork.id);
+                await this.ingestOrder(order, cellarForCellarwork.getId());
             }
         }
         return cellarForCellarwork;
@@ -450,7 +425,7 @@ export class KellermeisterService {
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
         if (cellar) {
-            return cellar.id == bottle.getCellar();
+            return cellar.getId() == bottle.getCellar();
         }
         return false;
     }

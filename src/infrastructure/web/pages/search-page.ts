@@ -3,14 +3,14 @@ import {customElement, state} from 'lit/decorators.js';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {router} from "../router.ts";
-import {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import '../components/bottle-component.ts';
+import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
 @customElement('search-page')
 class SearchPage extends BasePage {
@@ -19,7 +19,7 @@ class SearchPage extends BasePage {
     filter: ProductFilter;
 
     @state()
-    results: Map<Cellar, Map<string, SolidBottle[]>>;
+    results: Map<Cellar, Map<string, Bottle[]>>;
 
     @state()
     private searchText: string = '';
@@ -85,8 +85,8 @@ class SearchPage extends BasePage {
                 return html`
                     <section class="cellar-section">
                         <h2 class="cellar-heading">
-                            <a class="cellar-link" @click="${() => Router.go(router.urlForName('cellar-page', {cellarId: cellar.id!}))}">
-                                ${cellar.name}
+                            <a class="cellar-link" @click="${() => Router.go(router.urlForName('cellar-page', {cellarId: cellar.getId()!}))}">
+                                ${cellar.getName()}
                             </a>
                             <span class="cellar-count">${totalBottles}</span>
                         </h2>
