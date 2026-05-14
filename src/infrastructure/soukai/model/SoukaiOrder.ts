@@ -10,7 +10,7 @@ export class SoukaiOrder extends SolidModel implements Order {
     static rdfContexts = { schema: "https://schema.org/" };
     static rdfsClasses = ["schema:Order"];
     static fields = {
-        orderDate: { type: FieldType.String, rdfProperty: "schema:orderDate" },
+        orderDate: { type: FieldType.Date, rdfProperty: "schema:orderDate" },
         orderNumber: { type: FieldType.String, rdfProperty: "schema:orderNumber" },
         sellerUrl: { type: FieldType.Key, rdfProperty: "schema:seller" },
     };
@@ -18,7 +18,7 @@ export class SoukaiOrder extends SolidModel implements Order {
     getId(): string {
         return super.getIdAttribute();
     }
-    getOrderDate(): string {
+    getOrderDate(): Date {
         return this.getAttribute("orderDate");
     }
     getOrderNumber(): string {

@@ -4,7 +4,6 @@ import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
 import {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import '../components/kellermeister-button.ts';
@@ -13,6 +12,7 @@ import '../components/kellermeister-footer.ts';
 import '../components/kellermeister-wine-filter.ts';
 import '../components/bottle-component.ts';
 import {router} from "../router.ts";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
 @customElement('cellar-page')
 class CellarPage extends BasePage {
@@ -33,7 +33,7 @@ class CellarPage extends BasePage {
     private searchText: string = '';
 
     @state()
-    private ratingBottle?: SolidBottle = undefined;
+    private ratingBottle?: Bottle = undefined;
 
     @state()
     private selectedRating?: number = undefined;
@@ -44,7 +44,7 @@ class CellarPage extends BasePage {
         if (this.cellar) {
             return await this.cdi.getKellermeisterService().bottlesFromCellarGroupedByProduct(this.cellar, this.filter);
         }
-        return new Map<string, SolidBottle[]>();
+        return new Map<string, Bottle[]>();
     });
 
     constructor() {
@@ -99,7 +99,7 @@ class CellarPage extends BasePage {
               <div class="rating-overlay">
                   <div class="rating-container">
                       <div class="rating-title">Bewertung</div>
-                      <div class="rating-product">${this.ratingBottle.product?.name}</div>
+                      <div class="rating-product">${this.ratingBottle.getProduct()?.getName()}</div>
                       <div class="rating-buttons">
                           ${[0, 1, 2, 3].map(value => html`
                               <button
@@ -230,9 +230,9 @@ class CellarPage extends BasePage {
         this.loadBottles();
     }
 
-    private handleBottleClick(bottle: SolidBottle): void {
+    private handleBottleClick(bottle: Bottle): void {
         this.ratingBottle = bottle;
-        this.selectedRating = bottle.rating;
+        this.selectedRating = bottle.getRating();
     }
 
     private handleRatingSelect(rating: number): void {
@@ -246,7 +246,7 @@ class CellarPage extends BasePage {
 
     private async handleRatingConfirm(): Promise<void> {
         if (this.ratingBottle) {
-            await this.cdi.getKellermeisterService().disposeBottleToAltglass(this.ratingBottle, this.selectedRating);
+            await this.cdi.getKellermeisterService().disposeBottleToAltglass2(this.ratingBottle, this.selectedRating);
             this.loadBottles();
         }
         this.ratingBottle = undefined;

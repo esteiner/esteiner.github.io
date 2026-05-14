@@ -2,13 +2,13 @@ import {css, html, nothing} from "lit";
 import {customElement, property, state} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import "./product-component.ts";
-import type {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
 @customElement('bottle-component')
 class BottleComponent extends BaseComponent {
 
     @property()
-    bottle: SolidBottle | undefined;
+    bottle: Bottle | undefined;
 
     @property()
     expandable: boolean = true;
@@ -56,10 +56,10 @@ class BottleComponent extends BaseComponent {
                 <div>
                     <div class="card1">
                         <slot name="count"></slot>
-                        <span class="product-name" @click="${this.expandCollapseProduct}">${this.bottle.product.name}</span>
+                        <span class="product-name" @click="${this.expandCollapseProduct}">${this.bottle.getProduct().getName()}</span>
                     </div>
                     ${this.expanded ? html`
-                        <product-component .product="${this.bottle.product}"><slot></slot></product-component>
+                        <product-component .product="${this.bottle.getProduct()}"><slot></slot></product-component>
                     `
                     : nothing
                     }

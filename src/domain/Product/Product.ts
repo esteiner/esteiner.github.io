@@ -3,6 +3,7 @@ import type {OrderItem} from "../Order/OrderItem.ts";
 export interface Product {
     getId(): string;
     getName(): string;
+    getProductionDate(): Date;
     getPrice(): number;
     getPriceCurrency(): string;
     getProducer(): string;
@@ -16,7 +17,7 @@ export interface Product {
     getProduction(): string;
     getOrganic(): string;
     getClassification(): string;
-    getDrinkingWindowFrom(): string;
-    getDrinkingWindowTo(): string;
+    getDrinkingWindowFrom(): Date;
+    getDrinkingWindowTo(): Date;
     getOrderItem(): OrderItem;
 }

@@ -1,13 +1,13 @@
 import {css, html, nothing} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
-import type {SolidProduct} from "../../../domain/Product/SolidProduct.ts";
+import type {Product} from "../../../domain/Product/Product.ts";
 
 @customElement('product-component')
 class ProductComponent extends BaseComponent {
 
     @property()
-    product: SolidProduct | undefined;
+    product: Product | undefined;
 
     constructor() {
         super();
@@ -57,55 +57,55 @@ class ProductComponent extends BaseComponent {
                 </div>
                 <div class="group">
                     <label>Jahrgang</label>
-                    <span class="value">${this.renderYear(this.product?.productionDate)}</span>
+                    <span class="value">${this.renderYear(this.product?.getProductionDate())}</span>
                 </div>
                 <div class="group">
                     <label>Flaschengrösse</label>
-                    <span class="value">${this.product?.milliliter ? `${this.product.milliliter} ml` : ''}</span>
+                    <span class="value">${this.product?.getVolumeMl() ? `${this.product?.getVolumeMl()} ml` : ''}</span>
                 </div>
                 <div class="group">
                     <label>Weinart</label>
-                    <span class="value">${this.product?.weinart}</span>
+                    <span class="value">${this.product?.getWineType()}</span>
                 </div>
                 <div class="group">
                     <label>Weinfarbe</label>
-                    <span class="value">${this.product?.weinfarbe}</span>
+                    <span class="value">${this.product?.getWineColor()}</span>
                 </div>
                 <div class="group">
                     <label>Region</label>
-                    <span class="value">${this.product?.region}</span>
+                    <span class="value">${this.product?.getRegion()}</span>
                 </div>
                 <div class="group">
                     <label>Land</label>
-                    <span class="value">${this.product?.land}</span>
+                    <span class="value">${this.product?.getCountry()}</span>
                 </div>
                 <div class="group">
                     <label>Traubensorte</label>
-                    <span class="value">${this.product?.traubensorte}</span>
+                    <span class="value">${this.product?.getGrapeVariety()}</span>
                 </div>
                 <div class="group">
                     <label>Klassifikation</label>
-                    <span class="value">${this.product?.klassifikation}</span>
+                    <span class="value">${this.product?.getClassification()}</span>
                 </div>
                 <div class="group">
                     <label>Alkohol</label>
-                    <span class="value">${this.product?.alkoholgehalt}</span>
+                    <span class="value">${this.product?.getAlcoholContent()}</span>
                 </div>
                 <div class="group">
                     <label>Ausbau</label>
-                    <span class="value">${this.product?.ausbau}</span>
+                    <span class="value">${this.product?.getProduction()}</span>
                 </div>
                 <div class="group">
                     <label>Biologisch</label>
-                    <span class="value">${this.product?.biologisch}</span>
+                    <span class="value">${this.product?.getOrganic()}</span>
                 </div>
                 <div class="group">
                     <label>Trinkfenster</label>
-                    <span class="value">${this.renderYear(this.product?.trinkfensterVon)} – ${this.renderYear(this.product?.trinkfensterBis)}</span>
+                    <span class="value">${this.renderYear(this.product?.getDrinkingWindowFrom())} – ${this.renderYear(this.product?.getDrinkingWindowTo())}</span>
                 </div>
                 <div class="group">
                     <label>Quelle</label>
-                    <span class="value">${this.product?.orderItem?.order?.seller?.name}${this.renderDate(this.product?.orderItem?.order?.orderDate)}</span>
+                    <span class="value">${this.product?.getOrderItem()?.getOrder()?.getSeller()?.getName()}${this.renderDate(this.product?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
                 </div>
             </div>
         `

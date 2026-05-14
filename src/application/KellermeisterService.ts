@@ -14,6 +14,8 @@ import {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
 import {SolidOrderItem} from "../domain/Order/SolidOrderItem";
+import type {BottlesStorage} from "../domain/Bottle/BottlesStorage.ts";
+import type {Bottle} from "../domain/Bottle/Bottle.ts";
 
 /**
  * Application Use Case: Get Profile
@@ -44,6 +46,16 @@ export class KellermeisterService {
         return this.cellarRepository.fetchCellarForCellarwork();
     }
 
+    async getAllBottles2(): Promise<Bottle[]> {
+        const bottlesStorage: BottlesStorage | undefined = await this.fetchBottlesStorage();
+        if (bottlesStorage) {
+            return bottlesStorage.getBottles();
+        } else {
+            console.log("getAllBottles: bottles storage not found")
+            return new Array();
+        }
+
+    }
     async getAllBottles(): Promise<SolidBottle[]> {
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         if (bottlesContainer) {
@@ -97,17 +109,17 @@ export class KellermeisterService {
         return result;
     }
 
-    async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, SolidBottle[]>> {
-        const bottles = await this.getAllBottles();
-        const grouped = new Map<string, SolidBottle[]>();
+    async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
+        const bottles = await this.getAllBottles2();
+        const grouped = new Map<string, Bottle[]>();
 
         for (const bottle of bottles) {
-            if (bottle.product && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.product)) {
-                //console.log("bottlesFromCellarGroupedByProduct", bottle.product.id);
-                if (!grouped.has(bottle.product.id)) {
-                    grouped.set(bottle.product.id, []);
+            if (bottle.getProduct() && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct2(bottle.getProduct())) {
+                //console.log("bottlesFromCellarGroupedByProduct", bottle.getProduct().getName());
+                if (!grouped.has(bottle.getProduct().getName())) {
+                    grouped.set(bottle.getProduct().getName(), []);
                 }
-                grouped.get(bottle.product.id)?.push(bottle);
+                grouped.get(bottle.getProduct().getName())?.push(bottle);
             }
         }
         return new Map([...grouped.entries()].sort(([a], [b]) => b.toLowerCase().localeCompare(a.toLowerCase())));
@@ -281,6 +293,31 @@ export class KellermeisterService {
         }
     }
 
+    async disposeBottleToAltglass2(bottle: Bottle, rating?: number) {
+        const bottlesStorage = await this.fetchBottlesStorage();
+        if (bottlesStorage) {
+            if (rating !== undefined) {
+                bottlesStorage.rateBottle(bottle.getId(), rating);
+            }
+            // bottlesStorage.transferBottle(bottle, this.getAltglassId());
+            if (bottlesStorage.isModified()) {
+                console.log(`disposeBottleToAltglass2: ${rating}`);
+                await bottlesStorage.persist();
+            }
+        }
+        // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
+        // if (bottlesContainer) {
+        //     if (rating !== undefined) {
+        //         bottlesContainer.rateBottle(bottle, rating);
+        //     }
+        //     bottlesContainer.transferBottle(bottle, this.getAltglassId());
+        //     if (bottlesContainer.isDirty()) {
+        //         await bottlesContainer.save();
+        //         this.bottlesContainer = null;
+        //     }
+        // }
+    }
+
     async transferBottles(bottles: SolidBottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
         console.log("transferBottles: checking number of bottles", bottles.length);
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
@@ -304,10 +341,12 @@ export class KellermeisterService {
 
     // -----------------------------------------------------------------
 
+    private async fetchBottlesStorage(): Promise<BottlesStorage | undefined> {
+        return await this.bottleStorageRepository.fetchBottlesStorage();
+    }
+
     private async fetchBottles(): Promise<BottlesContainer | null> {
-        // start
-        await this.bottleStorageRepository.fetchBottlesStorage();
-        // end
+        await this.fetchBottlesStorage();
         if (this.bottlesContainer) {
             console.log("fetchBottles: from cache");
             return this.bottlesContainer;
@@ -345,9 +384,9 @@ export class KellermeisterService {
         return this.bottlesContainer;
     }
 
-    private isBottleInThisCellar(bottle: SolidBottle, cellar: Cellar | undefined) {
+    private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
         if (cellar) {
-            return cellar.id == bottle.cellar;
+            return cellar.id == bottle.getCellar();
         }
         return false;
     }

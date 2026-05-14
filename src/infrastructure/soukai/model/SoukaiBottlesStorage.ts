@@ -20,9 +20,21 @@ export class SoukaiBottlesStorage extends SolidModel implements BottlesStorage {
     }
 
     getId(): string {
-        return this.id;
+        return this.url;
     }
     getBottles(): SoukaiBottle[] {
         return this.bottles;
+    }
+
+    rateBottle(bottleId: string, rating: number) {
+        this.bottles.filter(bottle => bottle.getId() === bottleId).forEach(bottle => bottle.setRating(rating));
+    }
+
+    isModified() {
+        return this.isDirty();
+    }
+
+    persist(): Promise<this> {
+        return this.save();
     }
 }

@@ -4,4 +4,8 @@ export interface Bottle {
     getId(): string;
     getCellar(): string;
     getProduct(): Product;
+    getPrice(): number;
+    getPriceCurrency(): string;
+    getRating(): number;
+    setRating(rating: number): void;
 }

@@ -12,7 +12,7 @@ export class SoukaiSeller extends SolidModel implements Seller {
         email: { type: FieldType.String, rdfProperty: "schema:email" },
     };
     getId(): string {
-        return this.id;
+        return super.getIdAttribute();
     }
     getName(): string {
         return this.getAttribute("name");

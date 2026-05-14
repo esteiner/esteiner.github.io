@@ -12,6 +12,7 @@ export class SoukaiProduct extends SolidModel implements Product {
     static rdfsClasses = ["schema:Product"];
     static fields = {
         name: { type: FieldType.String, rdfProperty: "schema:name" },
+        productionDate: { type: FieldType.Date, rdfProperty: "schema:name" },
         price: { type: FieldType.Number, rdfProperty: "schema:price" },
         priceCurrency: { type: FieldType.String, rdfProperty: "schema:priceCurrency" },
         producer: { type: FieldType.String, rdfProperty: "wine:hersteller" },
@@ -25,8 +26,8 @@ export class SoukaiProduct extends SolidModel implements Product {
         production: { type: FieldType.String, rdfProperty: "wine:ausbau" },
         organic: { type: FieldType.String, rdfProperty: "wine:biologisch" },
         classification: { type: FieldType.String, rdfProperty: "wine:klassifikation" },
-        drinkingWindowFrom: { type: FieldType.String, rdfProperty: "wine:trinkfensterVon" },
-        drinkingWindowTo: { type: FieldType.String, rdfProperty: "wine:trinkfensterBis" },
+        drinkingWindowFrom: { type: FieldType.Date, rdfProperty: "wine:trinkfensterVon" },
+        drinkingWindowTo: { type: FieldType.Date, rdfProperty: "wine:trinkfensterBis" },
         orderItemUrl: { type: FieldType.Key, rdfProperty: "wine:orderItem" },
     };
 
@@ -39,10 +40,13 @@ export class SoukaiProduct extends SolidModel implements Product {
     }
 
     getId(): string {
-        return this.id;
+        return super.getIdAttribute();
     }
     getName(): string {
         return this.getAttribute("name");
+    }
+    getProductionDate(): Date {
+        return this.getAttribute("productionDate");
     }
     getPrice(): number {
         return this.getAttribute("price");
@@ -83,10 +87,10 @@ export class SoukaiProduct extends SolidModel implements Product {
     getClassification(): string {
         return this.getAttribute("classification");
     }
-    getDrinkingWindowFrom(): string {
+    getDrinkingWindowFrom(): Date {
         return this.getAttribute("drinkingWindowFrom");
     }
-    getDrinkingWindowTo(): string {
+    getDrinkingWindowTo(): Date {
         return this.getAttribute("drinkingWindowTo");
     }
     getOrderItem(): SoukaiOrderItem {

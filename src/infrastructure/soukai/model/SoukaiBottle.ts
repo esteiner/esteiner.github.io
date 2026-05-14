@@ -10,6 +10,7 @@ export class SoukaiBottle extends SolidModel implements Bottle {
     static fields = {
         cellarUrl: { type: FieldType.Key, rdfProperty: "schema:cellar" },
         subjectOfUrl: { type: FieldType.Key, rdfProperty: "schema:subjectOf" },
+        rating: { type: FieldType.Number, rdfProperty: "schema:rating" },
     };
 
     declare public product: SoukaiProduct;
@@ -21,7 +22,7 @@ export class SoukaiBottle extends SolidModel implements Bottle {
     }
 
     getId(): string {
-        return this.id;
+        return super.getIdAttribute();
     }
     getCellar(): string {
         return this.getAttribute("cellarUrl");
@@ -29,4 +30,17 @@ export class SoukaiBottle extends SolidModel implements Bottle {
     getProduct(): SoukaiProduct {
         return this.product;
     }
+    getPrice(): number {
+        return this.getProduct()?.getPrice() ?? 0;
+    }
+    getPriceCurrency(): string {
+        return this.getProduct().getPriceCurrency() ?? "n/a";
+    }
+    getRating(): number {
+        return this.getAttribute("rating");
+    }
+    setRating(rating: number) {
+        this.setAttributeValue("rating", rating);
+    }
+
 }

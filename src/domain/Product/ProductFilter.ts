@@ -1,6 +1,7 @@
 import {Weinart} from "./Weinart.ts";
 import {Weinfarbe} from "./Weinfarbe.ts";
 import {SolidProduct} from "./SolidProduct.ts";
+import type {Product} from "./Product.ts";
 
 export class ProductFilter {
 
@@ -101,6 +102,43 @@ export class ProductFilter {
                     || this.isIncludedIn(textFilterLowerCase, product.land?.toLowerCase())
                     || this.isIncludedIn(textFilterLowerCase, product.region?.toLowerCase())
                     || this.isBiggerThan(this.textFilter, product.trinkfensterBis?.getFullYear())
+                );
+            }
+        }
+        return result;
+    }
+
+    public filterProduct2(product: Product): boolean {
+        let result: boolean = true;
+        // Weinart
+        if (this.isSprudel) {
+            result = result && Weinart.Schaumwein.equals(product.getWineType());
+        }
+        if (this.isDessert) {
+            result = result && Weinart.Dessertwein.equals(product.getWineType());
+        }
+        // Weinfarbe
+        if (this.isWhite) {
+            result = result && Weinfarbe.Weiss.equals(product.getWineColor());
+        }
+        if (this.isRed) {
+            result = result && Weinfarbe.Rot.equals(product.getWineColor());
+        }
+        if (this.isRose) {
+            result = result && Weinfarbe.Rose.equals(product.getWineColor());
+        }
+        // Text
+        if (this.isText) {
+            if (this.textFilter) {
+                const textFilterLowerCase = this.textFilter.toLowerCase();
+                result = result && (
+                    this.isIncludedIn(textFilterLowerCase, product.getName()?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.getProduction()?.toUTCString().toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.getGrapeVariety()?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.getAlcoholContent())
+                    || this.isIncludedIn(textFilterLowerCase, product.getCountry()?.toLowerCase())
+                    || this.isIncludedIn(textFilterLowerCase, product.getRegion()?.toLowerCase())
+                    || this.isBiggerThan(this.textFilter, product.getDrinkingWindowTo()?.getFullYear())
                 );
             }
         }
