@@ -6,6 +6,7 @@ import {Order} from "../domain/Order/Order.ts";
 import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
+import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import {Product} from "../domain/Product/Product.ts";
 import {ProductFactory} from "../domain/Product/ProductFactory.ts";
@@ -24,7 +25,7 @@ export class KellermeisterService {
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
-    constructor(private cellarRepository: CellarRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
+    constructor(private cellarRepository: CellarRepository, private bottleStorageRepository: BottlesStorageRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
 
     getAltglassId(): string {
@@ -304,6 +305,9 @@ export class KellermeisterService {
     // -----------------------------------------------------------------
 
     private async fetchBottles(): Promise<BottlesContainer | null> {
+        // start
+        await this.bottleStorageRepository.fetchBottlesStorage();
+        // end
         if (this.bottlesContainer) {
             console.log("fetchBottles: from cache");
             return this.bottlesContainer;

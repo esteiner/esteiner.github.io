@@ -3,10 +3,12 @@ import {SolidPodService} from "../solid/SolidPodService.ts";
 import {SolidOrderRespository} from "../solid/SolidOrderRespository.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
 import {SolidBottlesContainerRepository} from "../solid/SolidBottlesContainerRepository.ts";
+import {SoukaiBottlesStorageRepository} from "../soukai/SoukaiBottlesStorageRepository.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
 import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
+import type {BottlesStorageRepository} from "../../domain/Bottle/BottlesStorageRepository.ts";
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
 import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
@@ -31,6 +33,7 @@ export class CDI {
     private orderFactory: OrderFactory;
 
     // Repositories
+    private bottleStorageRepository: BottlesStorageRepository | null = null;
     private cellarRepository: CellarRepository | null = null;
     private bottlesContainerRepository: BottlesContainerRepository | null = null;
     private orderRepository: OrderRepository | null = null;
@@ -83,12 +86,13 @@ export class CDI {
         if (this.storageUrl) {
 
             // Initialize repositories
+            this.bottleStorageRepository = new SoukaiBottlesStorageRepository(this.storageUrl);
             this.cellarRepository = new SolidCellarRepository(this.storageUrl);
             this.bottlesContainerRepository = new SolidBottlesContainerRepository(this.storageUrl);
             this.orderRepository = new SolidOrderRespository(this.storageUrl);
             // Initialize services
             this.solidPodService = new SolidPodService(this.storageUrl);
-            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
+            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottleStorageRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
         }
      }
 
