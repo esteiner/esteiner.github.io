@@ -33,7 +33,7 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
             const document = await requireEngine().readOne(this.bottlesUrl, this.bottlesUrl);
             const bottlesStorage = await this.deserializeDocument(document);
             const end = performance.now();
-            console.log("fetchBottlesContainer: ", bottlesStorage?.getBottles()?.length, "found in", this.asSeconds(end - start));
+            console.log("fetchBottlesContainer: ", bottlesStorage?.getBottles()?.length, "found in", this.asSeconds(end - start), "seconds");
             return bottlesStorage;
         } catch (error) {
 
