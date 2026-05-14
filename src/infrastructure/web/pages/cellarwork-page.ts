@@ -6,13 +6,13 @@ import { BasePage } from "../common/base-page.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {SolidBottle} from "../../../domain/Bottle/SolidBottle.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import "../components/order-item-component.ts";
 import "../components/bottle-component.ts";
 import type {RouterLocation} from "@vaadin/router";
 import {ProductFilter} from "../../../domain/Product/ProductFilter";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
 @customElement('cellarwork-page')
 class CellarWorkPage extends BasePage {
@@ -46,7 +46,7 @@ class CellarWorkPage extends BasePage {
         if (this.sourceCellar) {
             return await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
         }
-        return new Array<SolidBottle>();
+        return new Array<Bottle>();
     });
 
     constructor() {
@@ -275,7 +275,7 @@ class CellarWorkPage extends BasePage {
                                     `)}
                                 </div>
                                 <div class="data-row">
-                                    ${repeat(bottles, (bottle) => bottle.id, (bottle, index) =>  html`
+                                    ${repeat(bottles, (bottle) => bottle.getId(), (bottle, index) =>  html`
                                         <span class="column1">
                                             <bottle-component .bottle="${bottle}" .expandable=${this.expandable}>${bottle.getPrice()}</bottle-component>
                                         </span>
@@ -308,7 +308,7 @@ class CellarWorkPage extends BasePage {
 
     private async handleIngestClick(e: Event) {
         e.preventDefault();
-        const bottlesForUpdate: SolidBottle[] = this._bottlesTask.value ?? [];
+        const bottlesForUpdate: Bottle[] = this._bottlesTask.value ?? [];
         console.log("handleIngestClick: number of bottles: ", bottlesForUpdate.length);
         await this.cdi.getKellermeisterService().transferBottles(bottlesForUpdate, this.cellarIds);
         this.loadBottles();

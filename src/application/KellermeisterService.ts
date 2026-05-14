@@ -16,6 +16,7 @@ import { fetch } from "@inrupt/solid-client-authn-browser";
 import {SolidOrderItem} from "../domain/Order/SolidOrderItem";
 import type {BottlesStorage} from "../domain/Bottle/BottlesStorage.ts";
 import type {Bottle} from "../domain/Bottle/Bottle.ts";
+import type {Product} from "../domain/Product/Product.ts";
 
 /**
  * Application Use Case: Get Profile
@@ -128,7 +129,13 @@ export class KellermeisterService {
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
-    async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<SolidBottle[]> {
+    async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
+        const bottles = await this.getAllBottles2();
+        return bottles.filter(bottle => cellar?.id === bottle.getCellar()).filter(bottle => filter.filterProduct2(bottle.getProduct()))
+            .sort((a: Bottle, b: Bottle) => this.productComparator2(a.getProduct(), b.getProduct()));
+    }
+
+    async bottlesFromCellar2(cellar: Cellar | undefined, filter: ProductFilter): Promise<SolidBottle[]> {
         const bottles = await this.getAllBottles();
         return bottles.filter(bottle => cellar?.id === bottle.cellar).filter(bottle => filter.filterProduct(bottle.product))
             .sort((a: SolidBottle, b: SolidBottle) => this.productComparator(a.product, b.product));
@@ -137,6 +144,24 @@ export class KellermeisterService {
     productComparator(a: SolidProduct, b: SolidProduct): number {
         const nameA = a.name;
         const nameB = b.name;
+        if (nameB === undefined) {
+            return -1
+        }
+        if (nameA === undefined) {
+            return 1;
+        }
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        // names must be equal
+        return 0;
+    }
+    productComparator2(a: Product, b: Product): number {
+        const nameA = a.getName();
+        const nameB = b.getName();
         if (nameB === undefined) {
             return -1
         }
@@ -302,7 +327,7 @@ export class KellermeisterService {
             // bottlesStorage.transferBottle(bottle, this.getAltglassId());
             if (bottlesStorage.isModified()) {
                 console.log(`disposeBottleToAltglass2: ${rating}`);
-                await bottlesStorage.persist();
+                await this.bottleStorageRepository.save(bottlesStorage);
             }
         }
         // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
@@ -318,7 +343,46 @@ export class KellermeisterService {
         // }
     }
 
-    async transferBottles(bottles: SolidBottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
+    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesStorage | undefined> {
+        console.log("transferBottles: checking number of bottles", bottles.length);
+        const bottlesStorage = await this.fetchBottlesStorage();
+        var transferred: number = 0;
+        if (bottlesStorage) {
+            for (var i = 0; i < bottles.length; i++) {
+                if (cellarIds[i] != undefined) {
+                    bottlesStorage.transferBottle(bottles[i], cellarIds[i]);
+                    transferred++;
+                }
+            }
+        }
+        if (bottlesStorage?.isModified()) {
+            console.log("transferBottles: updating number of bottles", transferred);
+            const savedBottlesStorage = await this.bottleStorageRepository.save(bottlesStorage);
+            console.log("transferBottles: updated bottles", transferred);
+            return savedBottlesStorage;
+
+        }
+        return bottlesStorage;
+        // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
+        // var transferred: number = 0;
+        // if (bottlesContainer) {
+        //     for (var i = 0; i < bottles.length; i++) {
+        //         if (cellarIds[i] != undefined) {
+        //             bottlesContainer.transferBottle(bottles[i], cellarIds[i]);
+        //             transferred++;
+        //         }
+        //     }
+        // }
+        // if (bottlesContainer?.isDirty) {
+        //     console.log("transferBottles: updating number of bottles", transferred);
+        //     const savedBottlesContainer: BottlesContainer | null = await this.saveBottles();
+        //     console.log("transferBottles: updated bottles", transferred);
+        //     return savedBottlesContainer;
+        // }
+        // return bottlesContainer;
+    }
+
+   async transferBottles2(bottles: SolidBottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
         console.log("transferBottles: checking number of bottles", bottles.length);
         const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
         var transferred: number = 0;

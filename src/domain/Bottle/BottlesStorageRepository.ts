@@ -7,4 +7,6 @@ export interface BottlesStorageRepository {
      */
     fetchBottlesStorage(): Promise<BottlesStorage | undefined>;
 
+    save(bottlesStorage: BottlesStorage): Promise<BottlesStorage | undefined>;
+
 }

@@ -22,10 +22,13 @@ export class SoukaiBottle extends SolidModel implements Bottle {
     }
 
     getId(): string {
-        return super.getIdAttribute();
+        return this.url;
     }
     getCellar(): string {
         return this.getAttribute("cellarUrl");
+    }
+    setCellar(cellarId: string): void {
+        this.setAttributeValue("cellarUrl", cellarId);
     }
     getProduct(): SoukaiProduct {
         return this.product;

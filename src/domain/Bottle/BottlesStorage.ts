@@ -5,5 +5,5 @@ export interface BottlesStorage {
     getBottles(): Bottle[];
     rateBottle(bottleId: string, rating: number): void;
     isModified(): boolean;
-    persist(): Promise<this>;
+    transferBottle(bottle: Bottle, cellarId: string): void;
 }

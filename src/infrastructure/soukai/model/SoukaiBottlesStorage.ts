@@ -2,6 +2,7 @@ import {SolidModel} from "soukai-solid";
 import type {BottlesStorage} from "../../../domain/Bottle/BottlesStorage.ts";
 import {FieldType, type Relation} from "soukai";
 import {SoukaiBottle} from "./SoukaiBottle.ts";
+import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
 export class SoukaiBottlesStorage extends SolidModel implements BottlesStorage {
     static timestamps = false;
@@ -34,7 +35,7 @@ export class SoukaiBottlesStorage extends SolidModel implements BottlesStorage {
         return this.isDirty();
     }
 
-    persist(): Promise<this> {
-        return this.save();
+    transferBottle(transferedBottle: Bottle, cellarId: string) {
+        this.bottles.filter(bottle => bottle.getId() === transferedBottle.getId()).forEach(bottle => bottle.setCellar(cellarId));
     }
 }

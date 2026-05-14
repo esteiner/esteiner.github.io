@@ -34,10 +34,17 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
             const bottlesStorage = await this.deserializeDocument(document);
             const end = performance.now();
             console.log("fetchBottlesContainer: ", bottlesStorage?.getBottles()?.length, "bottles found in", this.asSeconds(end - start), "seconds");
+            console.log("fetchBottlesContainer: modified", bottlesStorage?.isModified());
             return bottlesStorage;
         } catch (error) {
 
         }
+    }
+
+    async save(bottlesStorage: BottlesStorage): Promise<BottlesStorage | undefined> {
+        console.log("save: is modified", bottlesStorage.isModified());
+        (bottlesStorage as SoukaiBottlesStorage).save();
+        return await this.fetchBottlesStorage();
     }
 
     private async deserializeDocument(document: EngineDocument): Promise<SoukaiBottlesStorage | undefined> {
@@ -121,13 +128,13 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
             if (!this.hasType(entry, SCHEMA_PRODUCT)) continue;
             const product = await SoukaiProduct.newFromJsonLD(entry, this.bottlesUrl);
             const a = product.getAttributes();
-            if (product.getProductionDate() === undefined) {
-                console.error("deserializeProductsInto: production date undefined", product);
-            }
-            if (product.getProductionDate() === null) {
-                console.error("deserializeProductsInto: production date null", product);
-            }
-            console.log("deserializeProductsInto:", product.getName(), product.getAttribute("productionDate"));
+            // if (product.getProductionDate() === undefined) {
+            //     console.error("deserializeProductsInto: production date undefined", product);
+            // }
+            // if (product.getProductionDate() === null) {
+            //     console.error("deserializeProductsInto: production date null", product);
+            // }
+            // console.log("deserializeProductsInto:", product.getName(), product.getProductionDate());
             const orderItem = a.orderItemUrl
                 ? orderItemMap.get(a.orderItemUrl as string)
                 : undefined;
@@ -161,8 +168,8 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
             if (!this.hasType(entry, SCHEMA_COLLECTION)) continue;
             const bottlesStorage = await SoukaiBottlesStorage.newFromJsonLD(entry, this.bottlesUrl);
             bottlesStorage.url = this.bottlesUrl;
-            console.log("fetchBottlesContainer: id = ", bottlesStorage.getId());
-            console.log("fetchBottlesContainer: attributes", bottlesStorage.getAttributes());
+            // console.log("fetchBottlesContainer: id = ", bottlesStorage.getId());
+            // console.log("fetchBottlesContainer: attributes", bottlesStorage.getAttributes());
             bottlesStorage.bottles = bottles;
             return bottlesStorage;
         }
