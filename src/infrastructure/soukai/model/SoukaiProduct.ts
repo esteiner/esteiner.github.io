@@ -11,11 +11,13 @@ export class SoukaiProduct extends SolidModel implements Product {
     };
     static rdfsClasses = ["schema:Product"];
     static fields = {
-        name: { type: FieldType.String, rdfProperty: "schema:name" },
+        name: {
+            type: FieldType.String,
+            rdfProperty: "schema:name",
+        },
         productionDate: {
             type: FieldType.Date,
-            rdfProperty: "schema:name",
-            set: () => console.log("setter"),
+            rdfProperty: "schema:productionDate",
         },
         price: { type: FieldType.Number, rdfProperty: "schema:price" },
         priceCurrency: { type: FieldType.String, rdfProperty: "schema:priceCurrency" },
