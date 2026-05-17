@@ -1,5 +1,5 @@
-import type {BottlesStorageRepository} from "../../domain/Bottle/BottlesStorageRepository.ts";
-import type {BottlesStorage} from "../../domain/Bottle/BottlesStorage.ts";
+import type {BottlesDocumentRepository} from "../../domain/Bottle/BottlesDocumentRepository.ts";
+import type {BottlesDocument} from "../../domain/Bottle/BottlesDocument.ts";
 import {bootModels, type EngineDocument, requireEngine} from "soukai";
 import {SoukaiSeller} from "./model/SoukaiSeller.ts";
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
@@ -7,6 +7,8 @@ import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
 import {SoukaiProduct} from "./model/SoukaiProduct.ts";
 import {SoukaiBottle} from "./model/SoukaiBottle.ts";
 import {SoukaiBottlesStorage} from "./model/SoukaiBottlesStorage.ts";
+import {urlRoute} from "@noeldemartin/utils";
+import type {SolidModel} from "soukai-solid";
 
 const SCHEMA_ORGANIZATION = "https://schema.org/Organization"; // seller
 const SCHEMA_ORDER = "https://schema.org/Order";
@@ -15,35 +17,40 @@ const SCHEMA_PRODUCT = "https://schema.org/Product";
 const SCHEMA_LIST_ITEM = "https://schema.org/ListItem"; // bottle
 const SCHEMA_COLLECTION = "https://schema.org/Collection"; // bottles
 
-export class SoukaiBottlesStorageRepository implements BottlesStorageRepository {
+export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository {
 
     private bottlesUrl: string;
+    private bottlesDocumentUrl: string;
 
     constructor(storageUrl: URL) {
         this.bottlesUrl = storageUrl.toString() + 'private/kellermeister/bottles/bottles#it';
+        this.bottlesDocumentUrl = urlRoute(this.bottlesUrl);
+        bootModels({ SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage });
     }
 
     /**
      * Fetches the BottleStorage.
      */
-    async fetchBottlesStorage(): Promise<BottlesStorage | undefined> {
+    async fetchBottlesStorage(): Promise<SoukaiBottlesStorage | undefined> {
         try {
+            console.log(`fetchBottlesContainer: from bottlesUrl`, this.bottlesUrl);
+            console.log(`fetchBottlesContainer: from urlRoute(bottlesUrl)`, this.bottlesDocumentUrl);
             const start = performance.now();
-            bootModels({ SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage });
             const document = await requireEngine().readOne(this.bottlesUrl, this.bottlesUrl);
             const bottlesStorage = await this.deserializeDocument(document);
             const end = performance.now();
             console.log("fetchBottlesContainer: ", bottlesStorage?.getBottles()?.length, "bottles found in", this.asSeconds(end - start), "seconds");
-            console.log("fetchBottlesContainer: modified", bottlesStorage?.isModified());
             return bottlesStorage;
         } catch (error) {
-
+            console.log(error);
         }
     }
 
-    async save(bottlesStorage: BottlesStorage): Promise<BottlesStorage | undefined> {
-        console.log("save: is modified", bottlesStorage.isModified());
-        (bottlesStorage as SoukaiBottlesStorage).save();
+    async save(bottlesStorage: BottlesDocument): Promise<BottlesDocument | undefined> {
+        const soukaiBottlesStorage = bottlesStorage as SoukaiBottlesStorage;
+        soukaiBottlesStorage.url = this.bottlesUrl;
+        console.log("save: is modified", soukaiBottlesStorage.isDirty());
+        await soukaiBottlesStorage.save();
         return await this.fetchBottlesStorage();
     }
 
@@ -52,27 +59,34 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
             const entries = (document as any)["@graph"] as any[];
             console.log("deserializeDocument: with entries", entries.length);
 
-            // 1. Build Seller lookup
-            const sellerMap = new Map<string, SoukaiSeller>();
-            await this.deserializeSellerInto(entries, sellerMap);
+            // 0. Build BottlesDocument
+            const bottlesStorage: SoukaiBottlesStorage | undefined = await this.deserializeBottlesStorage(entries);
 
-            // 2. Build Order lookup
-            const orderMap = new Map<string, SoukaiOrder>();
-            await this.deserializeOrdersInto(entries, orderMap, sellerMap);
+            if (bottlesStorage) {
+                // 1. Build Seller lookup
+                const sellerMap = new Map<string, SoukaiSeller>();
+                await this.deserializeSellerInto(entries, sellerMap);
 
-            // 3. Build OrderItem lookup
-            const orderItemMap = new Map<string, SoukaiOrderItem>();
-            await this.deserializeOrderItemsInto(entries, orderItemMap, orderMap);
+                // 2. Build Order lookup
+                const orderMap = new Map<string, SoukaiOrder>();
+                await this.deserializeOrdersInto(entries, orderMap, sellerMap);
 
-            // 4. Build Product lookup
-            const productMap = new Map<string, SoukaiProduct>();
-            await this.deserializeProductsInto(entries, productMap, orderItemMap);
+                // 3. Build OrderItem lookup
+                const orderItemMap = new Map<string, SoukaiOrderItem>();
+                await this.deserializeOrderItemsInto(entries, orderItemMap, orderMap);
 
-            // 5. Build Bottles from ListItems via BottleModel
-            const soukaiBottles: SoukaiBottle[] = await this.deserializeBottles(entries, productMap);
+                // 4. Build Product lookup
+                const productMap = new Map<string, SoukaiProduct>();
+                await this.deserializeProductsInto(entries, productMap, orderItemMap);
 
-            // 6. Build BottlesStorage
-            const bottlesStorage: SoukaiBottlesStorage | undefined = await this.deserializeBottlesStorage(entries, soukaiBottles);
+                // 5. Build Bottles from ListItems via BottleModel
+                const soukaiBottles: SoukaiBottle[] = await this.deserializeBottles(entries, productMap);
+
+                bottlesStorage.setRelationModels("bottles", soukaiBottles);
+                const documentModels = bottlesStorage.getDocumentModels();
+                bottlesStorage.cleanDirty();
+                console.log("documentModels: ", documentModels);
+            }
 
             return bottlesStorage;
         } catch (error) {
@@ -80,11 +94,25 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
         }
     }
 
+    // 0. BottlesStorage
+    private async deserializeBottlesStorage(entries: any) {
+        for (const entry of entries) {
+            if (!this.hasType(entry, SCHEMA_COLLECTION)) continue;
+            const bottlesStorage = await SoukaiBottlesStorage.newFromJsonLD(entry, this.bottlesUrl);
+            bottlesStorage.url = this.bottlesUrl;
+            return bottlesStorage;
+        }
+    }
+
     // 1. Seller
     private async deserializeSellerInto(entries: any, sellerMap: Map<string, SoukaiSeller>) {
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_ORGANIZATION)) continue;
-            const seller = await SoukaiSeller.newFromJsonLD(entry, this.bottlesUrl);
+            const seller = await SoukaiSeller.newFromJsonLD(entry, this.bottlesDocumentUrl);
+            this.setId(seller, entry);
+            console.log("deserializeSellerInto: getDocumentUrl()", seller.getDocumentUrl());
+            console.log("deserializeSellerInto: getSourceDocumentUrl()", seller.getSourceDocumentUrl());
+            seller.cleanDirty();
             sellerMap.set(entry["@id"], seller);
             //console.log("deserializeDocument: seller found", seller);
         }
@@ -95,12 +123,14 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_ORDER)) continue;
             const order = await SoukaiOrder.newFromJsonLD(entry, this.bottlesUrl);
+            this.setId(order, entry);
             const a = order.getAttributes();
             const seller = a.sellerUrl
                 ? sellerMap.get(a.sellerUrl as string)
                 : undefined;
             if (!seller) continue;
             order.seller = seller;
+            order.cleanDirty();
             orderMap.set(entry["@id"], order);
             //console.log("deserializeOrdersInto: order found", order);
         }
@@ -111,12 +141,14 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_ORDER_ITEM)) continue;
             const orderItem = await SoukaiOrderItem.newFromJsonLD(entry, this.bottlesUrl);
+            this.setId(orderItem, entry);
             const a = orderItem.getAttributes();
-            const order = a.orderUrl
-                ? orderMap.get(a.orderUrl as string)
+            const order = a.orderUrl ?
+                orderMap.get(a.orderUrl as string)
                 : undefined;
             if (!order) continue;
             orderItem.order = order;
+            orderItem.cleanDirty();
             orderItemMap.set(entry["@id"], orderItem);
             //console.log("deserializeOrderItemsInto: orderItem found", orderItem);
         }
@@ -127,19 +159,15 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_PRODUCT)) continue;
             const product = await SoukaiProduct.newFromJsonLD(entry, this.bottlesUrl);
+            this.setId(product, entry);
+            // console.log("deserializeProductsInto: product.id", product.getId());
             const a = product.getAttributes();
-            // if (product.getProductionDate() === undefined) {
-            //     console.error("deserializeProductsInto: production date undefined", product);
-            // }
-            // if (product.getProductionDate() === null) {
-            //     console.error("deserializeProductsInto: production date null", product);
-            // }
-            // console.log("deserializeProductsInto:", product.getName(), product.getProductionDate());
-            const orderItem = a.orderItemUrl
-                ? orderItemMap.get(a.orderItemUrl as string)
+            const orderItem = a.orderItemUrl ?
+                orderItemMap.get(a.orderItemUrl as string)
                 : undefined;
             if (!orderItem) continue;
             product.orderItem = orderItem;
+            product.cleanDirty();
             productMap.set(entry["@id"], product);
             //console.log("deserializeProductsInto: product found", product);
         }
@@ -151,28 +179,29 @@ export class SoukaiBottlesStorageRepository implements BottlesStorageRepository 
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_LIST_ITEM)) continue;
             const bottle = await SoukaiBottle.newFromJsonLD(entry, this.bottlesUrl);
+            this.setId(bottle, entry);
             const a = bottle.getAttributes();
-            const product = a.subjectOfUrl
-                ? productMap.get(a.subjectOfUrl as string)
+            const product = a.productUrl ?
+                productMap.get(a.productUrl as string)
                 : undefined;
             if (!product) continue;
             bottle.product = product;
+            console.log("deserializeBottles: bottle.cellarUrl", bottle.cellarUrl);
+            bottle.cleanDirty();
             bottles.push(bottle);
         }
-        return bottles
+        return bottles;
     }
 
-    // 6. BottlesStorage
-    private async deserializeBottlesStorage(entries: any, bottles: SoukaiBottle[]) {
-        for (const entry of entries) {
-            if (!this.hasType(entry, SCHEMA_COLLECTION)) continue;
-            const bottlesStorage = await SoukaiBottlesStorage.newFromJsonLD(entry, this.bottlesUrl);
-            bottlesStorage.url = this.bottlesUrl;
-            // console.log("fetchBottlesContainer: id = ", bottlesStorage.getId());
-            // console.log("fetchBottlesContainer: attributes", bottlesStorage.getAttributes());
-            bottlesStorage.bottles = bottles;
-            return bottlesStorage;
-        }
+    private setId(soukaiModel: SolidModel, entry: any): void {
+        const relativeId: string = this.relativeId(entry["@id"]);
+        // @ts-ignore
+        soukaiModel["@id"] = relativeId;
+        soukaiModel.url = relativeId;
+    }
+
+    private relativeId(absoluteId: string): string {
+        return absoluteId.substring(this.bottlesDocumentUrl.length, absoluteId.length);
     }
 
     private hasType(entry: any, typeUri: string): boolean {

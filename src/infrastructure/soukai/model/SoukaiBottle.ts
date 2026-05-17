@@ -1,23 +1,17 @@
-import {type SolidBelongsToOneRelation, SolidModel} from "soukai-solid";
+import {type Relation} from "soukai";
+import {type SolidBelongsToOneRelation} from "soukai-solid";
+import Model from "./SoukaiBottle.schema";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
-import {FieldType, type Relation} from "soukai";
 import {SoukaiProduct} from "./SoukaiProduct.ts";
 
-export class SoukaiBottle extends SolidModel implements Bottle {
+export class SoukaiBottle extends Model implements Bottle {
     static timestamps = false;
-    static rdfContexts = { schema: "https://schema.org/" };
-    static rdfsClasses = ["schema:ListItem"];
-    static fields = {
-        cellarUrl: { type: FieldType.Key, rdfProperty: "schema:cellar" },
-        subjectOfUrl: { type: FieldType.Key, rdfProperty: "schema:subjectOf" },
-        rating: { type: FieldType.Number, rdfProperty: "schema:rating" },
-    };
 
     declare public product: SoukaiProduct;
     declare public relatedProduct: SolidBelongsToOneRelation<SoukaiBottle, SoukaiProduct, typeof SoukaiProduct>;
     public productRelationship() : Relation {
         return this
-            .belongsToOne(SoukaiProduct, 'subjectOfUrl')
+            .belongsToOne(SoukaiProduct, 'productUrl')
             .usingSameDocument(true);
     }
 
@@ -25,25 +19,31 @@ export class SoukaiBottle extends SolidModel implements Bottle {
         return this.url;
     }
     getCellar(): string {
-        return this.getAttribute("cellarUrl");
+        return this.cellarUrl;
     }
     setCellar(cellarId: string): void {
-        this.setAttributeValue("cellarUrl", cellarId);
+        console.log("setCellar: argument", cellarId);
+        this.cellarUrl = cellarId;
+        console.log("setCellar: new value", this.cellarUrl);
     }
     getProduct(): SoukaiProduct {
         return this.product;
     }
     getPrice(): number {
-        return this.getProduct()?.getPrice() ?? 0;
+        return this.orUndefined(this.price);
     }
     getPriceCurrency(): string {
-        return this.getProduct().getPriceCurrency() ?? "n/a";
+        return this.orUndefined(this.priceCurrency);
     }
     getRating(): number {
-        return this.getAttribute("rating");
+        return this.orUndefined(this.rating);
     }
     setRating(rating: number) {
-        this.setAttributeValue("rating", rating);
+        this.rating = rating;
+    }
+
+    private orUndefined(value: any): any | undefined {
+        return value ? value : undefined;
     }
 
 }

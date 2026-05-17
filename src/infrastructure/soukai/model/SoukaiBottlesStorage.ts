@@ -1,10 +1,13 @@
 import {SolidModel} from "soukai-solid";
-import type {BottlesStorage} from "../../../domain/Bottle/BottlesStorage.ts";
+import type {BottlesDocument} from "../../../domain/Bottle/BottlesDocument.ts";
 import {FieldType, type Relation} from "soukai";
 import {SoukaiBottle} from "./SoukaiBottle.ts";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 
-export class SoukaiBottlesStorage extends SolidModel implements BottlesStorage {
+/**
+ * This class represents the bottles.ttl resource/document containing all bottles.
+ */
+export class SoukaiBottlesStorage extends SolidModel implements BottlesDocument {
     static timestamps = false;
     static rdfContexts = { schema: "https://schema.org/" };
     static rdfsClasses = ["schema:Collection"];
@@ -26,16 +29,18 @@ export class SoukaiBottlesStorage extends SolidModel implements BottlesStorage {
     getBottles(): SoukaiBottle[] {
         return this.bottles;
     }
-
-    rateBottle(bottleId: string, rating: number) {
-        this.bottles.filter(bottle => bottle.getId() === bottleId).forEach(bottle => bottle.setRating(rating));
+    addBottle(bottle: Bottle): void {
+        if (bottle instanceof SoukaiBottle) {
+            this.bottles.push(bottle as SoukaiBottle);
+        }
     }
 
-    isModified() {
+    isDirty2() {
+        console.log("isDirty2: ", super.isDirty());
         return this.isDirty();
     }
-
-    transferBottle(transferedBottle: Bottle, cellarId: string) {
-        this.bottles.filter(bottle => bottle.getId() === transferedBottle.getId()).forEach(bottle => bottle.setCellar(cellarId));
+    save(): Promise<this> {
+        return super.save();
     }
+
 }

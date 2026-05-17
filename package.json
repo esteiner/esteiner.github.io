@@ -16,6 +16,7 @@
     "@inrupt/vocab-solid": "^1.0.4",
     "@lit/task": "^1.0.3",
     "@noeldemartin/solid-utils": "^0.6.1",
+    "@noeldemartin/utils": "^0.7.3",
     "@vaadin/router": "2.0.1",
     "lit": "^3.3.1",
     "soukai": "^0.7.1",

@@ -1,4 +1,5 @@
 import type {Order} from "./Order.ts";
+import type {Product} from "../Product/Product.ts";
 
 export interface OrderItem {
     getId(): string;
@@ -6,4 +7,5 @@ export interface OrderItem {
     getPriceCurrency(): string;
     getOrderQuantity(): number;
     getOrder(): Order;
+    getProduct(): Product
 }

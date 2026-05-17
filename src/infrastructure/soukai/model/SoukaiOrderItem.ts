@@ -1,21 +1,12 @@
-import {FieldType, type Relation} from "soukai";
+import type {Relation} from "soukai";
+import {type SolidBelongsToOneRelation} from "soukai-solid";
+import Model from "./SoukaiOrderItem.schema";
 import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
-import {type SolidBelongsToOneRelation, SolidModel} from "soukai-solid";
 import {SoukaiOrder} from "./SoukaiOrder.ts";
+import {SoukaiProduct} from "./SoukaiProduct.ts";
 
-export class SoukaiOrderItem extends SolidModel implements OrderItem {
+export class SoukaiOrderItem extends Model implements OrderItem {
   static timestamps = false;
-  static rdfContexts = {
-    schema: "https://schema.org/",
-    wine: "https://vocab.kellermeister.ch/wine/",
-  };
-  static rdfsClasses = ["schema:OrderItem"];
-  static fields = {
-    price: { type: FieldType.Number, rdfProperty: "schema:price" },
-    priceCurrency: { type: FieldType.String, rdfProperty: "schema:priceCurrency" },
-    orderQuantity: { type: FieldType.Number, rdfProperty: "schema:orderQuantity" },
-    orderUrl: { type: FieldType.Key, rdfProperty: "wine:order" },
-  };
 
   declare public order: SoukaiOrder;
   declare public relatedOrder: SolidBelongsToOneRelation<SoukaiOrderItem, SoukaiOrder, typeof SoukaiOrder>;
@@ -25,26 +16,35 @@ export class SoukaiOrderItem extends SolidModel implements OrderItem {
         .usingSameDocument(true);
   }
 
-  // declare public product: ProductModel;
-  // public productRelationship() : Relation {
-  //   return this
-  //       .belongsToOne(ProductModel, 'productUrl')
-  //       .usingSameDocument(true);
-  // }
+  declare public product: SoukaiProduct;
+  declare public relatedProduct: SolidBelongsToOneRelation<SoukaiOrderItem, SoukaiProduct, typeof SoukaiProduct>;
+  public productRelationship() : Relation {
+    return this
+        .belongsToOne(SoukaiProduct, 'productUrl')
+        .usingSameDocument(true);
+  }
 
   getId(): string {
     return super.getIdAttribute();
   }
   getPrice(): number {
-    return this.getAttribute("price");
+    return this.orUndefined(this.price);
   }
   getPriceCurrency(): string {
-    return this.getAttribute("priceCurrency");
+    return this.orUndefined(this.priceCurrency);
   }
   getOrderQuantity(): number {
-    return this.getAttribute("orderQuantity");
+    return this.orUndefined(this.orderQuantity);
   }
   getOrder(): SoukaiOrder {
     return this.order;
   }
+  getProduct(): SoukaiProduct {
+    return this.product;
+}
+
+  private orUndefined(value: any): any | undefined {
+    return value ? value : undefined;
+  }
+
 }

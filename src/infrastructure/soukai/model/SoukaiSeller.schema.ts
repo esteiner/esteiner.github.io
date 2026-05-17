@@ -1,18 +1,16 @@
 import {FieldType} from "soukai";
 import {defineSolidModelSchema} from "soukai-solid";
 
-// https://schema.org/Collection
+// https://schema.org/Organization
 export default defineSolidModelSchema({
     rdfContexts: {
         schema: 'https://schema.org/'
     },
-    rdfsClasses: ['schema:Collection'],
+    rdfsClasses: ['schema:Organization'],
 
     fields: {
-        bottlesUrl: {
-            type: FieldType.Array,
-            items: FieldType.Key,
-            rdfProperty: 'schema:hasPart'
-        }
+        name: FieldType.String,
+        email: FieldType.String,
+        url: FieldType.String
     }
 });

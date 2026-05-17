@@ -1,17 +1,17 @@
 import {SolidPodService} from "../solid/SolidPodService.ts";
-import {SolidOrderRespository} from "../solid/SolidOrderRespository.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
-import {SolidBottlesContainerRepository} from "../solid/SolidBottlesContainerRepository.ts";
 import {SoukaiBottlesStorageRepository} from "../soukai/SoukaiBottlesStorageRepository.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
-import {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
-import type {BottlesContainerRepository} from "../../domain/Bottle/BottlesContainerRepository.ts";
-import type {BottlesStorageRepository} from "../../domain/Bottle/BottlesStorageRepository.ts";
-import {OrderFactory} from "../../domain/Order/OrderFactory.ts";
-import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
-import {ProductFactory} from "../../domain/Product/ProductFactory.ts";
+import type {BottlesDocumentRepository} from "../../domain/Bottle/BottlesDocumentRepository.ts";
 import {SoukaiCellarRepository} from "../soukai/SoukaiCellarRepository.ts";
+import type {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
+import {SoukaiBottleFactory} from "../soukai/model/SoukaiBottleFactory.ts";
+import type {ProductFactory} from "../../domain/Product/ProductFactory.ts";
+import {SoukaiProductFactory} from "../soukai/model/SoukaiProductFactory.ts";
+import type {OrderFactory} from "../../domain/Order/OrderFactory.ts";
+import {SoukaiOrderFactory} from "../soukai/model/SoukaiOrderFactory.ts";
+import {SoukaiOrderRepository} from "../soukai/SoukaiOrderRepository.ts";
 
 /**
  * Dependency Injection Container.
@@ -32,10 +32,9 @@ export class CDI {
     private orderFactory: OrderFactory;
 
     // Repositories
-    private bottleStorageRepository: BottlesStorageRepository | null = null;
+    private bottleStorageRepository: BottlesDocumentRepository | null = null;
     private cellarRepository: SoukaiCellarRepository | null = null;
-    private bottlesContainerRepository: BottlesContainerRepository | null = null;
-    private orderRepository: OrderRepository | null = null;
+    private orderRepository: SoukaiOrderRepository | null = null;
 
     // Services
     private solidService: SolidService;
@@ -44,9 +43,9 @@ export class CDI {
 
     private constructor() {
         // Initialize factories
-        this.bottleFactory = new BottleFactory();
-        this.productFactory = new ProductFactory();
-        this.orderFactory = new OrderFactory();
+        this.bottleFactory = new SoukaiBottleFactory();
+        this.productFactory = new SoukaiProductFactory();
+        this.orderFactory = new SoukaiOrderFactory();
         // Initialize services
         this.solidService = new InruptSolidService();
     }
@@ -87,16 +86,11 @@ export class CDI {
             // Initialize repositories
             this.bottleStorageRepository = new SoukaiBottlesStorageRepository(this.storageUrl);
             this.cellarRepository = new SoukaiCellarRepository(this.storageUrl);
-            this.bottlesContainerRepository = new SolidBottlesContainerRepository(this.storageUrl);
-            this.orderRepository = new SolidOrderRespository(this.storageUrl);
+            this.orderRepository = new SoukaiOrderRepository(this.storageUrl);
             // Initialize services
             this.solidPodService = new SolidPodService(this.storageUrl);
-            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottleStorageRepository, this.bottlesContainerRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
+            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottleStorageRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
         }
      }
-
-    public getBottleFactory(): BottleFactory {
-        return this.bottleFactory;
-    }
 
 }

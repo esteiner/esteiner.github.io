@@ -1,23 +1,21 @@
-import {SolidModel} from "soukai-solid";
-import {FieldType} from "soukai";
+import Model from "./SoukaiCellar.schema";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 
-export class SoukaiCellar extends SolidModel implements Cellar {
+export class SoukaiCellar extends Model implements Cellar {
     static timestamps = false;
-    static rdfContexts = { schema: "https://schema.org/" };
-    static rdfsClasses = ["schema:Room"];
-    static fields = {
-        name: { type: FieldType.String, rdfProperty: "schema:name" },
-        displayOrder: { type: FieldType.Number, rdfProperty: "km:displayOrder" },
-    };
+
     getId(): string {
         return this.url;
     }
     getName(): string {
-        return this.getAttribute("name");
+        return this.orUndefined(this.name);
     }
     getDisplayOrder(): number {
-        return this.getAttribute("displayOrder");
+        return this.orUndefined(this.displayOrder);
+    }
+
+    private orUndefined(value: any): any | undefined {
+        return value ? value : undefined;
     }
 }

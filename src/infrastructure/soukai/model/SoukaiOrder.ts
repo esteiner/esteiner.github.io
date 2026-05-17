@@ -1,32 +1,14 @@
-import {SolidModel} from "soukai-solid";
-import {FieldType, type Relation} from "soukai";
+import type {Relation} from "soukai";
+import Model from "./SoukaiOrder.schema";
 import type {Seller} from "../../../domain/Order/Seller.ts";
 import {SoukaiSeller} from "./SoukaiSeller.ts";
 import type {Order} from "../../../domain/Order/Order.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
+import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
 
-export class SoukaiOrder extends SolidModel implements Order {
+export class SoukaiOrder extends Model implements Order {
+    static history = false;
     static timestamps = false;
-    static rdfContexts = { schema: "https://schema.org/" };
-    static rdfsClasses = ["schema:Order"];
-    static fields = {
-        orderDate: { type: FieldType.Date, rdfProperty: "schema:orderDate" },
-        orderNumber: { type: FieldType.String, rdfProperty: "schema:orderNumber" },
-        sellerUrl: { type: FieldType.Key, rdfProperty: "schema:seller" },
-    };
-
-    getId(): string {
-        return super.getIdAttribute();
-    }
-    getOrderDate(): Date {
-        return this.getAttribute("orderDate");
-    }
-    getOrderNumber(): string {
-        return this.getAttribute("orderNumber");
-    }
-    getSeller(): Seller | undefined {
-        return this.seller;
-    }
 
     declare public seller: SoukaiSeller | undefined;
     public sellerRelationship(): Relation {
@@ -41,4 +23,32 @@ export class SoukaiOrder extends SolidModel implements Order {
             .usingSameDocument(true);
     }
 
+    getId(): string {
+        return super.getIdAttribute();
+    }
+    getOrderDate(): Date {
+        return this.orUndefined(this.orderDate);
+    }
+    getOrderNumber(): string {
+        return this.orUndefined(this.orderNumber);
+    }
+    getSeller(): Seller | undefined {
+        return this.seller;
+    }
+    getOrderItems(): SoukaiOrderItem[] {
+        if (this.positions) {
+            return this.positions;
+        }
+        return [];
+    }
+    addOrderItem(orderItem: OrderItem): Order {
+        if (orderItem instanceof SoukaiOrderItem) {
+            this.positions?.push(orderItem);
+        }
+        return this;
+    }
+
+    private orUndefined(value: any): any | undefined {
+        return value ? value : undefined;
+    }
 }

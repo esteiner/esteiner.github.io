@@ -1,41 +1,11 @@
-import {type SolidBelongsToOneRelation, SolidModel} from "soukai-solid";
+import type {Relation} from "soukai";
+import {type SolidBelongsToOneRelation} from "soukai-solid";
+import Model from "./SoukaiProduct.schema";
 import type { Product } from "../../../domain/Product/Product";
-import {FieldType, type Relation} from "soukai";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 
-export class SoukaiProduct extends SolidModel implements Product {
+export class SoukaiProduct extends Model implements Product {
     static timestamps = false;
-    static rdfContexts = {
-        schema: "https://schema.org/",
-        wine: "https://vocab.kellermeister.ch/wine/",
-    };
-    static rdfsClasses = ["schema:Product"];
-    static fields = {
-        name: {
-            type: FieldType.String,
-            rdfProperty: "schema:name",
-        },
-        productionDate: {
-            type: FieldType.Date,
-            rdfProperty: "schema:productionDate",
-        },
-        price: { type: FieldType.Number, rdfProperty: "schema:price" },
-        priceCurrency: { type: FieldType.String, rdfProperty: "schema:priceCurrency" },
-        producer: { type: FieldType.String, rdfProperty: "wine:hersteller" },
-        country: { type: FieldType.String, rdfProperty: "wine:land" },
-        volumeMl: { type: FieldType.Number, rdfProperty: "wine:milliliter" },
-        region: { type: FieldType.String, rdfProperty: "wine:region" },
-        grapeVariety: { type: FieldType.String, rdfProperty: "wine:traubensorte" },
-        wineType: { type: FieldType.String, rdfProperty: "wine:weinart" },
-        wineColor: { type: FieldType.String, rdfProperty: "wine:weinfarbe" },
-        alcoholContent: { type: FieldType.String, rdfProperty: "wine:alkoholgehalt" },
-        production: { type: FieldType.String, rdfProperty: "wine:ausbau" },
-        organic: { type: FieldType.String, rdfProperty: "wine:biologisch" },
-        classification: { type: FieldType.String, rdfProperty: "wine:klassifikation" },
-        drinkingWindowFrom: { type: FieldType.Date, rdfProperty: "wine:trinkfensterVon" },
-        drinkingWindowTo: { type: FieldType.Date, rdfProperty: "wine:trinkfensterBis" },
-        orderItemUrl: { type: FieldType.Key, rdfProperty: "wine:orderItem" },
-    };
 
     declare public orderItem: SoukaiOrderItem;
     declare public relatedOrderItem: SolidBelongsToOneRelation<SoukaiProduct, SoukaiOrderItem, typeof SoukaiOrderItem>;
@@ -46,60 +16,64 @@ export class SoukaiProduct extends SolidModel implements Product {
     }
 
     getId(): string {
-        return super.getIdAttribute();
+        return this.id;
     }
     getName(): string {
-        return this.getAttribute("name");
+        return this.orUndefined(this.name);
     }
-    getProductionDate(): Date {
-        return this.getAttribute("productionDate");
+    getProductionDate(): Date | undefined {
+        return this.productionDate ? this.productionDate : undefined;
     }
     getPrice(): number {
-        return this.getAttribute("price");
+        return this.orUndefined(this.price);
     }
     getPriceCurrency(): string {
-        return this.getAttribute("priceCurrency");
+        return this.orUndefined(this.priceCurrency);
     }
     getProducer(): string {
-        return this.getAttribute("producer");
+        return this.orUndefined(this.hersteller);
     }
     getCountry(): string {
-        return this.getAttribute("country");
+        return this.orUndefined(this.land);
     }
     getVolumeMl(): number {
-        return this.getAttribute("volumeMl");
+        return this.orUndefined(this.milliliter);
     }
     getRegion(): string {
-        return this.getAttribute("region");
+        return this.orUndefined(this.region);
     }
     getGrapeVariety(): string {
-        return this.getAttribute("grapeVariety");
+        return this.orUndefined(this.traubensorte);
     }
     getWineType(): string {
-        return this.getAttribute("wineType");
+        return this.orUndefined(this.weinart);
     }
     getWineColor(): string {
-        return this.getAttribute("wineColor");
+        return this.orUndefined(this.weinfarbe);
     }
     getAlcoholContent(): string {
-        return this.getAttribute("alcoholContent");
+        return this.orUndefined(this.alkoholgehalt);
     }
     getProduction(): string {
-        return this.getAttribute("production");
+        return this.orUndefined(this.ausbau);
     }
     getOrganic(): string {
-        return this.getAttribute("organic");
+        return this.orUndefined(this.biologisch);
     }
     getClassification(): string {
-        return this.getAttribute("classification");
+        return this.orUndefined(this.klassifikation);
     }
     getDrinkingWindowFrom(): Date {
-        return this.getAttribute("drinkingWindowFrom");
+        return this.orUndefined(this.trinkfensterVon);
     }
     getDrinkingWindowTo(): Date {
-        return this.getAttribute("drinkingWindowTo");
+        return this.orUndefined(this.trinkfensterBis);
     }
     getOrderItem(): SoukaiOrderItem {
         return this.orderItem;
+    }
+
+    private orUndefined(value: any): any | undefined {
+        return value ? value : undefined;
     }
 }

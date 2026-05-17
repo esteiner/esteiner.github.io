@@ -43,7 +43,7 @@
 
   CDI is a singleton. At creation time it only initializes two things:
 
-  - BottleFactory (stateless, no Pod URL needed)
+  - SolidBottleFactory (stateless, no Pod URL needed)
   - InruptSolidService (stateless wrapper around Inrupt's library)
 
   Everything else (SolidCellarRepositoryImpl, SolidBottlesContainerRepository, SolidOrderRepository, SolidPodService, KellermeisterService) is null until CDI.setStorageUrl(url) is called. Any page that calls
@@ -113,9 +113,9 @@
   - Fields: name (string), displayOrder (number, predicate km:displayOrder)
   - Stored as individual documents in cellars/
 
-  BottlesContainer (schema:Collection) + Bottle (schema:ListItem)
+  SolidBottlesContainer (schema:Collection) + Bottle (schema:ListItem)
   - Stored together in a single Turtle document: bottles/bottles.ttl
-  - BottlesContainer.bottlesRelationship() → belongsToMany(Bottle, 'bottlesUrl').usingSameDocument(true). The usingSameDocument(true) tells Soukai to embed the related Bottle nodes in the same .ttl file
+  - SolidBottlesContainer.bottlesRelationship() → belongsToMany(Bottle, 'bottlesUrl').usingSameDocument(true). The usingSameDocument(true) tells Soukai to embed the related Bottle nodes in the same .ttl file
   rather than linking to separate documents.
   - Bottle.productRelationship() → belongsToOne(Product, 'productUrl').usingSameDocument(true). Products are also embedded in the same file.
   - The cellar field on Bottle is just a plain FieldType.Key — a URL string pointing to the cellar's ID. It's not a Soukai relation; the cellar lookup is done in application code by comparing strings.
@@ -133,7 +133,7 @@
   Cellar.from(cellarUrl).all() — Soukai queries the container and returns all schema:Room resources. Uses Cellar.find(id) for single lookups.
 
   SolidBottlesContainerRepository
-  BottlesContainer.find(bottlesUrl) — fetches the single bottles.ttl document. Soukai loads the container and all embedded Bottle and Product nodes in one HTTP request.
+  SolidBottlesContainer.find(bottlesUrl) — fetches the single bottles.ttl document. Soukai loads the container and all embedded Bottle and Product nodes in one HTTP request.
 
   SolidOrderRepository
   fetchOrders() merges two sources: orders/ (processed) and inbox/kellermeister/ (unprocessed).
@@ -146,7 +146,7 @@
 
   getAllVisibleCellars() — simple delegation to cellarRepository.fetchCellars().
 
-  bottlesFromCellarGroupedByProduct(cellar) — fetches the entire BottlesContainer (all bottles in one shot), filters by bottle.cellar === cellar.id, then groups into a Map<productId, Bottle[]>. The map is
+  bottlesFromCellarGroupedByProduct(cellar) — fetches the entire SolidBottlesContainer (all bottles in one shot), filters by bottle.cellar === cellar.id, then groups into a Map<productId, Bottle[]>. The map is
   sorted by product ID descending. This is how the cellar page knows to show "3x Barolo" as one row.
 
   ingestOrdersFromInbox() — the most complex flow:
@@ -154,8 +154,8 @@
   2. Fetches unprocessed orders from inbox/kellermeister/
   3. For each order, calls ingestOrder():
     - Calls explode(orderItem) — expands an OrderItem with orderQuantity: 3 into 3 individual OrderItem instances
-    - Calls getOrCreateProduct() — deduplicates by name against existing products already in the BottlesContainer
-    - Uses BottleFactory.createFromOrderItem() to build a Bottle, setting its cellar to the staging cellar ID
+    - Calls getOrCreateProduct() — deduplicates by name against existing products already in the SolidBottlesContainer
+    - Uses SolidBottleFactory.createFromOrderItem() to build a Bottle, setting its cellar to the staging cellar ID
     - Calls bottlesContainer.addBottle(bottle) which pushes to the in-memory array and marks the container dirty
   4. If the container is dirty: bottlesContainer.save() writes everything back to bottles.ttl in one PUT, then moveProcessedOrders() saves each order to orders/ and deletes the original from inbox via
   deleteSolidDataset()
@@ -192,7 +192,7 @@
 
   User navigates to /cellar/:id
     → onBeforeEnter() → getCellarById() + bottlesFromCellarGroupedByProduct()
-       → BottlesContainer.find(bottles.ttl) → single HTTP GET loads all bottles+products
+       → SolidBottlesContainer.find(bottles.ttl) → single HTTP GET loads all bottles+products
        → filter + group by product → render
 
   User navigates to /cellarwork/:id

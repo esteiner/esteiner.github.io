@@ -1,8 +1,8 @@
 import {customElement, property, state} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import {css, html, nothing} from "lit";
-import type {SolidOrderItem} from "../../../domain/Order/SolidOrderItem.ts";
 import "./product-component.ts";
+import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
 
 @customElement('order-item-component')
 class OrderItemComponent extends BaseComponent {
@@ -11,7 +11,7 @@ class OrderItemComponent extends BaseComponent {
     showOrderQuantity?: boolean;
 
     @property()
-    orderItem: SolidOrderItem | undefined;
+    orderItem: OrderItem | undefined;
 
     @state()
     expanded: boolean = false;
@@ -53,10 +53,10 @@ class OrderItemComponent extends BaseComponent {
         return html`
             <div>
                 <div class="collapsed">
-                    ${this.showOrderQuantity ? html`<button class="bottle-button">${this.orderItem?.orderQuantity}</button>` : nothing}
-                    <span @click="${this.expandCollapseProduct}">${this.orderItem?.product?.name}</span>
+                    ${this.showOrderQuantity ? html`<button class="bottle-button">${this.orderItem?.getOrderQuantity()}</button>` : nothing}
+                    <span @click="${this.expandCollapseProduct}">${this.orderItem?.getProduct()?.getName()}</span>
                 </div>
-                ${this.expanded ? html`<product-component .product="${this.orderItem?.product}">${this.orderItem?.price} ${this.orderItem?.priceCurrency}</product-component>`: nothing}
+                ${this.expanded ? html`<product-component .product="${this.orderItem?.getProduct()}">${this.orderItem?.getPrice()} ${this.orderItem?.getPriceCurrency()}</product-component>`: nothing}
             </div>
         `;
     }

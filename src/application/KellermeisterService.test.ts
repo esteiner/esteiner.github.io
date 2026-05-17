@@ -1,18 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { KellermeisterService } from './KellermeisterService';
 import { ProductFilter } from '../domain/Product/ProductFilter';
-import type { BottlesContainerRepository } from '../domain/Bottle/BottlesContainerRepository';
-import type { OrderRepository } from '../domain/Order/OrderRepository';
-import type { BottleFactory } from '../domain/Bottle/BottleFactory';
-import type { ProductFactory } from '../domain/Product/ProductFactory';
-import type { OrderFactory } from '../domain/Order/OrderFactory';
-import type { SolidBottle } from '../domain/Bottle/SolidBottle';
-import type { SolidOrder } from '../domain/Order/SolidOrder';
-import type { BottlesContainer } from '../domain/Bottle/BottlesContainer';
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {Cellar} from "../domain/Cellar/Cellar.ts";
-import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
+import type {BottlesDocumentRepository} from "../domain/Bottle/BottlesDocumentRepository.ts";
 import type {Product} from "../domain/Product/Product.ts";
+import type {ProductFactory} from "../domain/Product/ProductFactory.ts";
+import type {Order} from "../domain/Order/Order.ts";
+import type {Bottle} from "../domain/Bottle/Bottle.ts";
+import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
+import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
+import type {OrderFactory} from "../domain/Order/OrderFactory.ts";
+import {SoukaiProduct} from "../infrastructure/soukai/model/SoukaiProduct.ts";
+import { bootSolidModels } from "soukai-solid";
+import {bootModels, InMemoryEngine, setEngine} from "soukai";
+import {SoukaiSeller} from "../infrastructure/soukai/model/SoukaiSeller.ts";
+import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
+import {SoukaiOrderItem} from "../infrastructure/soukai/model/SoukaiOrderItem.ts";
+import {SoukaiBottle} from "../infrastructure/soukai/model/SoukaiBottle.ts";
+import {SoukaiBottlesStorage} from "../infrastructure/soukai/model/SoukaiBottlesStorage.ts";
+import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
 vi.mock('@inrupt/solid-client', () => ({ deleteSolidDataset: vi.fn() }));
@@ -23,26 +30,34 @@ vi.mock('@inrupt/solid-client-authn-browser', () => ({ fetch: vi.fn() }));
 // ---------------------------------------------------------------------------
 
 function makeCellar(id: string): Cellar {
-    return { id } as unknown as Cellar;
+    const cellar = new SoukaiCellar();
+    cellar.id = id;
+    cellar.name = "name";
+    return cellar
 }
 
 function makeProduct(id: string, name?: string): Product {
-    return { id, name } as unknown as Product;
+    const product = new SoukaiProduct();
+    product.id = id;
+    product.name = name;
+    return product;
 }
 
-function makeBottle(productId: string, cellarId: string, productName?: string): SolidBottle {
+function makeBottle(productId: string, cellarId: string, productName?: string): Bottle {
     return {
         product: makeProduct(productId, productName),
         cellar: cellarId,
-    } as unknown as SolidBottle;
+    } as unknown as Bottle;
 }
 
-function makeOrder(orderDate?: Date): SolidOrder {
-    return { orderDate } as unknown as SolidOrder;
+function makeOrder(orderDate?: Date): Order {
+    const order = new SoukaiOrder();
+    order.orderDate = orderDate;
+    return order;
 }
 
-function makeBottlesContainer(bottles: SolidBottle[]): BottlesContainer {
-    return { bottles } as unknown as BottlesContainer;
+function makeBottlesContainer(bottles: Bottle[]): SolidBottlesContainer {
+    return { bottles } as unknown as SolidBottlesContainer;
 }
 
 // ---------------------------------------------------------------------------
@@ -62,10 +77,10 @@ function makeService() {
         getAltglassId: vi.fn().mockReturnValue('altglass-id'),
         fetchCellarForAltglass: vi.fn(),
     };
-    const bottlesContainerRepo: BottlesContainerRepository = {
+    const bottlesContainerRepo: SolidBottlesContainerRepository = {
         fetchBottles: vi.fn(),
     };
-    const bottlesStorageRepo: BottlesStorageRepository = {
+    const bottlesStorageRepo: BottlesDocumentRepository = {
         fetchBottlesStorage: vi.fn(),
         save: vi.fn(),
     };
@@ -76,7 +91,6 @@ function makeService() {
         saveProcessedOrder: vi.fn(),
     };
     const bottleFactory: BottleFactory = {
-        createFromOrderItem: vi.fn(),
         createFromProduct: vi.fn(),
     };
     const productFactory: ProductFactory = {
@@ -86,7 +100,10 @@ function makeService() {
         createOrder: vi.fn(),
         createOrderItem: vi.fn(),
     };
-    const service = new KellermeisterService(cellarRepo, bottlesStorageRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory);
+    setEngine(new InMemoryEngine());
+    bootSolidModels();
+    bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage });
+    const service = new KellermeisterService(cellarRepo, bottlesStorageRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }
 

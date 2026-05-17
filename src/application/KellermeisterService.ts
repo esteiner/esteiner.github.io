@@ -1,21 +1,18 @@
-import {SolidBottle} from "../domain/Bottle/SolidBottle.ts";
-import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
-import {SolidOrder} from "../domain/Order/SolidOrder.ts";
-import {BottlesContainer} from "../domain/Bottle/BottlesContainer.ts";
-import {ProductFilter} from "../domain/Product/ProductFilter.ts";
-import type {BottlesContainerRepository} from "../domain/Bottle/BottlesContainerRepository.ts";
-import type {BottlesStorageRepository} from "../domain/Bottle/BottlesStorageRepository.ts";
-import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
-import {ProductFactory} from "../domain/Product/ProductFactory.ts";
-import {OrderFactory} from "../domain/Order/OrderFactory.ts";
-import {deleteSolidDataset} from "@inrupt/solid-client";
 import { fetch } from "@inrupt/solid-client-authn-browser";
-import {SolidOrderItem} from "../domain/Order/SolidOrderItem";
-import type {BottlesStorage} from "../domain/Bottle/BottlesStorage.ts";
+import {deleteSolidDataset} from "@inrupt/solid-client";
+import {ProductFilter} from "../domain/Product/ProductFilter.ts";
+import type {BottlesDocumentRepository} from "../domain/Bottle/BottlesDocumentRepository.ts";
+import type {BottlesDocument} from "../domain/Bottle/BottlesDocument.ts";
 import type {Bottle} from "../domain/Bottle/Bottle.ts";
 import type {Product} from "../domain/Product/Product.ts";
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {Cellar} from "../domain/Cellar/Cellar.ts";
+import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
+import type {ProductFactory} from "../domain/Product/ProductFactory.ts";
+import type {OrderFactory} from "../domain/Order/OrderFactory.ts";
+import type {Order} from "../domain/Order/Order.ts";
+import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
+import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 
 /**
  * Application Use Case: Get Profile
@@ -23,11 +20,12 @@ import type {Cellar} from "../domain/Cellar/Cellar.ts";
  */
 export class KellermeisterService {
 
-    private bottlesContainer: BottlesContainer | null = null;
+    private cachedBottlesDocument: BottlesDocument | undefined = undefined;
+    //private bottlesContainer: BottlesContainer | null = null;
     private cachedCellars: Cellar[] | null = null;
-    private cachedOrders: SolidOrder[] | null = null;
+    private cachedOrders: Order[] | null = null;
 
-    constructor(private cellarRepository: CellarRepository, private bottleStorageRepository: BottlesStorageRepository, private bottlesContainerRepository: BottlesContainerRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
+    constructor(private cellarRepository: CellarRepository, private bottleStorageRepository: BottlesDocumentRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
 
     getAltglassId(): string {
@@ -46,8 +44,8 @@ export class KellermeisterService {
         return this.cellarRepository.fetchCellarForCellarwork();
     }
 
-    async getAllBottles2(): Promise<Bottle[]> {
-        const bottlesStorage: BottlesStorage | undefined = await this.fetchBottlesStorage();
+    async getAllBottles(): Promise<Bottle[]> {
+        const bottlesStorage: BottlesDocument | undefined = await this.getCachedBottlesDocument();
         if (bottlesStorage) {
             return bottlesStorage.getBottles();
         } else {
@@ -56,21 +54,12 @@ export class KellermeisterService {
         }
 
     }
-    async getAllBottles(): Promise<SolidBottle[]> {
-        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        if (bottlesContainer) {
-            return bottlesContainer.bottles;
-        } else {
-            console.log("getAllBottles: bottles container not found")
-            return new Array();
-        }
-    }
 
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
     async searchBottlesGroupedByCellar(filter: ProductFilter): Promise<Map<Cellar, Map<string, Bottle[]>>> {
-        const [bottles, cellars] = await Promise.all([this.getAllBottles2(), this.getAllCellars()]);
+        const [bottles, cellars] = await Promise.all([this.getAllBottles(), this.getAllCellars()]);
         const cellarMap = new Map<string, Cellar>(cellars.map(c => [c.getId(), c]));
         const grouped = new Map<string, Map<string, Bottle[]>>();
 
@@ -110,7 +99,7 @@ export class KellermeisterService {
     }
 
     async bottlesFromCellarGroupedByProduct(cellar: Cellar | undefined, filter: ProductFilter): Promise<Map<string, Bottle[]>> {
-        const bottles = await this.getAllBottles2();
+        const bottles = await this.getAllBottles();
         const grouped = new Map<string, Bottle[]>();
 
         for (const bottle of bottles) {
@@ -129,7 +118,7 @@ export class KellermeisterService {
      * Returns a map with the product.id as key and an array of bottles as value.
      */
     async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
-        const bottles = await this.getAllBottles2();
+        const bottles = await this.getAllBottles();
         return bottles.filter(bottle => cellar?.getId() === bottle.getCellar()).filter(bottle => filter.filterProduct2(bottle.getProduct()))
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.getProduct(), b.getProduct()));
     }
@@ -212,7 +201,7 @@ export class KellermeisterService {
         }
     }
 
-    async getAllOrders(): Promise<SolidOrder[]> {
+    async getAllOrders(): Promise<Order[]> {
         if (this.cachedOrders) {
             return this.cachedOrders;
         }
@@ -220,11 +209,11 @@ export class KellermeisterService {
         return this.cachedOrders;
     }
 
-    async ordersGroupedByMonth(filter: ProductFilter): Promise<Map<Date, SolidOrder[]>> {
+    async ordersGroupedByMonth(filter: ProductFilter): Promise<Map<Date, Order[]>> {
         const orders = await this.getAllOrders();
         if (filter.hasRestrictions()) {
             console.log("ordersGroupedByMonth: with filter", filter);
-            let filteredOrders: SolidOrder[] = orders.map(order => this.filterOrder(order, filter)).filter(order => order != null);
+            let filteredOrders: Order[] = orders.map(order => this.filterOrder(order, filter)).filter(order => order != null);
             return this.groupOrdersByMonth(filteredOrders);
         }
         return this.groupOrdersByMonth(orders);
@@ -232,7 +221,7 @@ export class KellermeisterService {
 
     async ingestOrdersFromInbox(): Promise<Cellar> {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
-        const unprocessedOrders: SolidOrder[] = await this.orderRespository.fetchUnprocessedOrders();
+        const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();
 
         console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.getId()}`);
         if (unprocessedOrders.length > 0) {
@@ -243,99 +232,76 @@ export class KellermeisterService {
         return cellarForCellarwork;
     }
 
-    async ingestOrder(order: SolidOrder, cellarForCellarwork: string) {
+    async ingestOrder(order: Order, cellarForCellarwork: string) {
         console.log("ingestOrder: order:", order);
-        const bottlesContainer = await this.loadBottles();
-        if (bottlesContainer) {
-            this.addBottles(bottlesContainer, order, cellarForCellarwork);
-            if (bottlesContainer.isDirty()) {
-                await this.saveBottles();
-                await this.moveProcessedOrders(new Array(order));
-                console.log("ingestOrdersFromInbox: processed order:", order);
-            }
+        const bottlesDocument = await this.getCachedBottlesDocument();
+        if (bottlesDocument) {
+            this.addBottles(bottlesDocument, order, cellarForCellarwork);
+            await this.saveBottlesDocument();
+            await this.moveProcessedOrders(new Array(order));
+            console.log("ingestOrdersFromInbox: processed order:", order);
         }
     }
 
-    addBottles(bottlesContainer: BottlesContainer, order: SolidOrder, cellarForCellarwork: string) {
-        const newOrder: SolidOrder = this.orderFactory.createOrder(order);
+    async saveBottlesDocument(): Promise<void> {
+        const cachedBottlesDocument = await this.getCachedBottlesDocument();
+        if (cachedBottlesDocument) {
+            cachedBottlesDocument.save();
+        }
+    }
 
-        if (order.positions) {
-            const newPositions: SolidOrderItem[] = new Array();
-            for (const orderItem of order.positions) {
-                if (orderItem.orderQuantity) {
+    addBottles(bottlesDocument: BottlesDocument, order: Order, cellarForCellarwork: string) {
+        const newOrder: Order = this.orderFactory.createOrder(order);
+
+        if (order.getOrderItems()) {
+            // const newPositions: OrderItem[] = new Array();
+            for (const orderItem of order.getOrderItems()) {
+                if (orderItem.getOrderQuantity()) {
                     const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
-                    newPositions.push(newOrderItem);
+                    // newPositions.push(newOrderItem);
+                    newOrder.addOrderItem(newOrderItem);
 
-                    const product = this.productFactory.createProduct(orderItem.product, newOrderItem);
-                    for (let q = 0; q < orderItem.orderQuantity; q++) {
-                        const bottle: SolidBottle = this.bottleFactory.createFromProduct(product);
-                        bottle.cellar = cellarForCellarwork;
-                        bottlesContainer.addBottle(bottle);
+                    const product = this.productFactory.createProduct(orderItem.getProduct(), newOrderItem);
+                    for (let q = 0; q < orderItem.getOrderQuantity(); q++) {
+                        const bottle: Bottle = this.bottleFactory.createFromProduct(product);
+                        bottle.setCellar(cellarForCellarwork);
+                        bottlesDocument.addBottle(bottle);
                     }
                 }
             }
-            newOrder.positions = newPositions;
+            // newOrder.positions = newPositions;
         }
 
-    }
-
-    async disposeBottleToAltglass(bottle: SolidBottle, rating?: number) {
-        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        if (bottlesContainer) {
-            if (rating !== undefined) {
-                bottlesContainer.rateBottle(bottle, rating);
-            }
-            bottlesContainer.transferBottle(bottle, this.getAltglassId());
-            if (bottlesContainer.isDirty()) {
-                await bottlesContainer.save();
-                this.bottlesContainer = null;
-            }
-        }
     }
 
     async disposeBottleToAltglass2(bottle: Bottle, rating?: number) {
-        const bottlesStorage = await this.fetchBottlesStorage();
+        console.log("disposeBottleToAltglass2: with id", bottle.getId());
+        const bottlesStorage = await this.getCachedBottlesDocument();
         if (bottlesStorage) {
+            bottle.setCellar(this.getAltglassId());
             if (rating !== undefined) {
-                bottlesStorage.rateBottle(bottle.getId(), rating);
+                bottle.setRating(rating);
             }
-            // bottlesStorage.transferBottle(bottle, this.getAltglassId());
-            if (bottlesStorage.isModified()) {
-                console.log(`disposeBottleToAltglass2: ${rating}`);
-                await this.bottleStorageRepository.save(bottlesStorage);
-            }
+            console.log("disposeBottleToAltglass2: with rating", rating);
+            await this.bottleStorageRepository.save(bottlesStorage);
         }
-        // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        // if (bottlesContainer) {
-        //     if (rating !== undefined) {
-        //         bottlesContainer.rateBottle(bottle, rating);
-        //     }
-        //     bottlesContainer.transferBottle(bottle, this.getAltglassId());
-        //     if (bottlesContainer.isDirty()) {
-        //         await bottlesContainer.save();
-        //         this.bottlesContainer = null;
-        //     }
-        // }
     }
 
-    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesStorage | undefined> {
+    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesDocument | undefined> {
         console.log("transferBottles: checking number of bottles", bottles.length);
-        const bottlesStorage = await this.fetchBottlesStorage();
+        const bottlesStorage = await this.getCachedBottlesDocument();
         var transferred: number = 0;
         if (bottlesStorage) {
             for (var i = 0; i < bottles.length; i++) {
                 if (cellarIds[i] != undefined) {
-                    bottlesStorage.transferBottle(bottles[i], cellarIds[i]);
+                    bottles[i].setCellar(cellarIds[i]);
                     transferred++;
                 }
             }
-        }
-        if (bottlesStorage?.isModified()) {
             console.log("transferBottles: updating number of bottles", transferred);
-            const savedBottlesStorage = await this.bottleStorageRepository.save(bottlesStorage);
+            await this.bottleStorageRepository.save(bottlesStorage);
             console.log("transferBottles: updated bottles", transferred);
-            return savedBottlesStorage;
-
+            return await this.fetchBottlesStorage();
         }
         return bottlesStorage;
         // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
@@ -357,70 +323,18 @@ export class KellermeisterService {
         // return bottlesContainer;
     }
 
-   async transferBottles2(bottles: SolidBottle[], cellarIds: string[]): Promise<BottlesContainer | null> {
-        console.log("transferBottles: checking number of bottles", bottles.length);
-        const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        var transferred: number = 0;
-        if (bottlesContainer) {
-            for (var i = 0; i < bottles.length; i++) {
-                if (cellarIds[i] != undefined) {
-                    bottlesContainer.transferBottle(bottles[i], cellarIds[i]);
-                    transferred++;
-                }
-            }
-        }
-        if (bottlesContainer?.isDirty) {
-            console.log("transferBottles: updating number of bottles", transferred);
-            const savedBottlesContainer: BottlesContainer | null = await this.saveBottles();
-            console.log("transferBottles: updated bottles", transferred);
-            return savedBottlesContainer;
-        }
-        return bottlesContainer;
-    }
-
     // -----------------------------------------------------------------
 
-    private async fetchBottlesStorage(): Promise<BottlesStorage | undefined> {
+    private async getCachedBottlesDocument(): Promise<BottlesDocument | undefined> {
+        if (!this.cachedBottlesDocument) {
+            console.log("getCachedBottlesDocument: cache is empty");
+            this.cachedBottlesDocument = await this.bottleStorageRepository.fetchBottlesStorage();
+        }
+        return this.cachedBottlesDocument;
+    }
+
+    private async fetchBottlesStorage(): Promise<BottlesDocument | undefined> {
         return await this.bottleStorageRepository.fetchBottlesStorage();
-    }
-
-    private async fetchBottles(): Promise<BottlesContainer | null> {
-        await this.fetchBottlesStorage();
-        if (this.bottlesContainer) {
-            console.log("fetchBottles: from cache");
-            return this.bottlesContainer;
-        } else {
-            const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
-            if (bottlesContainer) {
-                this.bottlesContainer = bottlesContainer;
-                return this.bottlesContainer;
-            } else {
-                console.log("fetchBottles: bottles container not found")
-                return null;
-            }
-        }
-    }
-
-    private async loadBottles(): Promise<BottlesContainer | null> {
-        console.log("loadBottles: from repository");
-        const bottlesContainer: BottlesContainer | null = await this.bottlesContainerRepository.fetchBottles();
-        if (bottlesContainer) {
-            this.bottlesContainer = bottlesContainer;
-            return this.bottlesContainer;
-        } else {
-            console.log("fetchBottles: bottles container not found")
-            return null;
-        }
-    }
-
-    private async saveBottles(): Promise<BottlesContainer | null> {
-        if (this.bottlesContainer) {
-            console.log("saveBottles: saving number of bottles", this.bottlesContainer.bottles.length);
-            const savedBottlesContainer = await this.bottlesContainer.save();
-            console.log("saveBottles: saved number of bottles", savedBottlesContainer.bottles.length);
-            this.bottlesContainer = savedBottlesContainer;
-        }
-        return this.bottlesContainer;
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
@@ -430,28 +344,22 @@ export class KellermeisterService {
         return false;
     }
 
-    private filterOrder(order: SolidOrder, filter: ProductFilter): SolidOrder | null {
-        const orderItems = order.positions?.filter(position => filter.filterProduct(position.product));
+    private filterOrder(order: Order, filter: ProductFilter): Order | null {
+        const orderItems = order.getOrderItems()?.filter(position => filter.filterProduct2(position.getProduct()));
         if (orderItems && orderItems.length > 0) {
-            const filteredOrder = new SolidOrder();
-            filteredOrder.orderDate = order.orderDate;
-            filteredOrder.orderNumber = order.orderNumber;
-            filteredOrder.seller = order.seller;
-            filteredOrder.customer = order.customer;
-            filteredOrder.positions = orderItems;
-            return filteredOrder;
+            return order;
         }
         return null;
     }
 
-    private groupOrdersByMonth(orders: SolidOrder[]): Map<Date, SolidOrder[]> {
+    private groupOrdersByMonth(orders: Order[]): Map<Date, Order[]> {
         const unknownDate = new Date(1900, 0, 1);
         const dates: Map<string, Date> = new Map();
-        const grouped = new Map<Date, SolidOrder[]>();
+        const grouped = new Map<Date, Order[]>();
         for (const order of orders) {
             let dateKey: Date;
-            if (order.orderDate) {
-                dateKey = this.getDateKey(order.orderDate, dates);
+            if (order.getOrderDate()) {
+                dateKey = this.getDateKey(order.getOrderDate(), dates);
             } else {
                 dateKey = unknownDate;
             }
@@ -484,19 +392,21 @@ export class KellermeisterService {
         return true;
     }
 
-    private async moveProcessedOrders(unprocessedOrders: SolidOrder[]) {
+    private async moveProcessedOrders(unprocessedOrders: Order[]) {
         for (const order of unprocessedOrders) {
             await this.moveProcessedOrder(order);
         }
     }
 
-    private async moveProcessedOrder(unprocessedOrder: SolidOrder) {
-        console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
-        await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
-        this.cachedOrders = null;
-        // Delete from source
-        if (unprocessedOrder.getSourceDocumentUrl()) {
-            await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
+    private async moveProcessedOrder(unprocessedOrder: Order) {
+        if (unprocessedOrder instanceof SoukaiOrder) {
+            console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
+            await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
+            this.cachedOrders = null;
+            // Delete from source
+            if (unprocessedOrder.getSourceDocumentUrl()) {
+                await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
+            }
         }
     }
 
