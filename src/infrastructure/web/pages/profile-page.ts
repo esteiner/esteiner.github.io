@@ -18,6 +18,9 @@ class ProfilePage extends BasePage {
     @state()
     solidUserProfile: SolidUserProfile | null | undefined;
 
+    @state()
+    numberOfBottles: number | undefined;
+
     private cdi: CDI = CDI.getInstance();
 
     connectedCallback() {
@@ -31,6 +34,8 @@ class ProfilePage extends BasePage {
             this.solidUserProfile = await fetchLoginUserProfile(this.session.info.webId);
             console.log("fetchUserProfile: fetched login user profile", this.solidUserProfile);
         }
+        const bottles = await this.cdi.getKellermeisterService().getAllBottles();
+        this.numberOfBottles = bottles.length;
     }
 
     render() {
@@ -75,6 +80,10 @@ class ProfilePage extends BasePage {
                   <div class="group">
                       <label>Version</label>
                       <span class="value">${getBuildVersion()}</span>
+                  </div>
+                  <div class="group">
+                      <label>Flaschen</label>
+                      <span class="value">${this.numberOfBottles}</span>
                   </div>
               </div>
               <div class="section-header"><p>Solid Apps</p></div>
