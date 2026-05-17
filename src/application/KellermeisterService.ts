@@ -229,7 +229,6 @@ export class KellermeisterService {
                 await this.ingestOrder(order, cellarForCellarwork.getId());
             }
             console.log("ingestOrdersFromInbox:", this.cachedBottlesDocument?.getBottles().length);
-            await this.saveBottlesDocument();
         }
         return cellarForCellarwork;
     }
@@ -240,6 +239,7 @@ export class KellermeisterService {
         if (bottlesDocument) {
             this.addBottles(bottlesDocument, order, cellarForCellarwork);
             await this.moveProcessedOrders(new Array(order));
+            await this.saveBottlesDocument();
             console.log("ingestOrder: processed order:", order);
         } else {
             console.log("ingestOrder: bottles document undefined");
