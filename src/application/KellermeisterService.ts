@@ -223,11 +223,13 @@ export class KellermeisterService {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
         const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();
 
-        console.log(`ingestOrdersFromInbox: ${unprocessedOrders.length} orders to ${cellarForCellarwork.getId()}`);
+        console.log("ingestOrdersFromInbox:", unprocessedOrders.length, "orders to", cellarForCellarwork.getId());
         if (unprocessedOrders.length > 0) {
             for (const order of unprocessedOrders) {
                 await this.ingestOrder(order, cellarForCellarwork.getId());
             }
+            console.log("ingestOrdersFromInbox:", this.cachedBottlesDocument?.getBottles().length);
+            await this.saveBottlesDocument();
         }
         return cellarForCellarwork;
     }
@@ -237,16 +239,10 @@ export class KellermeisterService {
         const bottlesDocument = await this.getCachedBottlesDocument();
         if (bottlesDocument) {
             this.addBottles(bottlesDocument, order, cellarForCellarwork);
-            await this.saveBottlesDocument();
             await this.moveProcessedOrders(new Array(order));
-            console.log("ingestOrdersFromInbox: processed order:", order);
-        }
-    }
-
-    async saveBottlesDocument(): Promise<void> {
-        const cachedBottlesDocument = await this.getCachedBottlesDocument();
-        if (cachedBottlesDocument) {
-            cachedBottlesDocument.save();
+            console.log("ingestOrder: processed order:", order);
+        } else {
+            console.log("ingestOrder: bottles document undefined");
         }
     }
 
@@ -327,14 +323,24 @@ export class KellermeisterService {
 
     private async getCachedBottlesDocument(): Promise<BottlesDocument | undefined> {
         if (!this.cachedBottlesDocument) {
-            console.log("getCachedBottlesDocument: cache is empty");
-            this.cachedBottlesDocument = await this.bottleStorageRepository.fetchBottlesStorage();
+            console.log("getCachedBottlesDocument: fetching, because cache is empty");
+            this.cachedBottlesDocument = await this.bottleStorageRepository.fetchBottlesDocument();
+        }
+        return this.cachedBottlesDocument;
+    }
+
+    private async saveBottlesDocument(): Promise<BottlesDocument | undefined> {
+        if (this.cachedBottlesDocument) {
+            console.log("saveBottlesDocument");
+            await this.cachedBottlesDocument.save();
+            this.cachedBottlesDocument = undefined;
+            await this.getCachedBottlesDocument();
         }
         return this.cachedBottlesDocument;
     }
 
     private async fetchBottlesStorage(): Promise<BottlesDocument | undefined> {
-        return await this.bottleStorageRepository.fetchBottlesStorage();
+        return await this.bottleStorageRepository.fetchBottlesDocument();
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {

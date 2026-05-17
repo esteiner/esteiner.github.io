@@ -5,14 +5,18 @@ import {SoukaiSeller} from "./SoukaiSeller.ts";
 import type {Order} from "../../../domain/Order/Order.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
+import type {SolidBelongsToOneRelation} from "soukai-solid";
 
 export class SoukaiOrder extends Model implements Order {
     static history = false;
     static timestamps = false;
 
     declare public seller: SoukaiSeller | undefined;
+    declare public relatedSeller: SolidBelongsToOneRelation<SoukaiOrder, SoukaiSeller, typeof SoukaiSeller>;
     public sellerRelationship(): Relation {
-        return this.belongsToOne(SoukaiSeller, "sellerUrl");
+        return this
+            .belongsToOne(SoukaiSeller, "sellerUrl")
+            .usingSameDocument(true);;
     }
 
     declare public positions?: SoukaiOrderItem[];

@@ -18,7 +18,7 @@ import {SoukaiSeller} from "../infrastructure/soukai/model/SoukaiSeller.ts";
 import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "../infrastructure/soukai/model/SoukaiOrderItem.ts";
 import {SoukaiBottle} from "../infrastructure/soukai/model/SoukaiBottle.ts";
-import {SoukaiBottlesStorage} from "../infrastructure/soukai/model/SoukaiBottlesStorage.ts";
+import {SoukaiBottlesDocument} from "../infrastructure/soukai/model/SoukaiBottlesDocument.ts";
 import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
@@ -81,7 +81,7 @@ function makeService() {
         fetchBottles: vi.fn(),
     };
     const bottlesStorageRepo: BottlesDocumentRepository = {
-        fetchBottlesStorage: vi.fn(),
+        fetchBottlesDocument: vi.fn(),
         save: vi.fn(),
     };
     const orderRepo: OrderRepository = {
@@ -102,7 +102,7 @@ function makeService() {
     };
     setEngine(new InMemoryEngine());
     bootSolidModels();
-    bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage });
+    bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage: SoukaiBottlesDocument });
     const service = new KellermeisterService(cellarRepo, bottlesStorageRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottlesContainerRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }

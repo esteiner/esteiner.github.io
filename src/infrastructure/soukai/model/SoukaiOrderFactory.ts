@@ -17,6 +17,8 @@ export class SoukaiOrderFactory implements OrderFactory {
             newSeller.name = order.getSeller()?.getName();
             newSeller.email = order.getSeller()?.getEmail();
             newOrder.seller = newSeller;
+        } else {
+            console.log("createOrder: no seller found");
         }
         return newOrder;
     }

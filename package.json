@@ -14,6 +14,7 @@
     "@inrupt/solid-client": "^3.0.0",
     "@inrupt/solid-client-authn-browser": "^3.1.1",
     "@inrupt/vocab-solid": "^1.0.4",
+    "@inrupt/vocab-common-rdf": "^1.0.5",
     "@lit/task": "^1.0.3",
     "@noeldemartin/solid-utils": "^0.6.1",
     "@noeldemartin/utils": "^0.7.3",

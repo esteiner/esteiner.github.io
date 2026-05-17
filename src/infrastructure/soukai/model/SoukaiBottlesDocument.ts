@@ -7,7 +7,7 @@ import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 /**
  * This class represents the bottles.ttl resource/document containing all bottles.
  */
-export class SoukaiBottlesStorage extends SolidModel implements BottlesDocument {
+export class SoukaiBottlesDocument extends SolidModel implements BottlesDocument {
     static timestamps = false;
     static rdfContexts = { schema: "https://schema.org/" };
     static rdfsClasses = ["schema:Collection"];

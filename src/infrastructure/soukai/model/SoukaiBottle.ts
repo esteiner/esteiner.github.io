@@ -22,9 +22,7 @@ export class SoukaiBottle extends Model implements Bottle {
         return this.cellarUrl;
     }
     setCellar(cellarId: string): void {
-        console.log("setCellar: argument", cellarId);
         this.cellarUrl = cellarId;
-        console.log("setCellar: new value", this.cellarUrl);
     }
     getProduct(): SoukaiProduct {
         return this.product;

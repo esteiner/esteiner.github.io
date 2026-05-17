@@ -5,7 +5,7 @@ export interface BottlesDocumentRepository {
     /**
      * Fetches the BottleStorage.
      */
-    fetchBottlesStorage(): Promise<BottlesDocument | undefined>;
+    fetchBottlesDocument(): Promise<BottlesDocument | undefined>;
 
     save(bottlesStorage: BottlesDocument): Promise<BottlesDocument | undefined>;
 

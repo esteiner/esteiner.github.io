@@ -1,12 +1,20 @@
-import {getSolidDataset, createContainerAt, universalAccess, getResourceInfo} from "@inrupt/solid-client";
+import {
+    getSolidDataset,
+    createContainerAt,
+    universalAccess,
+    getResourceInfo,
+    saveSolidDatasetAt, buildThing, createThing, setThing, createSolidDataset
+} from "@inrupt/solid-client";
 import {fetch} from "@inrupt/solid-client-authn-browser";
 import {getAclServerResourceInfo} from "@inrupt/solid-client/universal";
+import {RDF} from "@inrupt/vocab-common-rdf";
 
 const inboxContainerPath: string = 'inbox/';
 const inboxKellermeisterContainerPath: string = 'inbox/kellermeister/';
 const ordersContainerPath: string = 'private/kellermeister/orders/';
 const cellarsContainerPath: string = 'private/kellermeister/cellars/';
 const bottlesContainerPath: string = 'private/kellermeister/bottles/';
+const bottlesDocumentPath: string = bottlesContainerPath + 'bottles#it';
 
 export class SolidPodService {
 
@@ -24,6 +32,7 @@ export class SolidPodService {
         await this.setupFolder(cellarsContainerPath);
         await this.setupFolder(ordersContainerPath);
         await this.setupFolder(bottlesContainerPath);
+        await this.setupBottlesDocument(bottlesDocumentPath);
     }
 
     async setupFolder(urlPath: String) {
@@ -48,6 +57,36 @@ export class SolidPodService {
         }
         catch (e) {
             console.log("setupFolder: failed to create folder", url.toString(), e);
+        }
+    }
+
+    async setupBottlesDocument(urlPath: String): Promise<void> {
+        let url: URL = new URL(this.storageUrl.toString() + urlPath);
+        // check if bottlesDocument exists
+        let bottlesDocument = null;
+        try {
+            bottlesDocument = await getSolidDataset(url.toString(), { fetch: fetch });
+        }
+        catch (e) {
+            console.log("setupBottlesDocument: bottles document doesn't yet exist: ",urlPath);
+        }
+        // create bottlesDocument
+        try {
+            if (!bottlesDocument) {
+                bottlesDocument = createSolidDataset();
+                const bottlesThing = buildThing(createThing({ name: "it" }))
+                    .addUrl(RDF.type, "https://schema.org/Collection")
+                    .addStringNoLocale("https://schema.org/name", "BottlesDocument")
+                    .build();
+                await saveSolidDatasetAt(url.toString(), setThing(bottlesDocument, bottlesThing), { fetch: fetch });
+                console.log("setupBottlesDocument: bottles document created", url.toString());
+            }
+            else {
+                console.log("setupBottlesDocument: bottles document found", url.toString());
+            }
+        }
+        catch (e) {
+            console.log("setupBottlesDocument: failed to create bottles document", url.toString(), e);
         }
     }
 

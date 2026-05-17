@@ -1,6 +1,7 @@
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import type {Cellar} from "../../domain/Cellar/Cellar.ts";
 import {SoukaiCellar} from "./model/SoukaiCellar.ts";
+import {bootModels} from "soukai";
 
 export class SoukaiCellarRepository implements CellarRepository {
 
@@ -12,6 +13,7 @@ export class SoukaiCellarRepository implements CellarRepository {
         this.cellarUrl = storageUrl.toString() + 'private/kellermeister/cellars/';
         this.cellarUrlForCellarwork = this.cellarUrl + 'cellarWork#it'
         this.cellarUrlForAltglass = this.cellarUrl + 'altglass#it'
+        bootModels({ SoukaiCellar });
     }
 
     async createCellar(name: string): Promise<Cellar> {
