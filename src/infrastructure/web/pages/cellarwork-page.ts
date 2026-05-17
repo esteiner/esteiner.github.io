@@ -38,16 +38,29 @@ class CellarWorkPage extends BasePage {
     @state()
     private searchText: string = '';
 
+    @state()
+    private busy: boolean = false;
+
     private expandable: boolean = false;
 
     private cdi: CDI = CDI.getInstance();
 
     private _bottlesTask = new Task(this, async () => {
+        if (this.shouldIngestFromInbox() && this.session.info.isLoggedIn) {
+            const ingested = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
+            if (ingested) {
+                this.sourceCellar = ingested;
+            }
+        }
         if (this.sourceCellar) {
             return await this.cdi.getKellermeisterService().bottlesFromCellar(this.sourceCellar, this.filter);
         }
         return new Array<Bottle>();
     });
+
+    private shouldIngestFromInbox(): boolean {
+        return !this.sourceCellar || this.sourceCellar.getId() === this.cdi.getKellermeisterService().getCellarWorkId();
+    }
 
     constructor() {
         super();
@@ -188,11 +201,7 @@ class CellarWorkPage extends BasePage {
 
     connectedCallback() {
         super.connectedCallback();
-        if (!this.sourceCellar || this.sourceCellar.getId() === this.cdi.getKellermeisterService().getCellarWorkId() ) {
-            this.ingestOrdersFromInbox();
-        } else {
-            this.loadBottles();
-        }
+        this.loadBottles();
         this.fetchCellars();
     }
 
@@ -205,20 +214,9 @@ class CellarWorkPage extends BasePage {
         await this.loadCellar(cellarId as string);
     }
 
-    async ingestOrdersFromInbox(): Promise<void> {
-        if (this.session.info.isLoggedIn) {
-            this.sourceCellar = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
-            if (this.sourceCellar) {
-                this.loadBottles();
-            }
-        }
-    }
-
     private async loadBottles() {
-        if (this.sourceCellar) {
-            await this._bottlesTask.run();
-            this.cellarIds = Array((this._bottlesTask.value ?? []).length).fill(undefined, 0);
-        }
+        await this._bottlesTask.run();
+        this.cellarIds = Array((this._bottlesTask.value ?? []).length).fill(undefined, 0);
     }
 
     async fetchCellars() {
@@ -263,7 +261,7 @@ class CellarWorkPage extends BasePage {
               </div>
             ` : ''}
             <main>
-                ${this._bottlesTask.render({
+                ${this.busy ? html`<div class="spinner"></div>` : this._bottlesTask.render({
                     pending: () => html`<div class="spinner"></div>`,
                     complete: (bottles) => html`
                         <form @submit="${this.handleIngestClick}">
@@ -310,8 +308,13 @@ class CellarWorkPage extends BasePage {
         e.preventDefault();
         const bottlesForUpdate: Bottle[] = this._bottlesTask.value ?? [];
         console.log("handleIngestClick: number of bottles: ", bottlesForUpdate.length);
-        await this.cdi.getKellermeisterService().transferBottles(bottlesForUpdate, this.cellarIds);
-        this.loadBottles();
+        try {
+            this.busy = true;
+            await this.cdi.getKellermeisterService().transferBottles(bottlesForUpdate, this.cellarIds);
+            await this.loadBottles();
+        } finally {
+            this.busy = false;
+        }
     }
 
     private handleCellarSelectionClick(e: Event) {
