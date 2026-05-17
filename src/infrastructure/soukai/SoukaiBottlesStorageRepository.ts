@@ -194,14 +194,9 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
     }
 
     private setId(soukaiModel: SolidModel, entry: any): void {
-        const relativeId: string = this.relativeId(entry["@id"]);
         // @ts-ignore
-        soukaiModel["@id"] = relativeId;
-        soukaiModel.url = relativeId;
-    }
-
-    private relativeId(absoluteId: string): string {
-        return absoluteId.substring(this.bottlesDocumentUrl.length, absoluteId.length);
+        soukaiModel["@id"] = entry["@id"];
+        soukaiModel.url = entry["@id"];
     }
 
     private hasType(entry: any, typeUri: string): boolean {
