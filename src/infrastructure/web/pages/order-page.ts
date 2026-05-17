@@ -1,5 +1,6 @@
 import {css, html} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {customElement, state} from 'lit/decorators.js';
+import {Task} from '@lit/task';
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {BasePage} from "../common/base-page.ts";
 import '../components/kellermeister-button.ts';
@@ -11,9 +12,6 @@ import type {Order} from "../../../domain/Order/Order.ts";
 
 @customElement('order-page')
 class OrderPage extends BasePage {
-
-    @property()
-    orders: Map<Date, Order[]>;
 
     @state()
     session: Session = getDefaultSession()
@@ -29,10 +27,16 @@ class OrderPage extends BasePage {
 
     private cdi: CDI = CDI.getInstance();
 
+    private _ordersTask = new Task(this, async () => {
+        if (this.session.info.isLoggedIn) {
+            return await this.cdi.getKellermeisterService().ordersGroupedByMonth(this.filter);
+        }
+        return new Map<Date, Order[]>();
+    });
+
     constructor() {
         super();
         this.filter = new ProductFilter();
-        this.orders = new Map<Date, Order[]>;
     }
 
     updated(changedProperties: Map<string, unknown>) {
@@ -43,14 +47,7 @@ class OrderPage extends BasePage {
 
     connectedCallback() {
         super.connectedCallback();
-        this.fetchOrders();
-    }
-
-    async fetchOrders() {
-        if (this.session.info.isLoggedIn) {
-            this.orders = await this.cdi.getKellermeisterService().ordersGroupedByMonth(this.filter);
-
-        }
+        this._ordersTask.run();
     }
 
     static get styles() {
@@ -111,6 +108,21 @@ class OrderPage extends BasePage {
                 .search-input:focus {
                     border-color: var(--app-color-primary, #3A6B28);
                 }
+
+                /* Spinner */
+                .spinner {
+                    width: 28px;
+                    height: 28px;
+                    border: 3px solid var(--km-border, #E4DFD7);
+                    border-top-color: var(--app-color-primary, #3A6B28);
+                    border-radius: 50%;
+                    animation: spin 0.7s linear infinite;
+                    margin: 16px auto;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
             `
         ];
     }
@@ -143,17 +155,19 @@ class OrderPage extends BasePage {
             </div>
             <main>
                 <div>
-                    ${this.orders.size > 0
+                    ${this._ordersTask.render({
+                        pending: () => html`<div class="spinner"></div>`,
+                        complete: (orders) => orders.size > 0
                             ? html`
-                                ${[...this.orders.keys()].map(
+                                ${[...orders.keys()].map(
                                         month => html`
-                                            <orders-component .month="${month}" .orders="${this.orders.get(month)}">`
+                                            <orders-component .month="${month}" .orders="${orders.get(month)}">`
                                 )}
                             `
                             : html`
                                 <p>Es gibt noch keine Bestellungen.</p>
-                            `
-                    }
+                            `,
+                    })}
                 </div>
             </main>
             <footer>
@@ -162,24 +176,24 @@ class OrderPage extends BasePage {
         `;
     }
 
-    private async handleSprudelFilterClick(): Promise<void> {
+    private handleSprudelFilterClick(): void {
         this.filter.toggleSprudelFilter();
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
-    private async handleRedFilterClick(): Promise<void> {
+    private handleRedFilterClick(): void {
         this.filter.toggleRedFilter();
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
-    private async handleWhiteFilterClick(): Promise<void> {
+    private handleWhiteFilterClick(): void {
         this.filter.toggleWhiteFilter();
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
-    private async handleRoseFilterClick(): Promise<void> {
+    private handleRoseFilterClick(): void {
         this.filter.toggleRoseFilter();
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
     private handleTextFilterClick(): void {
@@ -191,23 +205,23 @@ class OrderPage extends BasePage {
         }
     }
 
-    private async handleSearchInput(e: InputEvent): Promise<void> {
+    private handleSearchInput(e: InputEvent): void {
         this.searchText = (e.target as HTMLInputElement).value;
         this.filter.textFilter = this.searchText || null;
         this.filter.isText = !!this.searchText;
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
     private handleSearchClose(): void {
         this.showSearchInput = false;
     }
 
-    private async handleSearchClear(): Promise<void> {
+    private handleSearchClear(): void {
         this.showSearchInput = false;
         this.filter.textFilter = null;
         this.filter.isText = false;
         this.searchText = '';
-        await this.fetchOrders();
+        this._ordersTask.run();
     }
 
 }
