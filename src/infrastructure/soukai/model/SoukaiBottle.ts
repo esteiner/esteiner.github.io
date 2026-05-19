@@ -28,10 +28,12 @@ export class SoukaiBottle extends Model implements Bottle {
         return this.product;
     }
     getPrice(): number {
-        return this.orUndefined(this.price);
+        const productPrice = this.getProduct().getPrice();
+        return productPrice ? productPrice : this.orUndefined(this.price);
     }
     getPriceCurrency(): string {
-        return this.orUndefined(this.priceCurrency);
+        const productPrice = this.getProduct().getPrice();
+        return productPrice ? this.getProduct().getPriceCurrency() : this.orUndefined(this.priceCurrency);
     }
     getRating(): number {
         return this.orUndefined(this.rating);

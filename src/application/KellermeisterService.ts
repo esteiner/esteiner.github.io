@@ -334,6 +334,8 @@ export class KellermeisterService {
             await this.cachedBottlesDocument.save();
             this.cachedBottlesDocument = undefined;
             await this.getCachedBottlesDocument();
+        } else {
+            console.log("saveBottlesDocument: bottles document not found");
         }
         return this.cachedBottlesDocument;
     }
