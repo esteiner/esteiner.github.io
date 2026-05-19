@@ -13,6 +13,12 @@ import {WebIDProfile} from "../../domain/Solid/WebIDProfile.ts";
 // https://docs.inrupt.com/guides/webid-document-best-practices
 // https://docs.inrupt.com/guides/webid-document-best-practices/managing-webid-profiles#read-webid-profile-and-extended-profiles
 export class InruptSolidService implements SolidService {
+
+    /**
+     *
+     * used in LandingPage.sessionChangedCallback
+     * @param webID
+     */
     async getWebIDProfile(webID: URL): Promise<WebIDProfile | null> {
         console.log("getWebIDProfile: for WebID:", webID);
         const webIDUrl: UrlString = webID.toString();
