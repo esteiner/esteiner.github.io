@@ -1,6 +1,5 @@
 import {Weinart} from "./Weinart.ts";
 import {Weinfarbe} from "./Weinfarbe.ts";
-import {SolidProduct} from "./SolidProduct.ts";
 import type {Product} from "./Product.ts";
 
 export class ProductFilter {
@@ -71,44 +70,7 @@ export class ProductFilter {
         return (this.isSprudel || this.isDessert || this.isWhite || this.isRed || this.isRose || this.isText);
     }
 
-    public filterProduct(product: SolidProduct): boolean {
-        let result: boolean = true;
-        // Weinart
-        if (this.isSprudel) {
-            result = result && Weinart.Schaumwein.equals(product.weinart);
-        }
-        if (this.isDessert) {
-            result = result && Weinart.Dessertwein.equals(product.weinart);
-        }
-        // Weinfarbe
-        if (this.isWhite) {
-            result = result && Weinfarbe.Weiss.equals(product.weinfarbe);
-        }
-        if (this.isRed) {
-            result = result && Weinfarbe.Rot.equals(product.weinfarbe);
-        }
-        if (this.isRose) {
-            result = result && Weinfarbe.Rose.equals(product.weinfarbe);
-        }
-        // Text
-        if (this.isText) {
-            if (this.textFilter) {
-                const textFilterLowerCase = this.textFilter.toLowerCase();
-                result = result && (
-                    this.isIncludedIn(textFilterLowerCase, product.name?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.productionDate?.toUTCString().toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.traubensorte?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.alkoholgehalt)
-                    || this.isIncludedIn(textFilterLowerCase, product.land?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.region?.toLowerCase())
-                    || this.isBiggerThan(this.textFilter, product.trinkfensterBis?.getFullYear())
-                );
-            }
-        }
-        return result;
-    }
-
-    public filterProduct2(product: Product): boolean {
+    public filterProduct(product: Product): boolean {
         let result: boolean = true;
         // Weinart
         if (this.isSprudel) {

@@ -25,13 +25,20 @@ import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 vi.mock('@inrupt/solid-client', () => ({ deleteSolidDataset: vi.fn() }));
 vi.mock('@inrupt/solid-client-authn-browser', () => ({ fetch: vi.fn() }));
 
+// Boot Soukai models once at module load so model constructors used inside
+// describe-level helpers (e.g. `const cellarA = makeCellar(...)`) don't run
+// before the Metadata/history models are registered.
+bootSolidModels();
+bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesDocument });
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function makeCellar(id: string): Cellar {
     const cellar = new SoukaiCellar();
-    cellar.id = id;
+    // SoukaiCellar.getId() returns this.url
+    cellar.url = id;
     cellar.name = "name";
     return cellar
 }
@@ -44,9 +51,10 @@ function makeProduct(id: string, name?: string): Product {
 }
 
 function makeBottle(productId: string, cellarId: string, productName?: string): Bottle {
+    const product = makeProduct(productId, productName);
     return {
-        product: makeProduct(productId, productName),
-        cellar: cellarId,
+        getProduct: () => product,
+        getCellar: () => cellarId,
     } as unknown as Bottle;
 }
 
@@ -57,7 +65,9 @@ function makeOrder(orderDate?: Date): Order {
 }
 
 function makeBottlesDocument(bottles: Bottle[]): SoukaiBottlesDocument {
-    return { bottles } as unknown as SoukaiBottlesDocument;
+    return {
+        getBottles: () => bottles,
+    } as unknown as SoukaiBottlesDocument;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,8 +108,6 @@ function makeService() {
         createOrderItem: vi.fn(),
     };
     setEngine(new InMemoryEngine());
-    bootSolidModels();
-    bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesStorage: SoukaiBottlesDocument });
     const service = new KellermeisterService(cellarRepo, bottlesDocumentRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottlesDocumentRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }
@@ -353,7 +361,7 @@ describe('KellermeisterService', () => {
         });
 
         function injectBottles(svc: KellermeisterService, bottles: Bottle[]) {
-            (svc as any).bottlesContainer = makeBottlesDocument(bottles);
+            (svc as any).cachedBottlesDocument = makeBottlesDocument(bottles);
         }
 
         it('returns an empty map when there are no bottles', async () => {
@@ -362,7 +370,7 @@ describe('KellermeisterService', () => {
             expect(result.size).toBe(0);
         });
 
-        it('groups bottles by product id', async () => {
+        it('groups bottles by product name', async () => {
             injectBottles(service, [
                 makeBottle('p1', 'cellar-a', 'Merlot'),
                 makeBottle('p1', 'cellar-a', 'Merlot'),
@@ -370,8 +378,8 @@ describe('KellermeisterService', () => {
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
             expect(result.size).toBe(2);
-            expect(result.get('p1')).toHaveLength(2);
-            expect(result.get('p2')).toHaveLength(1);
+            expect(result.get('Merlot')).toHaveLength(2);
+            expect(result.get('Chardonnay')).toHaveLength(1);
         });
 
         it('excludes bottles from other cellars', async () => {
@@ -381,26 +389,20 @@ describe('KellermeisterService', () => {
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
             expect(result.size).toBe(1);
-            expect(result.has('p1')).toBe(true);
+            expect(result.has('Merlot')).toBe(true);
         });
 
         it('excludes bottles that do not pass the filter', async () => {
+            const filter = new ProductFilter();
+            filter.isText = true;
+            filter.textFilter = 'Merlot';
             injectBottles(service, [
                 makeBottle('p1', 'cellar-a', 'Merlot'),
                 makeBottle('p2', 'cellar-a', 'Chardonnay'),
             ]);
-            const filter = new ProductFilter();
-            filter.isText = true;
-            filter.textFilter = 'Merlot';
-            // p2 has a name and trinkfensterBis is undefined → passes due to precedence bug;
-            // so both would pass here. Use a bottle with a trinkfensterBis to avoid that:
-            injectBottles(service, [
-                makeBottle('p1', 'cellar-a', 'Merlot'),
-                { product: { id: 'p2', name: 'Chardonnay', trinkfensterBis: new Date(2030, 0, 1) }, cellar: 'cellar-a' } as unknown as Bottle,
-            ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, filter);
-            expect(result.has('p1')).toBe(true);
-            expect(result.has('p2')).toBe(false);
+            expect(result.has('Merlot')).toBe(true);
+            expect(result.has('Chardonnay')).toBe(false);
         });
 
         it('returns an empty map when cellar is undefined', async () => {
@@ -418,7 +420,7 @@ describe('KellermeisterService', () => {
             expect(result.size).toBe(1);
         });
 
-        it('uses the cached bottlesContainer on a second call', async () => {
+        it('uses the cached bottles document on a second call', async () => {
             const { service: svc, bottlesDocumentRepo } = makeService();
             const bottles = [makeBottle('p1', 'cellar-a', 'Merlot')];
             vi.mocked(bottlesDocumentRepo.fetchBottlesDocument).mockResolvedValue(makeBottlesDocument(bottles));

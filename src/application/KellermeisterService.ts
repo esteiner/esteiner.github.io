@@ -21,7 +21,6 @@ import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 export class KellermeisterService {
 
     private cachedBottlesDocument: BottlesDocument | undefined = undefined;
-    //private bottlesContainer: BottlesContainer | null = null;
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
@@ -64,7 +63,7 @@ export class KellermeisterService {
         const grouped = new Map<string, Map<string, Bottle[]>>();
 
         for (const bottle of bottles) {
-            if (bottle.getProduct() && bottle.getCellar() && filter.filterProduct2(bottle.getProduct())) {
+            if (bottle.getProduct() && bottle.getCellar() && filter.filterProduct(bottle.getProduct())) {
                 if (!grouped.has(bottle.getCellar())) {
                     grouped.set(bottle.getCellar(), new Map());
                 }
@@ -103,7 +102,7 @@ export class KellermeisterService {
         const grouped = new Map<string, Bottle[]>();
 
         for (const bottle of bottles) {
-            if (bottle.getProduct() && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct2(bottle.getProduct())) {
+            if (bottle.getProduct() && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.getProduct())) {
                 //console.log("bottlesFromCellarGroupedByProduct", bottle.getProduct().getName());
                 if (!grouped.has(bottle.getProduct().getName())) {
                     grouped.set(bottle.getProduct().getName(), []);
@@ -119,7 +118,7 @@ export class KellermeisterService {
      */
     async bottlesFromCellar(cellar: Cellar | undefined, filter: ProductFilter): Promise<Bottle[]> {
         const bottles = await this.getAllBottles();
-        return bottles.filter(bottle => cellar?.getId() === bottle.getCellar()).filter(bottle => filter.filterProduct2(bottle.getProduct()))
+        return bottles.filter(bottle => cellar?.getId() === bottle.getCellar()).filter(bottle => filter.filterProduct(bottle.getProduct()))
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.getProduct(), b.getProduct()));
     }
 
@@ -351,7 +350,7 @@ export class KellermeisterService {
     }
 
     private filterOrder(order: Order, filter: ProductFilter): Order | null {
-        const orderItems = order.getOrderItems()?.filter(position => filter.filterProduct2(position.getProduct()));
+        const orderItems = order.getOrderItems()?.filter(position => filter.filterProduct(position.getProduct()));
         if (orderItems && orderItems.length > 0) {
             return order;
         }

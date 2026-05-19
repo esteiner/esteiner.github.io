@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ProductFilter } from './ProductFilter';
-import type { SolidProduct } from './SolidProduct';
+import type { SoukaiProduct } from '../../infrastructure/soukai/model/SoukaiProduct';
 
-// Helper to build a minimal Product-shaped plain object for use in filterProduct().
+// Helper to build a minimal Product-shaped stub exposing the getters used by filterProduct().
 function makeBottle(product: {
     name?: string;
     weinart?: string;
@@ -13,8 +13,18 @@ function makeBottle(product: {
     region?: string;
     productionDate?: Date;
     trinkfensterBis?: Date;
-}): SolidProduct {
-    return product as unknown as SolidProduct;
+}): SoukaiProduct {
+    return {
+        getName: () => product.name,
+        getWineType: () => product.weinart,
+        getWineColor: () => product.weinfarbe,
+        getGrapeVariety: () => product.traubensorte,
+        getAlcoholContent: () => product.alkoholgehalt,
+        getCountry: () => product.land,
+        getRegion: () => product.region,
+        getProductionDate: () => product.productionDate,
+        getDrinkingWindowTo: () => product.trinkfensterBis,
+    } as unknown as SoukaiProduct;
 }
 
 describe('ProductFilter', () => {
