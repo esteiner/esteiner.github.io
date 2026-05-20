@@ -94,7 +94,7 @@ class SearchPage extends BasePage {
                 return html`
                     <section class="cellar-section">
                         <h2 class="cellar-heading">
-                            <a class="cellar-link" @click="${() => Router.go(router.urlForName('cellar-page', {cellarId: cellar.getId()!}))}">
+                            <a class="cellar-link" @click="${() => this.navigateToCellar(cellar)}">
                                 ${cellar.getName()}
                             </a>
                             <span class="cellar-count">${totalBottles}</span>
@@ -123,6 +123,12 @@ class SearchPage extends BasePage {
         const params = this.filter.toSearchParams();
         const search = params.toString() ? '?' + params.toString() : '';
         history.replaceState(null, '', window.location.pathname + search);
+    }
+
+    private navigateToCellar(cellar: Cellar): void {
+        const params = this.filter.toSearchParams();
+        const search = params.toString() ? '?' + params.toString() : '';
+        Router.go(router.urlForName('cellar-page', {cellarId: cellar.getId()!}) + search);
     }
 
     private handleTextFilterClick(): void {
