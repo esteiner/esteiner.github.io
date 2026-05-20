@@ -91,7 +91,14 @@ export class KellermeisterService {
         for (const cellarId of sortedCellarIds) {
             const cellar = cellarMap.get(cellarId);
             if (cellar) {
-                result.set(cellar, grouped.get(cellarId)!);
+                const byProduct = grouped.get(cellarId)!;
+                const sortedByProduct = new Map(
+                    [...byProduct.entries()].sort(([, a], [, b]) =>
+                        (a[0].getProduct().getName() ?? '').toLowerCase()
+                            .localeCompare((b[0].getProduct().getName() ?? '').toLowerCase())
+                    )
+                );
+                result.set(cellar, sortedByProduct);
             }
         }
         return result;
