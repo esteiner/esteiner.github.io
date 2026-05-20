@@ -18,6 +18,7 @@ import {SoukaiSeller} from "../infrastructure/soukai/model/SoukaiSeller.ts";
 import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "../infrastructure/soukai/model/SoukaiOrderItem.ts";
 import {SoukaiBottle} from "../infrastructure/soukai/model/SoukaiBottle.ts";
+import {SoukaiRating} from "../infrastructure/soukai/model/SoukaiRating.ts";
 import {SoukaiBottlesDocument} from "../infrastructure/soukai/model/SoukaiBottlesDocument.ts";
 import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 
@@ -29,7 +30,7 @@ vi.mock('@inrupt/solid-client-authn-browser', () => ({ fetch: vi.fn() }));
 // describe-level helpers (e.g. `const cellarA = makeCellar(...)`) don't run
 // before the Metadata/history models are registered.
 bootSolidModels();
-bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesDocument });
+bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiRating, SoukaiBottle, SoukaiBottlesDocument });
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -5,6 +5,7 @@ import {SoukaiSeller} from "./model/SoukaiSeller.ts";
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
 import {SoukaiProduct} from "./model/SoukaiProduct.ts";
+import {SoukaiRating} from "./model/SoukaiRating.ts";
 import {SoukaiBottle} from "./model/SoukaiBottle.ts";
 import {SoukaiBottlesDocument} from "./model/SoukaiBottlesDocument.ts";
 import {urlRoute} from "@noeldemartin/utils";
@@ -14,6 +15,7 @@ const SCHEMA_ORGANIZATION = "https://schema.org/Organization"; // seller
 const SCHEMA_ORDER = "https://schema.org/Order";
 const SCHEMA_ORDER_ITEM = "https://schema.org/OrderItem";
 const SCHEMA_PRODUCT = "https://schema.org/Product";
+const SCHEMA_RATING = "https://schema.org/Rating";
 const SCHEMA_LIST_ITEM = "https://schema.org/ListItem"; // bottle
 const SCHEMA_COLLECTION = "https://schema.org/Collection"; // bottles
 
@@ -27,7 +29,7 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
     constructor(storageUrl: URL) {
         this.bottlesUrl = storageUrl.toString() + bottlesDocumentPath;
         this.bottlesDocumentUrl = urlRoute(this.bottlesUrl);
-        bootModels({ SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiBottle, SoukaiBottlesDocument });
+        bootModels({ SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiRating, SoukaiBottle, SoukaiBottlesDocument });
     }
 
     async save(bottlesDocument: BottlesDocument): Promise<BottlesDocument | undefined> {
@@ -76,11 +78,15 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
                 const orderItemMap = new Map<string, SoukaiOrderItem>();
                 await this.deserializeOrderItemsInto(entries, orderItemMap, orderMap);
 
-                // 4. Build Product lookup
-                const productMap = new Map<string, SoukaiProduct>();
-                await this.deserializeProductsInto(entries, productMap, orderItemMap);
+                // 4. Build Rating lookup (products will reference these by URL)
+                const ratingMap = new Map<string, SoukaiRating>();
+                await this.deserializeRatingsInto(entries, ratingMap);
 
-                // 5. Build Bottles from ListItems via BottleModel
+                // 5. Build Product lookup
+                const productMap = new Map<string, SoukaiProduct>();
+                await this.deserializeProductsInto(entries, productMap, orderItemMap, ratingMap);
+
+                // 6. Build Bottles from ListItems via BottleModel
                 const soukaiBottles: SoukaiBottle[] = await this.deserializeBottles(entries, productMap);
 
                 bottlesDocument.setRelationModels("bottles", soukaiBottles);
@@ -156,8 +162,19 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
         }
     }
 
-    // 4. Product
-    private async deserializeProductsInto(entries: any, productMap: Map<string, SoukaiProduct>, orderItemMap: Map<string, SoukaiOrderItem>) {
+    // 4. Rating
+    private async deserializeRatingsInto(entries: any, ratingMap: Map<string, SoukaiRating>) {
+        for (const entry of entries) {
+            if (!this.hasType(entry, SCHEMA_RATING)) continue;
+            const rating = await SoukaiRating.newFromJsonLD(entry, this.bottlesUrl);
+            this.setId(rating, entry);
+            rating.cleanDirty();
+            ratingMap.set(entry["@id"], rating);
+        }
+    }
+
+    // 5. Product
+    private async deserializeProductsInto(entries: any, productMap: Map<string, SoukaiProduct>, orderItemMap: Map<string, SoukaiOrderItem>, ratingMap: Map<string, SoukaiRating>) {
         for (const entry of entries) {
             if (!this.hasType(entry, SCHEMA_PRODUCT)) continue;
             const product = await SoukaiProduct.newFromJsonLD(entry, this.bottlesUrl);
@@ -168,13 +185,18 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
                 : undefined;
             if (!orderItem) continue;
             product.orderItem = orderItem;
+            const ratingUrls = (a.ratingUrls as string[] | undefined) ?? [];
+            const ratings = ratingUrls
+                .map(url => ratingMap.get(url))
+                .filter((r): r is SoukaiRating => r !== undefined);
+            product.setRelationModels("ratings", ratings);
             product.cleanDirty();
             productMap.set(entry["@id"], product);
             // console.log("deserializeProductsInto: product found", product);
         }
     }
 
-    // 5. Bottles
+    // 6. Bottles
     private async deserializeBottles(entries: any, productMap: Map<string, SoukaiProduct>): Promise<SoukaiBottle[]> {
         const bottles: SoukaiBottle[] = [];
         for (const entry of entries) {

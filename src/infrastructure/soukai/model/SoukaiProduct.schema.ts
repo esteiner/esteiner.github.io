@@ -83,6 +83,11 @@ export default defineSolidModelSchema({
         orderItemUrl: {
             type: FieldType.Key,
             rdfProperty: 'km:orderItem'
+        },
+        ratingUrls: {
+            type: FieldType.Array,
+            items: { type: FieldType.Key },
+            rdfProperty: 'km:hasRating'
         }
     }
 });

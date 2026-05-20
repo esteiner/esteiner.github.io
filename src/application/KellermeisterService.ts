@@ -273,15 +273,15 @@ export class KellermeisterService {
 
     }
 
-    async disposeBottleToAltglass(bottle: Bottle, rating?: number) {
+    async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
         console.log("disposeBottleToAltglass2: with id", bottle.getId());
         const bottlesStorage = await this.getCachedBottlesDocument();
         if (bottlesStorage) {
             bottle.setCellar(this.getAltglassId());
-            if (rating !== undefined) {
-                bottle.setRating(rating);
+            if (ratingValue !== undefined) {
+                bottle.getProduct().createRating(ratingValue);
             }
-            console.log("disposeBottleToAltglass2: with rating", rating);
+            console.log("disposeBottleToAltglass2: with rating", ratingValue);
             await this.bottleStorageRepository.save(bottlesStorage);
         }
     }

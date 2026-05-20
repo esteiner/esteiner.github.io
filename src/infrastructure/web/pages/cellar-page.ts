@@ -232,7 +232,7 @@ class CellarPage extends BasePage {
 
     private handleBottleClick(bottle: Bottle): void {
         this.ratingBottle = bottle;
-        this.selectedRating = bottle.getRating();
+        this.selectedRating = undefined;
     }
 
     private handleRatingSelect(rating: number): void {

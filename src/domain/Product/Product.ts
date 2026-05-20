@@ -1,4 +1,5 @@
 import type {OrderItem} from "../Order/OrderItem.ts";
+import type {Rating} from "./Rating.ts";
 
 export interface Product {
     getId(): string;
@@ -20,4 +21,6 @@ export interface Product {
     getDrinkingWindowFrom(): Date;
     getDrinkingWindowTo(): Date;
     getOrderItem(): OrderItem;
+    getRatings(): Rating[];
+    createRating(value: number): Rating;
 }

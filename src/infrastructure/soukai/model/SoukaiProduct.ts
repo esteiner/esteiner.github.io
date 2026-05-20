@@ -1,8 +1,10 @@
 import type {Relation} from "soukai";
-import {type SolidBelongsToOneRelation} from "soukai-solid";
+import {type SolidBelongsToManyRelation, type SolidBelongsToOneRelation} from "soukai-solid";
 import Model from "./SoukaiProduct.schema";
 import type { Product } from "../../../domain/Product/Product";
+import type {Rating} from "../../../domain/Product/Rating.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
+import {SoukaiRating} from "./SoukaiRating.ts";
 
 export class SoukaiProduct extends Model implements Product {
     static timestamps = false;
@@ -12,6 +14,14 @@ export class SoukaiProduct extends Model implements Product {
     public orderItemRelationship() : Relation {
         return this
             .belongsToOne(SoukaiOrderItem, 'orderItemUrl')
+            .usingSameDocument(true);
+    }
+
+    declare public ratings: SoukaiRating[];
+    declare public relatedRatings: SolidBelongsToManyRelation<SoukaiProduct, SoukaiRating, typeof SoukaiRating>;
+    public ratingsRelationship() : Relation {
+        return this
+            .belongsToMany(SoukaiRating, 'ratingUrls')
             .usingSameDocument(true);
     }
 
@@ -71,6 +81,19 @@ export class SoukaiProduct extends Model implements Product {
     }
     getOrderItem(): SoukaiOrderItem {
         return this.orderItem;
+    }
+    getRatings(): Rating[] {
+        return this.ratings ?? [];
+    }
+    createRating(value: number): SoukaiRating {
+        const rating: SoukaiRating = new SoukaiRating();
+        rating.value = value;
+        rating.date = new Date();
+        if (!this.ratings) {
+            this.ratings = [];
+        }
+        this.ratings.push(rating);
+        return rating;
     }
 
     private orUndefined(value: any): any | undefined {
