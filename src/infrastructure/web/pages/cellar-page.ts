@@ -246,7 +246,7 @@ class CellarPage extends BasePage {
 
     private async handleRatingConfirm(): Promise<void> {
         if (this.ratingBottle) {
-            await this.cdi.getKellermeisterService().disposeBottleToAltglass2(this.ratingBottle, this.selectedRating);
+            await this.cdi.getKellermeisterService().disposeBottleToAltglass(this.ratingBottle, this.selectedRating);
             this.loadBottles();
         }
         this.ratingBottle = undefined;

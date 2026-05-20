@@ -233,7 +233,7 @@ export class KellermeisterService {
     }
 
     async ingestOrder(order: Order, cellarForCellarwork: string) {
-        console.log("ingestOrder: order:", order);
+        // console.log("ingestOrder: order:", order);
         const bottlesDocument = await this.getCachedBottlesDocument();
         if (bottlesDocument) {
             this.addBottles(bottlesDocument, order, cellarForCellarwork);
@@ -249,11 +249,9 @@ export class KellermeisterService {
         const newOrder: Order = this.orderFactory.createOrder(order);
 
         if (order.getOrderItems()) {
-            // const newPositions: OrderItem[] = new Array();
             for (const orderItem of order.getOrderItems()) {
                 if (orderItem.getOrderQuantity()) {
                     const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
-                    // newPositions.push(newOrderItem);
                     newOrder.addOrderItem(newOrderItem);
 
                     const product = this.productFactory.createProduct(orderItem.getProduct(), newOrderItem);
@@ -264,12 +262,11 @@ export class KellermeisterService {
                     }
                 }
             }
-            // newOrder.positions = newPositions;
         }
 
     }
 
-    async disposeBottleToAltglass2(bottle: Bottle, rating?: number) {
+    async disposeBottleToAltglass(bottle: Bottle, rating?: number) {
         console.log("disposeBottleToAltglass2: with id", bottle.getId());
         const bottlesStorage = await this.getCachedBottlesDocument();
         if (bottlesStorage) {
@@ -294,28 +291,11 @@ export class KellermeisterService {
                 }
             }
             console.log("transferBottles: updating number of bottles", transferred);
-            await this.bottleStorageRepository.save(bottlesStorage);
+            const savedBottlesDocument = await this.saveBottlesDocument();
             console.log("transferBottles: updated bottles", transferred);
-            return await this.fetchBottlesStorage();
+            return savedBottlesDocument;
         }
         return bottlesStorage;
-        // const bottlesContainer: BottlesContainer | null = await this.fetchBottles();
-        // var transferred: number = 0;
-        // if (bottlesContainer) {
-        //     for (var i = 0; i < bottles.length; i++) {
-        //         if (cellarIds[i] != undefined) {
-        //             bottlesContainer.transferBottle(bottles[i], cellarIds[i]);
-        //             transferred++;
-        //         }
-        //     }
-        // }
-        // if (bottlesContainer?.isDirty) {
-        //     console.log("transferBottles: updating number of bottles", transferred);
-        //     const savedBottlesContainer: BottlesContainer | null = await this.saveBottles();
-        //     console.log("transferBottles: updated bottles", transferred);
-        //     return savedBottlesContainer;
-        // }
-        // return bottlesContainer;
     }
 
     // -----------------------------------------------------------------
@@ -331,17 +311,11 @@ export class KellermeisterService {
     private async saveBottlesDocument(): Promise<BottlesDocument | undefined> {
         if (this.cachedBottlesDocument) {
             console.log("saveBottlesDocument");
-            await this.cachedBottlesDocument.save();
-            this.cachedBottlesDocument = undefined;
-            await this.getCachedBottlesDocument();
+            this.cachedBottlesDocument = await this.bottleStorageRepository.save(this.cachedBottlesDocument);
         } else {
             console.log("saveBottlesDocument: bottles document not found");
         }
         return this.cachedBottlesDocument;
-    }
-
-    private async fetchBottlesStorage(): Promise<BottlesDocument | undefined> {
-        return await this.bottleStorageRepository.fetchBottlesDocument();
     }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {

@@ -35,12 +35,4 @@ export class SoukaiBottlesDocument extends SolidModel implements BottlesDocument
         }
     }
 
-    isDirty2() {
-        console.log("isDirty2: ", super.isDirty());
-        return this.isDirty();
-    }
-    save(): Promise<this> {
-        return super.save();
-    }
-
 }

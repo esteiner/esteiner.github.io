@@ -28,7 +28,7 @@ export class SoukaiProductFactory implements ProductFactory  {
         }
         newProduct.price = orderItem.getPrice();
         newProduct.priceCurrency = orderItem.getPriceCurrency();
-        console.log("createProduct: created:", newProduct);
+        // console.log("createProduct: created:", newProduct);
         return newProduct;
     }
 

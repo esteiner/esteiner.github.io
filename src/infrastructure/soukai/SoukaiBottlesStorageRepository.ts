@@ -33,7 +33,6 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
     async save(bottlesDocument: BottlesDocument): Promise<BottlesDocument | undefined> {
         const soukaiBottlesStorage = bottlesDocument as SoukaiBottlesDocument;
         soukaiBottlesStorage.url = this.bottlesUrl;
-        console.log("save: is modified", soukaiBottlesStorage.isDirty());
         await soukaiBottlesStorage.save();
         return await this.fetchBottlesDocument();
     }
@@ -44,7 +43,7 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
     async fetchBottlesDocument(): Promise<SoukaiBottlesDocument | undefined> {
         try {
             console.log(`fetchBottlesDocument: from bottlesUrl`, this.bottlesUrl);
-            console.log(`fetchBottlesDocument: from urlRoute(bottlesUrl)`, this.bottlesDocumentUrl);
+            // console.log(`fetchBottlesDocument: from urlRoute(bottlesUrl)`, this.bottlesDocumentUrl);
             const start = performance.now();
             const document = await requireEngine().readOne(this.bottlesUrl, this.bottlesUrl);
             const bottlesDocument = await this.deserializeDocument(document);
@@ -113,8 +112,8 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
             if (!this.hasType(entry, SCHEMA_ORGANIZATION)) continue;
             const seller = await SoukaiSeller.newFromJsonLD(entry, this.bottlesDocumentUrl);
             this.setId(seller, entry);
-            console.log("deserializeSellerInto: getDocumentUrl()", seller.getDocumentUrl());
-            console.log("deserializeSellerInto: getSourceDocumentUrl()", seller.getSourceDocumentUrl());
+            // console.log("deserializeSellerInto: getDocumentUrl()", seller.getDocumentUrl());
+            // console.log("deserializeSellerInto: getSourceDocumentUrl()", seller.getSourceDocumentUrl());
             seller.cleanDirty();
             sellerMap.set(entry["@id"], seller);
             // console.log("deserializeSellerInto: seller found", seller);
