@@ -110,7 +110,7 @@ export class KellermeisterService {
                 grouped.get(bottle.getProduct().getName())?.push(bottle);
             }
         }
-        return new Map([...grouped.entries()].sort(([a], [b]) => b.toLowerCase().localeCompare(a.toLowerCase())));
+        return new Map([...grouped.entries()].sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase())));
     }
 
     /**
