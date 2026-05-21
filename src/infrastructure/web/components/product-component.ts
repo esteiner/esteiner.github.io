@@ -2,6 +2,7 @@ import {css, html, nothing} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Product} from "../../../domain/Product/Product.ts";
+import type {Rating} from "../../../domain/Product/Rating.ts";
 
 @customElement('product-component')
 class ProductComponent extends BaseComponent {
@@ -43,6 +44,22 @@ class ProductComponent extends BaseComponent {
                     font-size: 14px;
                     color: var(--km-text, #1A1917);
                     font-weight: 400;
+                }
+
+                .value.ratings {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 6px;
+                }
+
+                .rating-chip {
+                    background: var(--km-surface, white);
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    border-radius: 12px;
+                    padding: 2px 10px;
+                    font-size: 12px;
+                    color: var(--km-text, #1A1917);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
                 }
             `
         ];
@@ -107,8 +124,31 @@ class ProductComponent extends BaseComponent {
                     <label>Quelle</label>
                     <span class="value">${this.product?.getOrderItem()?.getOrder()?.getSeller()?.getName()}${this.renderDate(this.product?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
                 </div>
+                ${this.renderRatings()}
             </div>
         `
+    }
+
+    private renderRatings() {
+        const ratings = this.product?.getRatings() ?? [];
+        if (ratings.length === 0) {
+            return nothing;
+        }
+        const sorted = [...ratings].sort((a: Rating, b: Rating) => {
+            const da = a.getDate()?.getTime() ?? 0;
+            const db = b.getDate()?.getTime() ?? 0;
+            return db - da;
+        });
+        return html`
+            <div class="group">
+                <label>Bewertungen</label>
+                <span class="value ratings">
+                    ${sorted.map(r => html`
+                        <span class="rating-chip">${r.getValue()}${r.getDate() ? html` · ${r.getDate().toLocaleDateString()}` : nothing}</span>
+                    `)}
+                </span>
+            </div>
+        `;
     }
 
     private renderYear(date: Date | undefined) {
