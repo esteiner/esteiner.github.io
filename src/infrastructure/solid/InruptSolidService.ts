@@ -45,7 +45,8 @@ export class InruptSolidService implements SolidService {
     async login(oidcIssuer: URL): Promise<void> {
         console.log("login: with oidc issuer URL: ", oidcIssuer);
         // https://docs.inrupt.com/guides/authentication-in-solid/authentication-from-browser#start-login
-        // check open: if working with: clientId: "https://kellermeister.ch/clientid.jsonld"
+        // check open: if working with: clientId: "https://kellermeister.ch/client_id.jsonld"
+        // https://solidproject.org/TR/oidc#clientids-document
         login({
             oidcIssuer: oidcIssuer.toString(),
             redirectUrl: window.location.href,
