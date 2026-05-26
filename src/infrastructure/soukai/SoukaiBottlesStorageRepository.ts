@@ -44,13 +44,15 @@ export class SoukaiBottlesStorageRepository implements BottlesDocumentRepository
      */
     async fetchBottlesDocument(): Promise<SoukaiBottlesDocument | undefined> {
         try {
-            console.log(`fetchBottlesDocument: from bottlesUrl`, this.bottlesUrl);
+            console.log("fetchBottlesDocument: from bottlesUrl", this.bottlesUrl);
             // console.log(`fetchBottlesDocument: from urlRoute(bottlesUrl)`, this.bottlesDocumentUrl);
             const start = performance.now();
             const document = await requireEngine().readOne(this.bottlesUrl, this.bottlesUrl);
+            const fetched = performance.now();
+            console.log("fetchBottlesDocument:", "in", this.asSeconds(fetched - start), "seconds");
             const bottlesDocument = await this.deserializeDocument(document);
             const end = performance.now();
-            console.log("fetchBottlesDocument: ", bottlesDocument?.getBottles()?.length, "bottles found in", this.asSeconds(end - start), "seconds");
+            console.log("fetchBottlesDocument:", bottlesDocument?.getBottles()?.length, "bottles found in", this.asSeconds(end - start), "seconds");
             return bottlesDocument;
         } catch (error) {
             console.log(error);

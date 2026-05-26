@@ -1,11 +1,12 @@
 ToDo
 ===
 
-- [ ] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
+- [] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
+- [x] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
 - [x] Filter für Text auf Einkäufe Seite
 - [x] Profil Seite ist Text zu nahe am Rand
 - [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
-- [ ] background color = #f2f2b6
+- [x] background color = #f2f2b6
 - [x] Namen optimieren
 - [x] Inventar optimieren
 - [x] Foto-to-Order

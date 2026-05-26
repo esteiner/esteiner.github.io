@@ -32,15 +32,15 @@ export class KellermeisterService {
     }
 
     async getCellarAltglass(): Promise<Cellar | null> {
-        return this.cellarRepository.fetchCellarForAltglass();
+        return await this.getCellarById(this.getAltglassId())
     }
 
     getCellarWorkId(): string {
         return this.cellarRepository.getCellarWorkId();
     }
 
-    async getCellarCellarWork(): Promise<Cellar> {
-        return this.cellarRepository.fetchCellarForCellarwork();
+    async getCellarCellarWork(): Promise<Cellar | null> {
+        return await this.getCellarById(this.getCellarWorkId());
     }
 
     async getAllBottles(): Promise<Bottle[]> {
@@ -157,11 +157,8 @@ export class KellermeisterService {
     }
 
     async getAllVisibleCellars(): Promise<Cellar[]> {
-        if (this.cachedCellars) {
-            return this.cachedCellars.filter(cellar => this.isVisible(cellar));
-        }
-        this.cachedCellars = await this.cellarRepository.fetchCellars();
-        return this.cachedCellars.filter(cellar => this.isVisible(cellar));
+        const cellars = await this.getAllCellars();
+        return cellars.filter(cellar => this.isVisible(cellar));
     }
 
     async getCellars(): Promise<Cellar[]> {
@@ -274,14 +271,14 @@ export class KellermeisterService {
     }
 
     async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
-        console.log("disposeBottleToAltglass2: with id", bottle.getId());
+        console.log("disposeBottleToAltglass: with id", bottle.getId());
         const bottlesStorage = await this.getCachedBottlesDocument();
         if (bottlesStorage) {
             bottle.setCellar(this.getAltglassId());
             if (ratingValue !== undefined) {
                 bottle.getProduct().createRating(ratingValue);
             }
-            console.log("disposeBottleToAltglass2: with rating", ratingValue);
+            console.log("disposeBottleToAltglass: with rating", ratingValue);
             await this.bottleStorageRepository.save(bottlesStorage);
         }
     }
