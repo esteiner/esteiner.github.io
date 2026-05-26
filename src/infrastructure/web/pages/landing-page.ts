@@ -107,7 +107,7 @@ class LandingPage extends BasePage {
                     await this.cdi.getSolidPodService().setupPodForKellermeister();
                     this.loadCellars();
                 }
-                else if (webIDProfile.getIssuerUrls().length === 0) {
+                else if (webIDProfile.getStorageUrls().length === 0) {
                     alert("Das WebID Profil enthält keine Storage URL.");
                     this.cdi.getSolidService().logout();
                 } else {
@@ -261,7 +261,6 @@ class LandingPage extends BasePage {
         console.log("webIDProfile:", webIDProfile);
         if (webIDProfile) {
             this.cdi.getSolidService().login(webIDProfile.getIssuerUrls()[0]);
-            //performLogin(webIDProfile.getIssuerUrls()[0].toString());
         }
     }
 
