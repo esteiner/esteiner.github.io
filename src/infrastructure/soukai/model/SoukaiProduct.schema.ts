@@ -8,6 +8,8 @@ export default defineSolidModelSchema({
         km: 'https://vocab.kellermeister.ch/wine/'
     },
     rdfsClasses: ['schema:Product'],
+    timestamps: true,
+    history: true,
 
     fields: {
         // schema.org

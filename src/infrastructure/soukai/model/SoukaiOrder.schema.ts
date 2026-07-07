@@ -8,6 +8,8 @@ export default defineSolidModelSchema({
         xsd: 'http://www.w3.org/2001/XMLSchema#'
     },
     rdfsClasses: ['schema:Order'],
+    timestamps: true,
+    history: true,
 
     fields: {
         orderNumber: FieldType.String,

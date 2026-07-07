@@ -1,58 +1,67 @@
-import {SolidPodService} from "../solid/SolidPodService.ts";
 import {InruptSolidService} from "../solid/InruptSolidService.ts";
-import {SoukaiBottlesStorageRepository} from "../soukai/SoukaiBottlesStorageRepository.ts";
+import {InruptAuthService} from "../solid/InruptAuthService.ts";
+import {PodContainerRegistry} from "../solid/PodContainerRegistry.ts";
+import {SolidSyncService} from "../solid/SolidSyncService.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
+import type {AuthService} from "../../application/ports/AuthService.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
-import type {BottlesDocumentRepository} from "../../domain/Bottle/BottlesDocumentRepository.ts";
+import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
+import {SyncCoordinator} from "../../application/sync/SyncCoordinator.ts";
+import {ReconnectSync} from "../../application/sync/ReconnectSync.ts";
 import {SoukaiCellarRepository} from "../soukai/SoukaiCellarRepository.ts";
-import type {BottleFactory} from "../../domain/Bottle/BottleFactory.ts";
-import {SoukaiBottleFactory} from "../soukai/model/SoukaiBottleFactory.ts";
-import type {ProductFactory} from "../../domain/Product/ProductFactory.ts";
-import {SoukaiProductFactory} from "../soukai/model/SoukaiProductFactory.ts";
-import type {OrderFactory} from "../../domain/Order/OrderFactory.ts";
-import {SoukaiOrderFactory} from "../soukai/model/SoukaiOrderFactory.ts";
+import {SoukaiBottleRepository} from "../soukai/SoukaiBottleRepository.ts";
+import {SoukaiProductRepository} from "../soukai/SoukaiProductRepository.ts";
 import {SoukaiOrderRepository} from "../soukai/SoukaiOrderRepository.ts";
+import {SoukaiBottleFactory} from "../soukai/model/SoukaiBottleFactory.ts";
+import {SoukaiProductFactory} from "../soukai/model/SoukaiProductFactory.ts";
+import {SoukaiOrderFactory} from "../soukai/model/SoukaiOrderFactory.ts";
 
 /**
  * Dependency Injection Container.
  *
- * Manages the creation and lifecycle of dependencies.
- * Alternative: https://lit.dev/docs/data/context/
+ * Local-first: repositories are constructed eagerly at startup and are
+ * local-only (IndexedDB) — no `storageUrl` is required to use the app. The Pod
+ * container base is resolved lazily after login (via `setPodContainerBase`) and
+ * the sync layer is the only path that reaches the Pod.
  */
 export class CDI {
 
     private static instance: CDI;
 
-    // Storage URL
-    private storageUrl: URL | null = null;
+    private readonly containers: PodContainerRegistry;
 
-    // Factories
-    private bottleFactory: BottleFactory;
-    private productFactory: ProductFactory;
-    private orderFactory: OrderFactory;
+    private readonly solidService: SolidService;
+    private readonly authService: AuthService;
 
-    // Repositories
-    private bottleStorageRepository: BottlesDocumentRepository | null = null;
-    private cellarRepository: SoukaiCellarRepository | null = null;
-    private orderRepository: SoukaiOrderRepository | null = null;
-
-    // Services
-    private solidService: SolidService;
-    private solidPodService: SolidPodService | null = null;
-    private kellermeisterService: KellermeisterService | null = null;
+    private readonly kellermeisterService: KellermeisterService;
+    private readonly syncService: SolidSyncService;
+    private readonly syncCoordinator: SyncCoordinator;
+    private readonly reconnectSync: ReconnectSync;
 
     private constructor() {
-        // Initialize factories
-        this.bottleFactory = new SoukaiBottleFactory();
-        this.productFactory = new SoukaiProductFactory();
-        this.orderFactory = new SoukaiOrderFactory();
-        // Initialize services
-        this.solidService = new InruptSolidService();
-    }
+        this.containers = new PodContainerRegistry();
+        const podBase = () => this.containers.get();
 
-    public setStorageUrl(storageUrl: URL) {
-        this.storageUrl = storageUrl;
-        this.initializeComponents();
+        // Auth
+        this.solidService = new InruptSolidService();
+        this.authService = new InruptAuthService();
+
+        // Repositories (local-only)
+        const productRepository = new SoukaiProductRepository(podBase);
+        const bottleRepository = new SoukaiBottleRepository(podBase, productRepository);
+        const cellarRepository = new SoukaiCellarRepository(podBase);
+        const orderRepository = new SoukaiOrderRepository(podBase);
+
+        // Application service
+        this.kellermeisterService = new KellermeisterService(
+            cellarRepository, bottleRepository, productRepository, orderRepository,
+            new SoukaiBottleFactory(), new SoukaiOrderFactory(), new SoukaiProductFactory(),
+        );
+
+        // Sync layer
+        this.syncService = new SolidSyncService(this.authService, podBase);
+        this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService));
+        this.reconnectSync = new ReconnectSync(this.syncCoordinator, {maxRetries: 4, baseDelayMs: 2000});
     }
 
     public static getInstance(): CDI {
@@ -66,31 +75,27 @@ export class CDI {
         return this.solidService;
     }
 
-    public getSolidPodService(): SolidPodService {
-        if (this.solidPodService) {
-            return this.solidPodService;
-        }
-        throw new Error("CDI has no storage URL set.");
+    public getAuthService(): AuthService {
+        return this.authService;
     }
 
     public getKellermeisterService(): KellermeisterService {
-        if (this.kellermeisterService) {
-            return this.kellermeisterService;
-        }
-        throw new Error("CDI has no storage URL set.");
+        return this.kellermeisterService;
     }
 
-    private initializeComponents() {
-        if (this.storageUrl) {
+    public getSyncCoordinator(): SyncCoordinator {
+        return this.syncCoordinator;
+    }
 
-            // Initialize repositories
-            this.bottleStorageRepository = new SoukaiBottlesStorageRepository(this.storageUrl);
-            this.cellarRepository = new SoukaiCellarRepository(this.storageUrl);
-            this.orderRepository = new SoukaiOrderRepository(this.storageUrl);
-            // Initialize services
-            this.solidPodService = new SolidPodService(this.storageUrl);
-            this.kellermeisterService = new KellermeisterService(this.cellarRepository, this.bottleStorageRepository, this.orderRepository, this.bottleFactory, this.orderFactory, this.productFactory);
-        }
-     }
+    public getReconnectSync(): ReconnectSync {
+        return this.reconnectSync;
+    }
 
+    public getPodContainerRegistry(): PodContainerRegistry {
+        return this.containers;
+    }
+
+    public setPodContainerBase(base: string): void {
+        this.containers.set(base);
+    }
 }

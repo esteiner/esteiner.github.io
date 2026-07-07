@@ -7,6 +7,8 @@ export default defineSolidModelSchema({
         schema: 'https://schema.org/'
     },
     rdfsClasses: ['schema:ListItem'],
+    timestamps: true,
+    history: true,
 
     fields: {
         productUrl: {

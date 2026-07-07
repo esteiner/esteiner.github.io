@@ -1,0 +1,90 @@
+import type {AuthService} from "../ports/AuthService.ts";
+import {NotAuthenticatedError} from "../errors.ts";
+import type {SynchronizeWithPod} from "./SynchronizeWithPod.ts";
+
+export type SyncState = "idle" | "syncing" | "error";
+
+export interface SyncStatus {
+    state: SyncState;
+    lastSyncedAt: Date | null;
+    error: string | null;
+}
+
+export type SyncTrigger = "manual" | "reconnect";
+
+type StatusListener = (status: SyncStatus) => void;
+
+/**
+ * Serializes synchronization into a single-flight process:
+ *  - at most one sync runs at a time;
+ *  - triggers fired during an in-flight run are coalesced into exactly one
+ *    follow-up run;
+ *  - the on-reconnect path is skipped silently without a valid session, while
+ *    the manual path surfaces a NotAuthenticatedError so the UI can prompt login.
+ */
+export class SyncCoordinator {
+    private status: SyncStatus = {state: "idle", lastSyncedAt: null, error: null};
+    private running = false;
+    private pending = false;
+    private readonly listeners = new Set<StatusListener>();
+
+    constructor(
+        private readonly auth: AuthService,
+        private readonly synchronize: SynchronizeWithPod,
+    ) {
+    }
+
+    getStatus(): SyncStatus {
+        return this.status;
+    }
+
+    onStatusChange(listener: StatusListener): () => void {
+        this.listeners.add(listener);
+        listener(this.status);
+        return () => this.listeners.delete(listener);
+    }
+
+    async requestSync(trigger: SyncTrigger): Promise<void> {
+        if (!this.auth.isLoggedIn()) {
+            if (trigger === "reconnect") {
+                return; // skip silently — no session yet
+            }
+            throw new NotAuthenticatedError();
+        }
+
+        if (this.running) {
+            this.pending = true; // coalesce into a single follow-up run
+            return;
+        }
+
+        await this.run();
+    }
+
+    private async run(): Promise<void> {
+        this.running = true;
+        this.setStatus({state: "syncing", error: null});
+        try {
+            await this.synchronize.execute();
+            this.setStatus({state: "idle", lastSyncedAt: new Date(), error: null});
+        } catch (error) {
+            this.setStatus({state: "error", error: toMessage(error)});
+        } finally {
+            this.running = false;
+            if (this.pending) {
+                this.pending = false;
+                await this.run();
+            }
+        }
+    }
+
+    private setStatus(patch: Partial<SyncStatus>): void {
+        this.status = {...this.status, ...patch};
+        for (const listener of this.listeners) {
+            listener(this.status);
+        }
+    }
+}
+
+function toMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+}

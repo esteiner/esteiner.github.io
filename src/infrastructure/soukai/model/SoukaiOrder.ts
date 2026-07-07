@@ -8,8 +8,6 @@ import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
 import type {SolidBelongsToOneRelation} from "soukai-solid";
 
 export class SoukaiOrder extends Model implements Order {
-    static history = false;
-    static timestamps = false;
 
     declare public seller: SoukaiSeller | undefined;
     declare public relatedSeller: SolidBelongsToOneRelation<SoukaiOrder, SoukaiSeller, typeof SoukaiSeller>;
@@ -56,3 +54,7 @@ export class SoukaiOrder extends Model implements Order {
         return value ? value : undefined;
     }
 }
+
+// Local-first: retain the operation log and propagate deletions across devices.
+// Seller and OrderItems stay embedded in the Order document (see relationships).
+SoukaiOrder.useSoftDeletes(true);

@@ -7,6 +7,8 @@ export default defineSolidModelSchema({
         schema: 'https://schema.org/'
     },
     rdfsClasses: ['schema:Room'],
+    timestamps: true,
+    history: true,
 
     fields: {
         name: FieldType.String,

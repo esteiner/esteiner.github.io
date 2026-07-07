@@ -7,18 +7,20 @@ import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 import {SoukaiRating} from "./SoukaiRating.ts";
 
 export class SoukaiProduct extends Model implements Product {
-    static timestamps = false;
 
     declare public orderItem: SoukaiOrderItem;
     declare public relatedOrderItem: SolidBelongsToOneRelation<SoukaiProduct, SoukaiOrderItem, typeof SoukaiOrderItem>;
+    // Per-resource: the OrderItem lives embedded in its Order document, so from a
+    // Product it is a cross-document reference by URL.
     public orderItemRelationship() : Relation {
         return this
-            .belongsToOne(SoukaiOrderItem, 'orderItemUrl')
-            .usingSameDocument(true);
+            .belongsToOne(SoukaiOrderItem, 'orderItemUrl');
     }
 
     declare public ratings: SoukaiRating[];
     declare public relatedRatings: SolidBelongsToManyRelation<SoukaiProduct, SoukaiRating, typeof SoukaiRating>;
+    // Ratings are owned by exactly one Product and never referenced elsewhere, so
+    // they stay embedded in the Product's document.
     public ratingsRelationship() : Relation {
         return this
             .belongsToMany(SoukaiRating, 'ratingUrls')
@@ -100,3 +102,6 @@ export class SoukaiProduct extends Model implements Product {
         return value ? value : undefined;
     }
 }
+
+// Local-first: retain the operation log and propagate deletions across devices.
+SoukaiProduct.useSoftDeletes(true);

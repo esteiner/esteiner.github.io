@@ -6,10 +6,12 @@ import {EVENTS, getDefaultSession, Session} from "@inrupt/solid-client-authn-bro
 import {router} from "../router.ts";
 import {BasePage} from "../common/base-page.ts";
 import {CDI} from "../../cdi/CDI.ts";
+import {resolveKellermeisterContainer} from "../../solid/podContainerResolution.ts";
 import type {WebIDProfile} from "../../../domain/Solid/WebIDProfile.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
+import '../components/sync-status.ts';
 import {getBuildVersion} from "../utils";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
@@ -103,8 +105,12 @@ class LandingPage extends BasePage {
                 if (webIDProfile.getStorageUrls().length === 1) {
                     this.session = session;
                     this.isLoggedIn = session.info.isLoggedIn;
-                    this.cdi.setStorageUrl(webIDProfile.getStorageUrls()[0]);
-                    await this.cdi.getSolidPodService().setupPodForKellermeister();
+                    // Resolve (provision if missing) the Pod container, then sync:
+                    // re-home + push data created offline, and pull anything remote.
+                    const storageRoot = webIDProfile.getStorageUrls()[0].toString();
+                    const base = await resolveKellermeisterContainer(storageRoot, this.cdi.getSolidService().getAuthenticatedFetch());
+                    this.cdi.setPodContainerBase(base);
+                    await this.cdi.getReconnectSync().run();
                     this.loadCellars();
                 }
                 else if (webIDProfile.getStorageUrls().length === 0) {
@@ -128,9 +134,9 @@ class LandingPage extends BasePage {
     }
 
     loadCellars() {
-        if (this.isLoggedIn) {
-            this._cellarsTask.run();
-        }
+        // Local-first: cellars live in IndexedDB and are available with or
+        // without a Solid session.
+        this._cellarsTask.run();
     }
 
     render() {
@@ -178,30 +184,28 @@ class LandingPage extends BasePage {
                     </div>
                 </div>
             ` : ''}
+            <kellermeister-header>Kellermeister
+                <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
+                <sync-status slot="actions"></sync-status>
+            </kellermeister-header>
+            <main>
+                <div class="cellar-grid">
+                    ${this._cellarsTask.render({
+                        pending: () => html`<div class="spinner"></div>`,
+                        complete: (cellars) => html`${cellars.map(cellar => html`
+                            <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.getId())}" ghost icon="${this.cellarIconName(cellar.getId())}"></kellermeister-button>
+                        `)}`,
+                    })}
+                </div>
+            </main>
             ${this.session.info.isLoggedIn ? html`
-                <kellermeister-header>Kellermeister
-                    <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
-                </kellermeister-header>
-                <main>
-                    <div class="cellar-grid">
-                        ${this._cellarsTask.render({
-                            pending: () => html`<div class="spinner"></div>`,
-                            complete: (cellars) => html`${cellars.map(cellar => html`
-                                <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.getId())}" ghost icon="${this.cellarIconName(cellar.getId())}"></kellermeister-button>
-                            `)}`,
-                        })}
-                    </div>
-                </main>
                 <kellermeister-footer></kellermeister-footer>
             `
             : html`
-                <header>
-                    <h1 data-testid="page-title">Willkommen beim Kellermeister</h1>
-                </header>
                 <main class="content">
                     <div class="login-cta">
                         <kellermeister-button ghost icon="cellars" text="Anmelden" @click="${this.handleLoginClick}" data-testid="cellars-button" size="large"></kellermeister-button>
-                        <span class="login-cta-label">Deine Keller(t)räume betreten</span>
+                        <span class="login-cta-label">Melde dich an, um deine Keller mit deinem Pod zu synchronisieren</span>
                     </div>
                     <section class="intro">
                         <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.

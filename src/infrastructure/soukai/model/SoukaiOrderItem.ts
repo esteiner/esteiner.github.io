@@ -18,10 +18,10 @@ export class SoukaiOrderItem extends Model implements OrderItem {
 
   declare public product: SoukaiProduct;
   declare public relatedProduct: SolidBelongsToOneRelation<SoukaiOrderItem, SoukaiProduct, typeof SoukaiProduct>;
+  // Per-resource: the Product is its own Pod resource, referenced by URL.
   public productRelationship() : Relation {
     return this
-        .belongsToOne(SoukaiProduct, 'productUrl')
-        .usingSameDocument(true);
+        .belongsToOne(SoukaiProduct, 'productUrl');
   }
 
   getId(): string {

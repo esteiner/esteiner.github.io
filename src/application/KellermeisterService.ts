@@ -1,8 +1,8 @@
 import { fetch } from "@inrupt/solid-client-authn-browser";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
-import type {BottlesDocumentRepository} from "../domain/Bottle/BottlesDocumentRepository.ts";
-import type {BottlesDocument} from "../domain/Bottle/BottlesDocument.ts";
+import type {BottleRepository} from "../domain/Bottle/BottleRepository.ts";
+import type {ProductRepository} from "../domain/Product/ProductRepository.ts";
 import type {Bottle} from "../domain/Bottle/Bottle.ts";
 import type {Product} from "../domain/Product/Product.ts";
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
@@ -20,11 +20,11 @@ import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
  */
 export class KellermeisterService {
 
-    private cachedBottlesDocument: BottlesDocument | undefined = undefined;
+    private cachedBottles: Bottle[] | null = null;
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
-    constructor(private cellarRepository: CellarRepository, private bottleStorageRepository: BottlesDocumentRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
+    constructor(private cellarRepository: CellarRepository, private bottleRepository: BottleRepository, private productRepository: ProductRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
 
     getAltglassId(): string {
@@ -44,14 +44,11 @@ export class KellermeisterService {
     }
 
     async getAllBottles(): Promise<Bottle[]> {
-        const bottlesStorage: BottlesDocument | undefined = await this.getCachedBottlesDocument();
-        if (bottlesStorage) {
-            return bottlesStorage.getBottles();
-        } else {
-            console.log("getAllBottles: bottles storage not found")
-            return new Array();
+        if (this.cachedBottles) {
+            return this.cachedBottles;
         }
-
+        this.cachedBottles = await this.bottleRepository.fetchBottles();
+        return this.cachedBottles;
     }
 
     /**
@@ -231,96 +228,70 @@ export class KellermeisterService {
             for (const order of unprocessedOrders) {
                 await this.ingestOrder(order, cellarForCellarwork.getId());
             }
-            console.log("ingestOrdersFromInbox:", this.cachedBottlesDocument?.getBottles().length);
         }
         return cellarForCellarwork;
     }
 
     async ingestOrder(order: Order, cellarForCellarwork: string) {
-        // console.log("ingestOrder: order:", order);
-        const bottlesDocument = await this.getCachedBottlesDocument();
-        if (bottlesDocument) {
-            this.addBottles(bottlesDocument, order, cellarForCellarwork);
-            await this.moveProcessedOrders(new Array(order));
-            await this.saveBottlesDocument();
-            console.log("ingestOrder: processed order:", order);
-        } else {
-            console.log("ingestOrder: bottles document undefined");
-        }
+        await this.addBottles(order, cellarForCellarwork);
+        await this.moveProcessedOrders(new Array(order));
+        this.cachedBottles = null;
+        console.log("ingestOrder: processed order:", order);
     }
 
-    addBottles(bottlesDocument: BottlesDocument, order: Order, cellarForCellarwork: string) {
+    /**
+     * Per-resource ingestion: for each order item, persist the product as its own
+     * resource, then persist one bottle resource per ordered unit (each
+     * referencing that product by URL).
+     */
+    async addBottles(order: Order, cellarForCellarwork: string): Promise<void> {
         const newOrder: Order = this.orderFactory.createOrder(order);
 
-        if (order.getOrderItems()) {
-            for (const orderItem of order.getOrderItems()) {
-                if (orderItem.getOrderQuantity()) {
-                    const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
-                    newOrder.addOrderItem(newOrderItem);
-
-                    const product = this.productFactory.createProduct(orderItem.getProduct(), newOrderItem);
-                    for (let q = 0; q < orderItem.getOrderQuantity(); q++) {
-                        const bottle: Bottle = this.bottleFactory.createFromProduct(product);
-                        bottle.setCellar(cellarForCellarwork);
-                        bottlesDocument.addBottle(bottle);
-                    }
-                }
+        for (const orderItem of order.getOrderItems() ?? []) {
+            if (!orderItem.getOrderQuantity()) {
+                continue;
             }
-        }
+            const newOrderItem = this.orderFactory.createOrderItem(orderItem, newOrder);
+            newOrder.addOrderItem(newOrderItem);
 
+            const product = this.productFactory.createProduct(orderItem.getProduct(), newOrderItem);
+            await this.productRepository.save(product);
+
+            const bottles: Bottle[] = [];
+            for (let q = 0; q < orderItem.getOrderQuantity(); q++) {
+                const bottle: Bottle = this.bottleFactory.createFromProduct(product);
+                bottle.setCellar(cellarForCellarwork);
+                bottles.push(bottle);
+            }
+            await this.bottleRepository.saveAll(bottles);
+        }
     }
 
     async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
         console.log("disposeBottleToAltglass: with id", bottle.getId());
-        const bottlesStorage = await this.getCachedBottlesDocument();
-        if (bottlesStorage) {
-            bottle.setCellar(this.getAltglassId());
-            if (ratingValue !== undefined) {
-                bottle.getProduct().createRating(ratingValue);
-            }
-            console.log("disposeBottleToAltglass: with rating", ratingValue);
-            await this.bottleStorageRepository.save(bottlesStorage);
+        bottle.setCellar(this.getAltglassId());
+        if (ratingValue !== undefined) {
+            bottle.getProduct().createRating(ratingValue);
+            await this.productRepository.save(bottle.getProduct());
         }
+        await this.bottleRepository.save(bottle);
+        this.cachedBottles = null;
     }
 
-    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<BottlesDocument | undefined> {
-        console.log("transferBottles: checking number of bottles", bottles.length);
-        const bottlesStorage = await this.getCachedBottlesDocument();
-        var transferred: number = 0;
-        if (bottlesStorage) {
-            for (var i = 0; i < bottles.length; i++) {
-                if (cellarIds[i] != undefined) {
-                    bottles[i].setCellar(cellarIds[i]);
-                    transferred++;
-                }
+    async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<void> {
+        const toSave: Bottle[] = [];
+        for (let i = 0; i < bottles.length; i++) {
+            if (cellarIds[i] != undefined) {
+                bottles[i].setCellar(cellarIds[i]);
+                toSave.push(bottles[i]);
             }
-            console.log("transferBottles: updating number of bottles", transferred);
-            const savedBottlesDocument = await this.saveBottlesDocument();
-            console.log("transferBottles: updated bottles", transferred);
-            return savedBottlesDocument;
         }
-        return bottlesStorage;
+        console.log("transferBottles: updating number of bottles", toSave.length);
+        await this.bottleRepository.saveAll(toSave);
+        this.cachedBottles = null;
     }
 
     // -----------------------------------------------------------------
-
-    private async getCachedBottlesDocument(): Promise<BottlesDocument | undefined> {
-        if (!this.cachedBottlesDocument) {
-            console.log("getCachedBottlesDocument: fetching, because cache is empty");
-            this.cachedBottlesDocument = await this.bottleStorageRepository.fetchBottlesDocument();
-        }
-        return this.cachedBottlesDocument;
-    }
-
-    private async saveBottlesDocument(): Promise<BottlesDocument | undefined> {
-        if (this.cachedBottlesDocument) {
-            console.log("saveBottlesDocument");
-            this.cachedBottlesDocument = await this.bottleStorageRepository.save(this.cachedBottlesDocument);
-        } else {
-            console.log("saveBottlesDocument: bottles document not found");
-        }
-        return this.cachedBottlesDocument;
-    }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
         if (cellar) {

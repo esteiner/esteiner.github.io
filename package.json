@@ -13,8 +13,8 @@
   "dependencies": {
     "@inrupt/solid-client": "^3.0.0",
     "@inrupt/solid-client-authn-browser": "^3.1.1",
-    "@inrupt/vocab-solid": "^1.0.4",
     "@inrupt/vocab-common-rdf": "^1.0.5",
+    "@inrupt/vocab-solid": "^1.0.4",
     "@lit/task": "^1.0.3",
     "@noeldemartin/solid-utils": "^0.6.1",
     "@noeldemartin/utils": "^0.7.3",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.0",
     "@types/node": "^24.6.0",
+    "fake-indexeddb": "^6.2.5",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-html": "^3.2.2",

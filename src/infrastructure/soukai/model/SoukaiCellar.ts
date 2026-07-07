@@ -3,7 +3,6 @@ import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 
 export class SoukaiCellar extends Model implements Cellar {
-    static timestamps = false;
 
     getId(): string {
         return this.url;
@@ -19,3 +18,6 @@ export class SoukaiCellar extends Model implements Cellar {
         return value ? value : undefined;
     }
 }
+
+// Local-first: retain the operation log and propagate deletions across devices.
+SoukaiCellar.useSoftDeletes(true);

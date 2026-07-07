@@ -5,14 +5,14 @@ import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import {SoukaiProduct} from "./SoukaiProduct.ts";
 
 export class SoukaiBottle extends Model implements Bottle {
-    static timestamps = false;
 
     declare public product: SoukaiProduct;
     declare public relatedProduct: SolidBelongsToOneRelation<SoukaiBottle, SoukaiProduct, typeof SoukaiProduct>;
+    // Per-resource: a Product is its own Pod resource, referenced by URL (NOT
+    // embedded in the same document as the bottle).
     public productRelationship() : Relation {
         return this
-            .belongsToOne(SoukaiProduct, 'productUrl')
-            .usingSameDocument(true);
+            .belongsToOne(SoukaiProduct, 'productUrl');
     }
 
     getId(): string {
@@ -41,3 +41,6 @@ export class SoukaiBottle extends Model implements Bottle {
     }
 
 }
+
+// Local-first: retain the operation log and propagate deletions across devices.
+SoukaiBottle.useSoftDeletes(true);

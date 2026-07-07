@@ -3,7 +3,8 @@ import { KellermeisterService } from './KellermeisterService';
 import { ProductFilter } from '../domain/Product/ProductFilter';
 import type {CellarRepository} from "../domain/Cellar/CellarRepository.ts";
 import type {Cellar} from "../domain/Cellar/Cellar.ts";
-import type {BottlesDocumentRepository} from "../domain/Bottle/BottlesDocumentRepository.ts";
+import type {BottleRepository} from "../domain/Bottle/BottleRepository.ts";
+import type {ProductRepository} from "../domain/Product/ProductRepository.ts";
 import type {Product} from "../domain/Product/Product.ts";
 import type {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import type {Order} from "../domain/Order/Order.ts";
@@ -19,7 +20,6 @@ import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "../infrastructure/soukai/model/SoukaiOrderItem.ts";
 import {SoukaiBottle} from "../infrastructure/soukai/model/SoukaiBottle.ts";
 import {SoukaiRating} from "../infrastructure/soukai/model/SoukaiRating.ts";
-import {SoukaiBottlesDocument} from "../infrastructure/soukai/model/SoukaiBottlesDocument.ts";
 import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
@@ -30,7 +30,7 @@ vi.mock('@inrupt/solid-client-authn-browser', () => ({ fetch: vi.fn() }));
 // describe-level helpers (e.g. `const cellarA = makeCellar(...)`) don't run
 // before the Metadata/history models are registered.
 bootSolidModels();
-bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiRating, SoukaiBottle, SoukaiBottlesDocument });
+bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiRating, SoukaiBottle });
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -65,11 +65,6 @@ function makeOrder(orderDate?: Date): Order {
     return order;
 }
 
-function makeBottlesDocument(bottles: Bottle[]): SoukaiBottlesDocument {
-    return {
-        getBottles: () => bottles,
-    } as unknown as SoukaiBottlesDocument;
-}
 
 // ---------------------------------------------------------------------------
 // Fixture
@@ -88,9 +83,15 @@ function makeService() {
         getAltglassId: vi.fn().mockReturnValue('altglass-id'),
         fetchCellarForAltglass: vi.fn(),
     };
-    const bottlesDocumentRepo: BottlesDocumentRepository = {
-        fetchBottlesDocument: vi.fn(),
+    const bottleRepo: BottleRepository = {
+        fetchBottles: vi.fn().mockResolvedValue([]),
         save: vi.fn(),
+        saveAll: vi.fn(),
+        delete: vi.fn(),
+    };
+    const productRepo: ProductRepository = {
+        save: vi.fn(),
+        fetchById: vi.fn(),
     };
     const orderRepo: OrderRepository = {
         fetchOrders: vi.fn(),
@@ -109,8 +110,8 @@ function makeService() {
         createOrderItem: vi.fn(),
     };
     setEngine(new InMemoryEngine());
-    const service = new KellermeisterService(cellarRepo, bottlesDocumentRepo, orderRepo, bottleFactory, orderFactory, productFactory);
-    return { service, cellarRepo, bottlesDocumentRepo, orderRepo, bottleFactory, orderFactory, productFactory };
+    const service = new KellermeisterService(cellarRepo, bottleRepo, productRepo, orderRepo, bottleFactory, orderFactory, productFactory);
+    return { service, cellarRepo, bottleRepo, productRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }
 
 // ---------------------------------------------------------------------------
@@ -237,10 +238,10 @@ describe('KellermeisterService', () => {
         });
 
         it('removeCellar invalidates the cache when the cellar is empty and gets deleted', async () => {
-            const { service, cellarRepo, bottlesDocumentRepo } = makeService();
+            const { service, cellarRepo, bottleRepo } = makeService();
             const cellar = makeCellar('c1');
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
-            vi.mocked(bottlesDocumentRepo.fetchBottlesDocument).mockResolvedValue(makeBottlesDocument([]));
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([]);
 
             await service.getAllVisibleCellars();
             await service.removeCellar(cellar);
@@ -250,12 +251,10 @@ describe('KellermeisterService', () => {
         });
 
         it('removeCellar does NOT invalidate the cache when the cellar is not empty', async () => {
-            const { service, cellarRepo, bottlesDocumentRepo } = makeService();
+            const { service, cellarRepo, bottleRepo } = makeService();
             const cellar = makeCellar('c1');
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
-            vi.mocked(bottlesDocumentRepo.fetchBottlesDocument).mockResolvedValue(
-                makeBottlesDocument([makeBottle('p1', 'c1', 'Merlot')])
-            );
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([makeBottle('p1', 'c1', 'Merlot')]);
 
             await service.getAllVisibleCellars();
             await service.removeCellar(cellar);
@@ -362,7 +361,7 @@ describe('KellermeisterService', () => {
         });
 
         function injectBottles(svc: KellermeisterService, bottles: Bottle[]) {
-            (svc as any).cachedBottlesDocument = makeBottlesDocument(bottles);
+            (svc as any).cachedBottles = bottles;
         }
 
         it('returns an empty map when there are no bottles', async () => {
@@ -413,21 +412,21 @@ describe('KellermeisterService', () => {
         });
 
         it('fetches bottles from the repository when the cache is empty', async () => {
-            const { service: svc, bottlesDocumentRepo } = makeService();
+            const { service: svc, bottleRepo } = makeService();
             const bottles = [makeBottle('p1', 'cellar-a', 'Merlot')];
-            vi.mocked(bottlesDocumentRepo.fetchBottlesDocument).mockResolvedValue(makeBottlesDocument(bottles));
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue(bottles);
             const result = await svc.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
-            expect(bottlesDocumentRepo.fetchBottlesDocument).toHaveBeenCalledOnce();
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledOnce();
             expect(result.size).toBe(1);
         });
 
-        it('uses the cached bottles document on a second call', async () => {
-            const { service: svc, bottlesDocumentRepo } = makeService();
+        it('uses the cached bottles on a second call', async () => {
+            const { service: svc, bottleRepo } = makeService();
             const bottles = [makeBottle('p1', 'cellar-a', 'Merlot')];
-            vi.mocked(bottlesDocumentRepo.fetchBottlesDocument).mockResolvedValue(makeBottlesDocument(bottles));
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue(bottles);
             await svc.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
             await svc.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
-            expect(bottlesDocumentRepo.fetchBottlesDocument).toHaveBeenCalledOnce();
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledOnce();
         });
     });
 
@@ -453,7 +452,7 @@ describe('KellermeisterService', () => {
 
         it('does nothing when the order has no positions', async () => {
             const { service, bottleFactory } = makeService();
-            const order = { positions: undefined } as unknown as Order;
+            const order = { getOrderItems: () => undefined } as unknown as Order;
 
             await service.ingestOrder(order, 'cellar-a');
 
