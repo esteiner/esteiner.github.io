@@ -104,6 +104,35 @@ describe("local-first acceptance", () => {
         expect(afterSecond).toHaveLength(1);
     });
 
+    // Well-known cellars -----------------------------------------------------
+    it("creates both well-known cellars at startup, before any login (fixed slugs)", async () => {
+        const cellars = new SoukaiCellarRepository(() => null);
+
+        expect(cellars.getCellarWorkId()).toBe("local://cellars/cellarwork#it");
+        expect(cellars.getAltglassId()).toBe("local://cellars/altglass#it");
+
+        const all = await cellars.fetchCellars();
+        const ids = all.map((c) => c.getId());
+        expect(ids).toContain(cellars.getCellarWorkId());
+        expect(ids).toContain(cellars.getAltglassId());
+    });
+
+    it("ensureWellKnownCellars is idempotent: no duplicates, preserves a renamed cellar", async () => {
+        const cellars = new SoukaiCellarRepository(() => null);
+
+        // Rename the cellarwork cellar, then re-verify (as container resolution does).
+        const work = (await cellars.fetchCellarForCellarwork()) as SoukaiCellar;
+        await work.update({name: "Mein Eingang"});
+        await cellars.ensureWellKnownCellars();
+
+        const all = await cellars.fetchCellars();
+        const workCellars = all.filter((c) => c.getId() === cellars.getCellarWorkId());
+        const altglassCellars = all.filter((c) => c.getId() === cellars.getAltglassId());
+        expect(workCellars).toHaveLength(1);
+        expect(altglassCellars).toHaveLength(1);
+        expect(workCellars[0].getName()).toBe("Mein Eingang");
+    });
+
     // Task 6.4 --------------------------------------------------------------
     it("propagates a deletion to the Pod and does not resurrect it", async () => {
         const products = new SoukaiProductRepository(() => null);

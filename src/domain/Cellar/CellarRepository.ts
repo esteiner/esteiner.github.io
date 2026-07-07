@@ -17,6 +17,17 @@ export interface CellarRepository {
 
     createCellarForCellarwork(): Promise<Cellar>;
 
+    /**
+     * Ensure both well-known cellars (cellarwork and altglass) exist.
+     *
+     * Idempotent (create-if-absent): if a well-known cellar already exists it is
+     * left untouched — neither duplicated nor overwritten (a user-renamed display
+     * name is preserved) — and any missing one is created with its fixed slug and
+     * default display name. Safe to call repeatedly (startup, container
+     * resolution, after a restart).
+     */
+    ensureWellKnownCellars(): Promise<void>;
+
     deleteCellar(cellar: Cellar): Promise<void>;
 
     /**

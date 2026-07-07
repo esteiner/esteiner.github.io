@@ -108,7 +108,11 @@ class LandingPage extends BasePage {
                     // Resolve (provision if missing) the Pod container, then sync:
                     // re-home + push data created offline, and pull anything remote.
                     const storageRoot = webIDProfile.getStorageUrls()[0].toString();
-                    const base = await resolveKellermeisterContainer(storageRoot, this.cdi.getSolidService().getAuthenticatedFetch());
+                    const base = await resolveKellermeisterContainer(
+                        storageRoot,
+                        this.cdi.getSolidService().getAuthenticatedFetch(),
+                        () => this.cdi.getCellarRepository().ensureWellKnownCellars(),
+                    );
                     this.cdi.setPodContainerBase(base);
                     await this.cdi.getReconnectSync().run();
                     this.loadCellars();
@@ -336,9 +340,11 @@ class LandingPage extends BasePage {
     }
 
     private async handleCellarClick(cellarId: string) {
-        if (cellarId.endsWith("cellarWork#it")) {
+        if (cellarId.endsWith("cellarwork#it")) {
+            console.log("handleCellarClick go to cellarwork:", cellarId);
             Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cdi?.getKellermeisterService().getCellarWorkId()}`}));
         } else {
+            console.log("handleCellarClick go to cellar:", cellarId);
             Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
         }
     }

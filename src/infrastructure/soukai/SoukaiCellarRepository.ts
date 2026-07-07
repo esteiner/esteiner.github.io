@@ -13,8 +13,15 @@ import {mintProvisional, WELL_KNOWN_CELLAR} from "../shared/resource-identity.ts
  */
 export class SoukaiCellarRepository implements CellarRepository {
 
+    /**
+     * Local-first startup bootstrap: ensures the two well-known cellars exist
+     * before any login. Reads await this so early callers never race it.
+     */
+    private readonly ready: Promise<void>;
+
     constructor(private readonly podBase: () => string | null) {
         bootModels({SoukaiCellar});
+        this.ready = this.ensureWellKnownCellars();
     }
 
     async createCellar(name: string): Promise<Cellar> {
@@ -23,11 +30,16 @@ export class SoukaiCellarRepository implements CellarRepository {
     }
 
     async createCellarForAltglass(): Promise<Cellar> {
-        return await new SoukaiCellar({url: this.getAltglassId(), name: "Altglass", displayOrder: -1}).save();
+        return await this.ensureCellar(this.getAltglassId(), "Altglass", -1);
     }
 
     async createCellarForCellarwork(): Promise<Cellar> {
-        return await new SoukaiCellar({url: this.getCellarWorkId(), name: "Eingang", displayOrder: -1}).save();
+        return await this.ensureCellar(this.getCellarWorkId(), "Eingang", -1);
+    }
+
+    async ensureWellKnownCellars(): Promise<void> {
+        await this.ensureCellar(this.getCellarWorkId(), "Eingang", -1);
+        await this.ensureCellar(this.getAltglassId(), "Altglass", -1);
     }
 
     async deleteCellar(cellar: Cellar): Promise<void> {
@@ -58,6 +70,25 @@ export class SoukaiCellarRepository implements CellarRepository {
     }
 
     async fetchCellars(): Promise<Cellar[]> {
+        await this.ready;
+        return await this.queryCellars();
+    }
+
+    /**
+     * Idempotent create-if-absent for a fixed-slug cellar. Queries the store
+     * directly (NOT via `fetchCellars`, which awaits `this.ready` and would
+     * deadlock the startup bootstrap). Returns the existing cellar untouched if
+     * present, otherwise creates it with the given name/order.
+     */
+    private async ensureCellar(id: string, name: string, displayOrder: number): Promise<Cellar> {
+        const existing = (await this.queryCellars()).find((cellar) => cellar.getId() === id);
+        if (existing) {
+            return existing;
+        }
+        return await new SoukaiCellar({url: id, name, displayOrder}).save();
+    }
+
+    private async queryCellars(): Promise<SoukaiCellar[]> {
         return await fetchLive<SoukaiCellar>(SoukaiCellar, "cellars", this.podBase());
     }
 

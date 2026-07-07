@@ -4,6 +4,7 @@ import {PodContainerRegistry} from "../solid/PodContainerRegistry.ts";
 import {SolidSyncService} from "../solid/SolidSyncService.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
 import type {AuthService} from "../../application/ports/AuthService.ts";
+import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
 import {SyncCoordinator} from "../../application/sync/SyncCoordinator.ts";
@@ -33,6 +34,7 @@ export class CDI {
     private readonly solidService: SolidService;
     private readonly authService: AuthService;
 
+    private readonly cellarRepository: CellarRepository;
     private readonly kellermeisterService: KellermeisterService;
     private readonly syncService: SolidSyncService;
     private readonly syncCoordinator: SyncCoordinator;
@@ -50,6 +52,7 @@ export class CDI {
         const productRepository = new SoukaiProductRepository(podBase);
         const bottleRepository = new SoukaiBottleRepository(podBase, productRepository);
         const cellarRepository = new SoukaiCellarRepository(podBase);
+        this.cellarRepository = cellarRepository;
         const orderRepository = new SoukaiOrderRepository(podBase);
 
         // Application service
@@ -81,6 +84,10 @@ export class CDI {
 
     public getKellermeisterService(): KellermeisterService {
         return this.kellermeisterService;
+    }
+
+    public getCellarRepository(): CellarRepository {
+        return this.cellarRepository;
     }
 
     public getSyncCoordinator(): SyncCoordinator {

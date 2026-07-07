@@ -80,6 +80,7 @@ function makeService() {
         fetchCellarForCellarwork: vi.fn(),
         createCellarForAltglass: vi.fn(),
         createCellarForCellarwork: vi.fn(),
+        ensureWellKnownCellars: vi.fn(),
         getAltglassId: vi.fn().mockReturnValue('altglass-id'),
         fetchCellarForAltglass: vi.fn(),
     };
