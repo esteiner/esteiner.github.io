@@ -99,6 +99,7 @@ function makeService() {
         fetchUnprocessedOrders: vi.fn(),
         fetchOrderById: vi.fn(),
         saveProcessedOrder: vi.fn(),
+        deleteFromInbox: vi.fn(),
     };
     const bottleFactory: BottleFactory = {
         createFromProduct: vi.fn(),
@@ -458,6 +459,32 @@ describe('KellermeisterService', () => {
             await service.ingestOrder(order, 'cellar-a');
 
             expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
+        });
+
+        it('creates a product and one bottle per ordered unit in the cellarwork cellar', async () => {
+            const { service, orderFactory, productFactory, bottleFactory, productRepo, bottleRepo } = makeService();
+
+            const product = makeProduct('p1', 'Barolo');
+            const orderItem = { getOrderQuantity: () => 3, getProduct: () => product } as unknown as Order;
+            const order = { getOrderItems: () => [orderItem] } as unknown as Order;
+
+            const newOrder = { addOrderItem: vi.fn() } as unknown as Order;
+            vi.mocked(orderFactory.createOrder).mockReturnValue(newOrder);
+            vi.mocked(orderFactory.createOrderItem).mockReturnValue({} as never);
+            vi.mocked(productFactory.createProduct).mockReturnValue(product);
+            const placedCellars: string[] = [];
+            vi.mocked(bottleFactory.createFromProduct).mockImplementation(
+                () => ({ setCellar: (c: string) => placedCellars.push(c) } as unknown as Bottle),
+            );
+
+            await service.addBottles(order, 'cellarwork-id');
+
+            expect(productRepo.save).toHaveBeenCalledWith(product);
+            expect(bottleFactory.createFromProduct).toHaveBeenCalledTimes(3);
+            expect(bottleRepo.saveAll).toHaveBeenCalledTimes(1);
+            const savedBottles = vi.mocked(bottleRepo.saveAll).mock.calls[0][0];
+            expect(savedBottles).toHaveLength(3);
+            expect(placedCellars).toEqual(['cellarwork-id', 'cellarwork-id', 'cellarwork-id']);
         });
     });
 });

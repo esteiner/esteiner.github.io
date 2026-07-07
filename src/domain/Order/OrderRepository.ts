@@ -13,4 +13,11 @@ export interface OrderRepository {
 
     saveProcessedOrder(order: Order): Promise<Order>;
 
+    /**
+     * Delete a processed order's source document from the Pod inbox, using the
+     * authenticated session, so it is not ingested again. No-op when the order
+     * has no source document or there is no authenticated session.
+     */
+    deleteFromInbox(order: Order): Promise<void>;
+
 }

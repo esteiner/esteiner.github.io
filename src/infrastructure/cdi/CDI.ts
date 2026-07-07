@@ -53,7 +53,7 @@ export class CDI {
         const bottleRepository = new SoukaiBottleRepository(podBase, productRepository);
         const cellarRepository = new SoukaiCellarRepository(podBase);
         this.cellarRepository = cellarRepository;
-        const orderRepository = new SoukaiOrderRepository(podBase);
+        const orderRepository = new SoukaiOrderRepository(podBase, () => this.containers.inboxContainer(), this.authService);
 
         // Application service
         this.kellermeisterService = new KellermeisterService(

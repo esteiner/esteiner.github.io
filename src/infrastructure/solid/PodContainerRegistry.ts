@@ -41,4 +41,17 @@ export class PodContainerRegistry {
     container(collection: Collection): string | null {
         return this.base ? `${this.base}${collection}/` : null;
     }
+
+    /**
+     * The Pod inbox container for unprocessed orders (`{storageRoot}inbox/kellermeister/`),
+     * a sibling of the Kellermeister base, or null if the base is unknown. The
+     * storage root is the base with its trailing `kellermeister/` segment removed.
+     */
+    inboxContainer(): string | null {
+        if (!this.base) {
+            return null;
+        }
+        const storageRoot = this.base.replace(/kellermeister\/$/, "");
+        return `${storageRoot}inbox/kellermeister/`;
+    }
 }

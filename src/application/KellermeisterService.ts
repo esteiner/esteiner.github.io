@@ -1,5 +1,3 @@
-import { fetch } from "@inrupt/solid-client-authn-browser";
-import {deleteSolidDataset} from "@inrupt/solid-client";
 import {ProductFilter} from "../domain/Product/ProductFilter.ts";
 import type {BottleRepository} from "../domain/Bottle/BottleRepository.ts";
 import type {ProductRepository} from "../domain/Product/ProductRepository.ts";
@@ -357,12 +355,12 @@ export class KellermeisterService {
     private async moveProcessedOrder(unprocessedOrder: Order) {
         if (unprocessedOrder instanceof SoukaiOrder) {
             console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
+            // Save locally first, then clear the source from the Pod inbox (via
+            // the repository, using the authenticated session) so a failed
+            // deletion never loses the already-processed order.
             await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
             this.cachedOrders = null;
-            // Delete from source
-            if (unprocessedOrder.getSourceDocumentUrl()) {
-                await deleteSolidDataset(unprocessedOrder.getSourceDocumentUrl() as string, { fetch: fetch });
-            }
+            await this.orderRespository.deleteFromInbox(unprocessedOrder);
         }
     }
 

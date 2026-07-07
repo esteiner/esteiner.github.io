@@ -47,9 +47,15 @@ class CellarWorkPage extends BasePage {
 
     private _bottlesTask = new Task(this, async () => {
         if (this.shouldIngestFromInbox() && this.session.info.isLoggedIn) {
-            const ingested = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
-            if (ingested) {
-                this.sourceCellar = ingested;
+            // Inbox ingestion is online and may fail (network/Pod); never let it
+            // block rendering of the existing cellarwork contents.
+            try {
+                const ingested = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
+                if (ingested) {
+                    this.sourceCellar = ingested;
+                }
+            } catch (error) {
+                console.error("cellarwork-page: inbox ingestion failed:", error);
             }
         }
         if (this.sourceCellar) {
