@@ -35,6 +35,12 @@ class ProfilePage extends BasePage {
     @state()
     private storedWebId: string | null = null;
 
+    @state()
+    private cellarToDelete: Cellar | null = null;
+
+    @state()
+    private cellarWithBottles: Cellar | null = null;
+
     private cdi: CDI = CDI.getInstance();
     private unsubscribe: (() => void) | null = null;
 
@@ -85,18 +91,67 @@ class ProfilePage extends BasePage {
 
     private async handleDeleteCellarClick(cellar: Cellar) {
         const service = this.cdi.getKellermeisterService();
-        // Only empty cellars may be deleted; a cellar that still holds bottles
-        // navigates to its cellar page instead so the user can empty it first.
         if (await service.isCellarEmpty(cellar)) {
-            await service.removeCellar(cellar);
-            await this.loadCellars();
+            // Empty: deletion is destructive — confirm via a styled dialog.
+            this.cellarToDelete = cellar;
         } else {
+            // Non-empty: cannot be deleted — inform via a styled dialog, offering
+            // a link to the cellar so the user can empty it first.
+            this.cellarWithBottles = cellar;
+        }
+    }
+
+    private async handleDeleteConfirm() {
+        const cellar = this.cellarToDelete;
+        this.cellarToDelete = null;
+        if (cellar) {
+            await this.cdi.getKellermeisterService().removeCellar(cellar);
+            await this.loadCellars();
+        }
+    }
+
+    private handleDeleteCancel() {
+        this.cellarToDelete = null;
+    }
+
+    private handleGoToCellar() {
+        const cellar = this.cellarWithBottles;
+        this.cellarWithBottles = null;
+        if (cellar) {
             Router.go(router.urlForName('cellar-page', {cellarId: cellar.getId()}));
         }
     }
 
+    private handleCannotDeleteClose() {
+        this.cellarWithBottles = null;
+    }
+
     render() {
         return html`
+          ${this.cellarToDelete ? html`
+              <div class="dialog-overlay" @click="${this.handleDeleteCancel}">
+                  <div class="dialog" role="dialog" aria-modal="true" aria-label="Keller löschen" @click="${(e: Event) => e.stopPropagation()}">
+                      <h2>Keller löschen</h2>
+                      <p>Keller "${this.cellarToDelete.getName()}" wirklich löschen?</p>
+                      <div class="dialog-actions">
+                          <button class="dialog-btn dialog-btn-cancel" @click="${this.handleDeleteCancel}">Abbrechen</button>
+                          <button class="dialog-btn dialog-btn-ok" @click="${this.handleDeleteConfirm}">Löschen</button>
+                      </div>
+                  </div>
+              </div>
+          ` : ''}
+          ${this.cellarWithBottles ? html`
+              <div class="dialog-overlay" @click="${this.handleCannotDeleteClose}">
+                  <div class="dialog" role="dialog" aria-modal="true" aria-label="Löschen nicht möglich" @click="${(e: Event) => e.stopPropagation()}">
+                      <h2>Löschen nicht möglich</h2>
+                      <p>Keller "${this.cellarWithBottles.getName()}" enthält noch Flaschen und kann nicht gelöscht werden. Entferne zuerst alle Flaschen.</p>
+                      <div class="dialog-actions">
+                          <button class="dialog-btn dialog-btn-cancel" @click="${this.handleCannotDeleteClose}">Schliessen</button>
+                          <button class="dialog-btn dialog-btn-ok" @click="${this.handleGoToCellar}">Zum Keller</button>
+                      </div>
+                  </div>
+              </div>
+          ` : ''}
           <kellermeister-header>Profil
               <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" size="small"></kellermeister-button>
           </kellermeister-header>
@@ -194,6 +249,86 @@ class ProfilePage extends BasePage {
 
                 main {
                     padding: 16px;
+                }
+
+                /* Confirmation dialog — styled in analogy to the landing page's WebID dialog. */
+                .dialog-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(26, 25, 23, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 2000;
+                    backdrop-filter: blur(4px);
+                }
+
+                .dialog {
+                    background: var(--km-surface, #fff);
+                    border-radius: 16px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    box-shadow: 0 20px 60px rgba(26, 25, 23, 0.15);
+                    padding: 32px 28px 24px;
+                    width: min(440px, 92vw);
+                    color: var(--km-text, #1A1917);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                }
+
+                .dialog h2 {
+                    font-family: var(--app-font-family-display, Georgia, serif);
+                    font-size: 22px;
+                    font-weight: 500;
+                    font-style: italic;
+                    color: var(--app-color-primary, #3A6B28);
+                    margin: 0;
+                    letter-spacing: 0.01em;
+                }
+
+                .dialog p {
+                    margin: 0;
+                    font-size: 14px;
+                    color: var(--km-text-muted, #8A8278);
+                    line-height: 1.6;
+                }
+
+                .dialog-actions {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    margin-top: 4px;
+                }
+
+                .dialog-btn {
+                    padding: 10px 22px;
+                    border-radius: 8px;
+                    border: none;
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: opacity 0.2s ease, transform 0.1s ease;
+                    letter-spacing: 0.02em;
+                }
+
+                .dialog-btn:active {
+                    transform: scale(0.97);
+                }
+
+                .dialog-btn-cancel {
+                    background: var(--km-bg, #F7F5F1);
+                    color: var(--km-text-muted, #8A8278);
+                    border: 1px solid var(--km-border, #E4DFD7);
+                }
+
+                .dialog-btn-ok {
+                    background: var(--app-color-primary, #3A6B28);
+                    color: #fff;
+                }
+
+                .dialog-btn-ok:hover {
+                    opacity: 0.85;
                 }
 
                 .card {
