@@ -4,6 +4,8 @@ import {PodContainerRegistry} from "../solid/PodContainerRegistry.ts";
 import {SolidSyncService} from "../solid/SolidSyncService.ts";
 import type {SolidService} from "../../application/authentication/SolidService.ts";
 import type {AuthService} from "../../application/ports/AuthService.ts";
+import type {AppStateStore} from "../../application/ports/AppStateStore.ts";
+import {IndexedDbAppStateStore} from "../local/IndexedDbAppStateStore.ts";
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
@@ -33,6 +35,7 @@ export class CDI {
 
     private readonly solidService: SolidService;
     private readonly authService: AuthService;
+    private readonly appStateStore: AppStateStore;
 
     private readonly cellarRepository: CellarRepository;
     private readonly kellermeisterService: KellermeisterService;
@@ -47,6 +50,9 @@ export class CDI {
         // Auth
         this.solidService = new InruptSolidService();
         this.authService = new InruptAuthService();
+
+        // Local, device-scoped app metadata (webId, last sync date)
+        this.appStateStore = new IndexedDbAppStateStore();
 
         // Repositories (local-only)
         const productRepository = new SoukaiProductRepository(podBase);
@@ -63,7 +69,7 @@ export class CDI {
 
         // Sync layer
         this.syncService = new SolidSyncService(this.authService, podBase);
-        this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService));
+        this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService), this.appStateStore);
         this.reconnectSync = new ReconnectSync(this.syncCoordinator, {maxRetries: 4, baseDelayMs: 2000});
     }
 
@@ -80,6 +86,10 @@ export class CDI {
 
     public getAuthService(): AuthService {
         return this.authService;
+    }
+
+    public getAppStateStore(): AppStateStore {
+        return this.appStateStore;
     }
 
     public getKellermeisterService(): KellermeisterService {

@@ -1,4 +1,5 @@
 import type {AuthService} from "../ports/AuthService.ts";
+import type {AppStateStore} from "../ports/AppStateStore.ts";
 import {NotAuthenticatedError} from "../errors.ts";
 import type {SynchronizeWithPod} from "./SynchronizeWithPod.ts";
 
@@ -31,7 +32,21 @@ export class SyncCoordinator {
     constructor(
         private readonly auth: AuthService,
         private readonly synchronize: SynchronizeWithPod,
+        private readonly appState?: AppStateStore,
     ) {
+        // Seed the last-sync time from local storage so a reload shows the real
+        // time before any new sync runs (best-effort; only fills an empty slot).
+        void this.seedLastSynced();
+    }
+
+    private async seedLastSynced(): Promise<void> {
+        if (!this.appState) {
+            return;
+        }
+        const persisted = await this.appState.getLastSyncedAt();
+        if (persisted && !this.status.lastSyncedAt) {
+            this.setStatus({lastSyncedAt: persisted});
+        }
     }
 
     getStatus(): SyncStatus {
@@ -65,7 +80,9 @@ export class SyncCoordinator {
         this.setStatus({state: "syncing", error: null});
         try {
             await this.synchronize.execute();
-            this.setStatus({state: "idle", lastSyncedAt: new Date(), error: null});
+            const lastSyncedAt = new Date();
+            this.setStatus({state: "idle", lastSyncedAt, error: null});
+            await this.appState?.setLastSyncedAt(lastSyncedAt);
         } catch (error) {
             this.setStatus({state: "error", error: toMessage(error)});
         } finally {

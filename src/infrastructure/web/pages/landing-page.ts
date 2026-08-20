@@ -112,6 +112,9 @@ class LandingPage extends BasePage {
     async sessionChangedCallback(session: Session) {
         if (session.info.isLoggedIn && session.info.webId != null) {
             console.log("sessionChangedCallback: fetched user session with WebId:", session.info.webId);
+            // Persist the WebID used so it is available offline / before a session
+            // is restored (local-only device metadata).
+            void this.cdi.getAppStateStore().setWebId(session.info.webId);
             const webIDProfile: WebIDProfile | null = await this.cdi.getSolidService().getWebIDProfile(new URL(session.info.webId));
             if (webIDProfile) {
                 if (webIDProfile.getStorageUrls().length === 1) {

@@ -3,6 +3,20 @@ import {SyncCoordinator} from "./SyncCoordinator.ts";
 import {SynchronizeWithPod} from "./SynchronizeWithPod.ts";
 import {NotAuthenticatedError} from "../errors.ts";
 import type {AuthService, SolidSession} from "../ports/AuthService.ts";
+import type {AppStateStore} from "../ports/AppStateStore.ts";
+
+/** In-memory AppStateStore for tests. */
+function fakeAppState(seed?: {webId?: string | null; lastSyncedAt?: Date | null}) {
+    let webId: string | null = seed?.webId ?? null;
+    let lastSyncedAt: Date | null = seed?.lastSyncedAt ?? null;
+    const store: AppStateStore = {
+        getWebId: async () => webId,
+        setWebId: async (v) => { webId = v; },
+        getLastSyncedAt: async () => lastSyncedAt,
+        setLastSyncedAt: async (d) => { lastSyncedAt = d; },
+    };
+    return {store, getWebId: () => webId, getLastSyncedAt: () => lastSyncedAt};
+}
 
 const session: SolidSession = {isLoggedIn: true, webId: "https://alice.pod/profile#me", fetch};
 const loggedIn: AuthService = {isLoggedIn: () => true, getSession: () => session};
@@ -65,5 +79,45 @@ describe("SyncCoordinator", () => {
         await coordinator.requestSync("manual");
         expect(coordinator.getStatus().state).toBe("error");
         expect(coordinator.getStatus().error).toContain("network down");
+    });
+
+    it("persists the last sync date on a successful run", async () => {
+        const {synchronize, resolvers} = controllable();
+        const app = fakeAppState();
+        const coordinator = new SyncCoordinator(loggedIn, synchronize, app.store);
+
+        void coordinator.requestSync("manual");
+        await flush();
+        resolvers[0]();
+        await flush();
+
+        expect(app.getLastSyncedAt()).toBeInstanceOf(Date);
+        expect(app.getLastSyncedAt()?.getTime()).toBe(coordinator.getStatus().lastSyncedAt?.getTime());
+    });
+
+    it("seeds lastSyncedAt from the store at startup and notifies listeners", async () => {
+        const seeded = new Date("2026-08-20T09:00:00.000Z");
+        const {synchronize} = controllable();
+        const coordinator = new SyncCoordinator(loggedIn, synchronize, fakeAppState({lastSyncedAt: seeded}).store);
+
+        const seen: Array<Date | null> = [];
+        coordinator.onStatusChange((s) => seen.push(s.lastSyncedAt));
+        await flush();
+
+        expect(coordinator.getStatus().lastSyncedAt?.getTime()).toBe(seeded.getTime());
+        expect(seen[seen.length - 1]?.getTime()).toBe(seeded.getTime());
+    });
+
+    it("does not overwrite the persisted date when a run fails", async () => {
+        const seeded = new Date("2026-08-20T09:00:00.000Z");
+        const app = fakeAppState({lastSyncedAt: seeded});
+        const failing = {execute: () => Promise.reject(new Error("network down"))} as unknown as SynchronizeWithPod;
+        const coordinator = new SyncCoordinator(loggedIn, failing, app.store);
+
+        await coordinator.requestSync("manual");
+        await flush();
+
+        expect(coordinator.getStatus().state).toBe("error");
+        expect(app.getLastSyncedAt()?.getTime()).toBe(seeded.getTime());
     });
 });

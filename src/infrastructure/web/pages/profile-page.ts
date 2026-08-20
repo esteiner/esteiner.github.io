@@ -32,6 +32,9 @@ class ProfilePage extends BasePage {
     @state()
     lastSyncedAt: Date | null = null;
 
+    @state()
+    private storedWebId: string | null = null;
+
     private cdi: CDI = CDI.getInstance();
     private unsubscribe: (() => void) | null = null;
 
@@ -53,6 +56,8 @@ class ProfilePage extends BasePage {
 
     async fetchUserProfile() {
         console.log("fetchUserProfile: session", this.session);
+        // The persisted WebID lets us show it even without a live session.
+        this.storedWebId = await this.cdi.getAppStateStore().getWebId();
         if (this.session.info.webId != null) {
             this.solidUserProfile = await fetchLoginUserProfile(this.session.info.webId);
             console.log("fetchUserProfile: fetched login user profile", this.solidUserProfile);
@@ -104,7 +109,7 @@ class ProfilePage extends BasePage {
                   </div>
                   <div class="group">
                       <label>WebID</label>
-                      <span class="value url">${this.session.info.webId}</span>
+                      <span class="value url">${this.session.info.webId ?? this.storedWebId}</span>
                   </div>
                   <div class="group">
                       <label>Storage</label>
