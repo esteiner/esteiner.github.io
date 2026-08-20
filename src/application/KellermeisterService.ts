@@ -192,10 +192,15 @@ export class KellermeisterService {
     async removeCellar(cellar: Cellar | undefined): Promise<void> {
         if (cellar) {
             if (await this.isEmpty(cellar)) {
-                this.cellarRepository.deleteCellar(cellar);
+                await this.cellarRepository.deleteCellar(cellar);
                 this.cachedCellars = null;
             }
         }
+    }
+
+    /** True when the cellar holds no bottles (safe to delete). */
+    async isCellarEmpty(cellar: Cellar): Promise<boolean> {
+        return await this.isEmpty(cellar);
     }
 
     async getAllOrders(): Promise<Order[]> {

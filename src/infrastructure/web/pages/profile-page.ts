@@ -4,12 +4,15 @@ import { BasePage } from "../common/base-page.ts";
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
+import {Router} from "@vaadin/router";
+import {router} from "../router.ts";
 import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
 import {CDI} from "../../cdi/CDI";
 import {getBuildVersion} from "../utils";
 import {formatLastSync} from "../components/sync-status-format.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
+import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 
 @customElement('profile-page')
 class ProfilePage extends BasePage {
@@ -22,6 +25,9 @@ class ProfilePage extends BasePage {
 
     @state()
     numberOfBottles: number | undefined;
+
+    @state()
+    private cellars: Cellar[] = [];
 
     @state()
     lastSyncedAt: Date | null = null;
@@ -53,6 +59,35 @@ class ProfilePage extends BasePage {
         }
         const bottles = await this.cdi.getKellermeisterService().getAllBottles();
         this.numberOfBottles = bottles.length;
+        await this.loadCellars();
+    }
+
+    private async loadCellars() {
+        // Local-first: all existing cellars, available with or without a session.
+        // Hide cellars with a negative displayOrder (e.g. the well-known
+        // cellarwork/altglass); a missing or zero displayOrder stays visible.
+        const cellars = await this.cdi.getKellermeisterService().getAllCellars();
+        this.cellars = cellars.filter(cellar => !(cellar.getDisplayOrder() < 0));
+    }
+
+    private async handleNewCellarClick() {
+        const name: string | null = prompt("Name des neuen Kellers", "Keller-" + (this.cellars.length + 1));
+        if (name) {
+            await this.cdi.getKellermeisterService().createCellar(name);
+            await this.loadCellars();
+        }
+    }
+
+    private async handleDeleteCellarClick(cellar: Cellar) {
+        const service = this.cdi.getKellermeisterService();
+        // Only empty cellars may be deleted; a cellar that still holds bottles
+        // navigates to its cellar page instead so the user can empty it first.
+        if (await service.isCellarEmpty(cellar)) {
+            await service.removeCellar(cellar);
+            await this.loadCellars();
+        } else {
+            Router.go(router.urlForName('cellar-page', {cellarId: cellar.getId()}));
+        }
     }
 
     render() {
@@ -106,8 +141,18 @@ class ProfilePage extends BasePage {
                       <label>Flaschen</label>
                       <span class="value">${this.numberOfBottles}</span>
                   </div>
-                  <div class="group">
+                  <div class="group group-keller">
                       <label>Keller</label>
+                      <span class="value">
+                          ${this.cellars.length > 0
+                              ? this.cellars.map(cellar => html`
+                                  <div class="cellar-row">
+                                      <span>${cellar.getName()}</span>
+                                      <kellermeister-button icon="trash" size="small" ghost @click="${() => this.handleDeleteCellarClick(cellar)}"></kellermeister-button>
+                                  </div>`)
+                              : "Keine Keller"}
+                      </span>
+                      <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" size="small" ghost></kellermeister-button>
                   </div>
               </div>
               <div class="section-header"><p>Solid Apps</p></div>
@@ -164,6 +209,22 @@ class ProfilePage extends BasePage {
 
                 .group:not(:last-child) {
                     border-bottom: 1px solid var(--km-border, #E4DFD7);
+                }
+
+                /* Keller group: label, cellar list, and an add-cellar action on the right. */
+                .group-keller {
+                    grid-template-columns: 110px 1fr auto;
+                }
+
+                .group-keller kellermeister-button {
+                    align-self: center;
+                }
+
+                /* Each cellar row: name with a delete button right behind it. */
+                .cellar-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
                 }
 
                 label {

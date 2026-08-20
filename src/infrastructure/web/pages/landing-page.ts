@@ -201,7 +201,6 @@ class LandingPage extends BasePage {
                 </div>
             ` : ''}
             <kellermeister-header>Kellermeister
-                <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
                 <kellermeister-button icon="search" text="Suche" @click="${this.handleSearchClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
             </kellermeister-header>
             <main>
@@ -323,14 +322,6 @@ class LandingPage extends BasePage {
         } else {
             console.log("handleCellarClick go to cellar:", cellarId);
             Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
-        }
-    }
-
-    private async handleNewCellarClick() {
-        const name: string | null = prompt("Name des neuen Kellers", "Keller-" + ((this._cellarsTask.value?.length ?? 0) - 1));
-        if (name) {
-            await this.cdi.getKellermeisterService().createCellar(name);
-            this.loadCellars();
         }
     }
 
