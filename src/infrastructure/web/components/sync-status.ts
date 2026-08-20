@@ -27,8 +27,8 @@ class SyncStatusComponent extends LitElement {
         .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--app-color-primary, #3A6B28); }
         .dot.syncing { background: #E0A526; animation: pulse 1s ease-in-out infinite; }
         .dot.error { background: #C0392B; }
-        button { font: inherit; cursor: pointer; background: transparent; border: none; color: var(--app-color-primary, #3A6B28); }
-        button:disabled { opacity: 0.5; cursor: default; }
+        kellermeister-button { font: inherit; cursor: pointer; background: transparent; border: none; color: var(--app-color-primary, #3A6B28); }
+        kellermeister-button:disabled { opacity: 0.5; cursor: default; }
         .hint { color: #C0392B; }
         @keyframes pulse { 50% { opacity: 0.3; } }
     `;

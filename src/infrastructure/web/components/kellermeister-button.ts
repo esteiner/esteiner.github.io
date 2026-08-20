@@ -30,7 +30,7 @@ import iconBottle from '../images/icons/wine-bottle-with-label.svg?raw';
 
 import { BaseComponent } from '../common/base-component.js';
 
-type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'cellar' | 'cellars' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash' | 'umbuchen';
+type IconType = 'scan' | 'delete' | 'back' | 'goto' | 'demo' | 'share' | 'ok' | 'cancel' | 'house' | 'wallet' | 'profile' | 'plus' | 'cellar' | 'cellars' | 'work' | 'logout'| 'wine-red' | 'wine-white' | 'wine-rose' | 'wine-bubble' | 'search' | 'shopping' | 'trash' | 'umbuchen' | 'sync';
 
 @customElement('kellermeister-button')
 class KellermeisterButton extends BaseComponent {
@@ -187,7 +187,7 @@ class KellermeisterButton extends BaseComponent {
         return unsafeHTML(iconHouse);
       case 'demo':
         return unsafeHTML(iconMonitorPlay);
-      case 'share':
+      case 'sync':
         return unsafeHTML(iconShare);
       case 'ok':
         return unsafeHTML(iconOk);

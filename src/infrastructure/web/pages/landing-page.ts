@@ -14,9 +14,14 @@ import '../components/kellermeister-footer.ts';
 import '../components/sync-status.ts';
 import {getBuildVersion} from "../utils";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import {NotAuthenticatedError} from "../../../application/errors.ts";
+import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
+import {formatLastSync} from "../components/sync-status-format.ts";
 
 @customElement('landing-page')
 class LandingPage extends BasePage {
+
+    private static readonly WEBID_HISTORY_KEY = 'kellermeister_webid_history';
 
     @property()
     session: Session = getDefaultSession();
@@ -45,9 +50,25 @@ class LandingPage extends BasePage {
     @state()
     private showImageLightbox: boolean = false;
 
+    @state()
+    private status: SyncStatus = {state: "idle", lastSyncedAt: null, error: null};
+
+    @state()
+    private hint: string | null = null;
+
     private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
 
-    private static readonly WEBID_HISTORY_KEY = 'kellermeister_webid_history';
+    private cdi: CDI = CDI.getInstance();
+    private unsubscribe: (() => void) | null = null;
+
+    private _cellarsTask = new Task(this, async () => {
+        return await this.cdi.getKellermeisterService().getCellars();
+    });
+
+    constructor() {
+        super();
+    }
+
 
     private loadWebIdHistory(): string[] {
         try {
@@ -64,17 +85,10 @@ class LandingPage extends BasePage {
         localStorage.setItem(LandingPage.WEBID_HISTORY_KEY, JSON.stringify(history));
     }
 
-    private cdi: CDI = CDI.getInstance();
-
-    private _cellarsTask = new Task(this, async () => {
-        return await this.cdi.getKellermeisterService().getCellars();
-    });
-
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
+        this.unsubscribe = this.cdi.getSyncCoordinator().onStatusChange((status) => {
+            this.status = status;
+        });
         super.connectedCallback();
         console.log("connectedCallback: logged in", this.isLoggedIn);
 
@@ -95,6 +109,8 @@ class LandingPage extends BasePage {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+        this.unsubscribe?.();
+        this.unsubscribe = null;
     }
 
     async sessionChangedCallback(session: Session) {
@@ -190,73 +206,33 @@ class LandingPage extends BasePage {
             ` : ''}
             <kellermeister-header>Kellermeister
                 <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
-                <sync-status slot="actions"></sync-status>
             </kellermeister-header>
             <main>
                 <div class="cellar-grid">
                     ${this._cellarsTask.render({
                         pending: () => html`<div class="spinner"></div>`,
-                        complete: (cellars) => html`${cellars.map(cellar => html`
-                            <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.getId())}" ghost icon="${this.cellarIconName(cellar.getId())}"></kellermeister-button>
-                        `)}`,
+                        complete: (cellars) => html`
+                            ${cellars.map(cellar => html`
+                                <kellermeister-button text="${this.cellarName(cellar)}" @click="${() => this.handleCellarClick(cellar.getId())}" ghost icon="${this.cellarIconName(cellar.getId())}"></kellermeister-button>
+                            `)}
+                            <kellermeister-button text="${this.syncLabel()}" @click="${this.handleSyncClick}" ?disabled="${this.status.state === "syncing"}" ghost icon="sync"></kellermeister-button>
+                        `,
                     })}
                 </div>
             </main>
-            ${this.session.info.isLoggedIn ? html`
-                <kellermeister-footer></kellermeister-footer>
-            `
-            : html`
-                <main class="content">
-                    <div class="login-cta">
-                        <kellermeister-button ghost icon="cellars" text="Anmelden" @click="${this.handleLoginClick}" data-testid="cellars-button" size="large"></kellermeister-button>
-                        <span class="login-cta-label">Melde dich an, um deine Keller mit deinem Pod zu synchronisieren</span>
-                    </div>
-                    <section class="intro">
-                        <p>Mit unserer Kellermeister App kannst du deine Weine in einem oder mehreren Kellern organisieren.
-                            Hast du nur einen Kühlschrank? Kein Problem, auch dieser lässt sich organisieren und du kannst jederzeit auf <em>Altglas</em> nachschauen, welche Weine du im Laufe der Zeit getrunken hast.</p>
-
-                        <details>
-                            <summary>Wie funktioniert die Kellermeister App?</summary>
-                            <p>Anhand deiner Weinrechnung oder eines Fotos der Weinetikette werden die für uns wichtigen Weindaten erfasst. Neue Weine findest du in <em>Kellerarbeit</em>, hier kannst du deine Weine einem Keller oder direkt deinem Kühlschrank zuweisen. Falls du sehr schnell beim Trinken warst oder den Wein verschenkt hast, kannst du ihn auch direkt in das <em>Altglas</em> umbuchen.</p>
-                            <img class="gif-responsive" src="/Weine-einbuchen.gif"/>
-                        </details>
-                        <details>
-                            <summary>Willst du ein neuer Kellermeister werden?</summary>
-                            <p>Dann erstelle dir einen <a href="https://solidproject.org/for_users" target="_blank">Solid Pod</a>. Damit bekommst du eine WebID, mit welcher du dich anmelden kannst.
-                                Anschliessend schreib an <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a> um deinen Weineingang zu konfigurieren.</p>
-                        </details>
-                        <details>
-                            <summary>Wie kann ich die Weine aus einer Rechnung übernehmen?</summary>
-                            <p>Leite dein Email mit deiner Weinrechnung an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
-                                Unser Agent verarbeitet sie und reichert fehlende Informationen an.</p>
-                        </details>
-                        <details>
-                            <summary>Wie kann ich einen Wein anhand eines Fotos übernehmen?</summary>
-                            <p>Sende das Foto des Etiketts (mit Vorder- und falls vorhandener Rückseite) an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.
-                                Optional kannst du im Betreff Ort und Preis angeben, z. B. <em>Restaurant Maihöffli Luzern: 95.50 CHF</em>.</p>
-                            <img class="process-img" src="/Prozess_Foto.png" @click="${() => this.showImageLightbox = true}" />
-                        </details>
-                        <details>
-                            <summary>Lust deinen gesamten Weinkeller zu erfassen?</summary>
-                            <p>Erstelle ein Email mit einer Tabelle: Hersteller, Weinname, Jahrgang, Weinart, Preis, Anzahl, Flaschengrösse — z. B. <em>Larmandier-Bernier, Vertus, 2012, Schaumwein, 99, 1, 750</em> und sende es an <a href="mailto:kellerknecht@kellermeister.ch">kellerknecht@kellermeister.ch</a>.</p>
-                        </details>
-
-                        <details>
-                            <summary>Kann ich die Kellermeister App weitergeben?</summary>
-                            <p>Ja, sehr gerne!<br>Hier ist der QR-Code für <a href="https://kellermeister.ch">https://kellermeister.ch</a></p>
-                            <img src="/Kellermeister_QR-Code.png"/>
-                        </details>
-
-                        <p>Noch weitere Fragen? Melde dich bei <a href="mailto:info@kellermeister.ch">info@kellermeister.ch</a></p>
-                    </section>
-                </main>
-                <div class="version-info">
-                    <span class="version-label">Version</span>
-                    <span class="version-number">${getBuildVersion()}</span>
-                </div>
-            `
-            }
+            <kellermeister-footer></kellermeister-footer>
         `
+    }
+
+    private syncLabel(): string {
+        switch (this.status.state) {
+            case "syncing":
+                return "Synchronisiert…";
+            case "error":
+                return "Fehler";
+            default:
+                return this.status.lastSyncedAt ? `last sync ${formatLastSync(this.status.lastSyncedAt)}` : "Sync - Nur lokal";
+        }
     }
 
     private async handleLoginClick() {
@@ -356,6 +332,18 @@ class LandingPage extends BasePage {
             this.loadCellars();
         }
     }
+
+    private async handleSyncClick(): Promise<void> {
+        console.log("handleSyncClick: seesion info is logged in:", getDefaultSession().info.isLoggedIn);
+
+        this.hint = null;
+        try {
+            await this.cdi.getSyncCoordinator().requestSync("manual");
+        } catch (error) {
+            this.hint = error instanceof NotAuthenticatedError ? "Bitte anmelden zum Synchronisieren." : "Synchronisierung fehlgeschlagen.";
+        }
+    }
+
 
     static get styles() {
         return [
