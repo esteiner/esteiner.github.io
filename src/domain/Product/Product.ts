@@ -4,6 +4,7 @@ import type {Rating} from "./Rating.ts";
 export interface Product {
     getId(): string;
     getName(): string;
+    getWineName(): string;
     getProductionDate(): Date | undefined;
     getPrice(): number;
     getPriceCurrency(): string;

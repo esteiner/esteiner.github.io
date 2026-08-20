@@ -30,6 +30,10 @@ export default defineSolidModelSchema({
             rdfProperty: 'schema:priceCurrency'
         },
         // vocab.kellermeister.ch/wine/
+        weinname: {
+            type: FieldType.String,
+            rdfProperty: 'km:weinname'
+        },
         hersteller: {
             type: FieldType.String,
             rdfProperty: 'km:hersteller'

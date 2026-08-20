@@ -9,6 +9,7 @@ export class SoukaiProductFactory implements ProductFactory  {
     public createProduct(product: Product, orderItem: OrderItem): Product {
         const newProduct: SoukaiProduct = new SoukaiProduct();
         newProduct.name = product.getName();
+        newProduct.weinname = product.getWineName();
         newProduct.productionDate = product.getProductionDate();
         newProduct.hersteller = product.getProducer();
         newProduct.weinart = product.getWineType();

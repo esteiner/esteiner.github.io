@@ -110,6 +110,7 @@ function makeService() {
     const orderFactory: OrderFactory = {
         createOrder: vi.fn(),
         createOrderItem: vi.fn(),
+        linkProduct: vi.fn(),
     };
     setEngine(new InMemoryEngine());
     const service = new KellermeisterService(cellarRepo, bottleRepo, productRepo, orderRepo, bottleFactory, orderFactory, productFactory);
@@ -453,12 +454,17 @@ describe('KellermeisterService', () => {
         // });
 
         it('does nothing when the order has no positions', async () => {
-            const { service, bottleFactory } = makeService();
+            const { service, bottleFactory, orderFactory, orderRepo } = makeService();
             const order = { getOrderItems: () => undefined } as unknown as Order;
+            const builtOrder = { getId: () => 'order-x', getOrderItems: () => [] } as unknown as Order;
+            vi.mocked(orderFactory.createOrder).mockReturnValue(builtOrder);
 
             await service.ingestOrder(order, 'cellar-a');
 
             expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
+            // The freshly-built order is still persisted and the source cleared.
+            expect(orderRepo.saveProcessedOrder).toHaveBeenCalledWith(builtOrder);
+            expect(orderRepo.deleteFromInbox).toHaveBeenCalledWith(order);
         });
 
         it('creates a product and one bottle per ordered unit in the cellarwork cellar', async () => {
@@ -468,18 +474,22 @@ describe('KellermeisterService', () => {
             const orderItem = { getOrderQuantity: () => 3, getProduct: () => product } as unknown as Order;
             const order = { getOrderItems: () => [orderItem] } as unknown as Order;
 
+            const newOrderItem = { id: 'oi1' } as unknown as Order;
             const newOrder = { addOrderItem: vi.fn() } as unknown as Order;
             vi.mocked(orderFactory.createOrder).mockReturnValue(newOrder);
-            vi.mocked(orderFactory.createOrderItem).mockReturnValue({} as never);
+            vi.mocked(orderFactory.createOrderItem).mockReturnValue(newOrderItem as never);
             vi.mocked(productFactory.createProduct).mockReturnValue(product);
+            vi.mocked(productRepo.save).mockResolvedValue(product);
             const placedCellars: string[] = [];
             vi.mocked(bottleFactory.createFromProduct).mockImplementation(
                 () => ({ setCellar: (c: string) => placedCellars.push(c) } as unknown as Bottle),
             );
 
-            await service.addBottles(order, 'cellarwork-id');
+            const returned = await service.addBottles(order, 'cellarwork-id');
 
+            expect(returned).toBe(newOrder);
             expect(productRepo.save).toHaveBeenCalledWith(product);
+            expect(orderFactory.linkProduct).toHaveBeenCalledWith(newOrderItem, product);
             expect(bottleFactory.createFromProduct).toHaveBeenCalledTimes(3);
             expect(bottleRepo.saveAll).toHaveBeenCalledTimes(1);
             const savedBottles = vi.mocked(bottleRepo.saveAll).mock.calls[0][0];

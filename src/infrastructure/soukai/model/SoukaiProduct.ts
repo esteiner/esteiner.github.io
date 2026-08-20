@@ -33,6 +33,9 @@ export class SoukaiProduct extends Model implements Product {
     getName(): string {
         return this.orUndefined(this.name);
     }
+    getWineName(): string {
+        return this.orUndefined(this.weinname);
+    }
     getProductionDate(): Date | undefined {
         return this.productionDate ? this.productionDate : undefined;
     }

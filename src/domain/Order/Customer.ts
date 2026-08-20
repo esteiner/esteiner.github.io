@@ -1,6 +1,6 @@
-export interface Seller {
+export interface Customer {
   getId(): string;
   getName(): string;
   getEmail(): string;
-  getUrl(): string;
+  getAddress(): string;
 }

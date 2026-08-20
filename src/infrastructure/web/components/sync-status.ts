@@ -3,6 +3,7 @@ import {customElement, state} from "lit/decorators.js";
 import {CDI} from "../../cdi/CDI.ts";
 import {NotAuthenticatedError} from "../../../application/errors.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
+import {formatLastSync} from "./sync-status-format.ts";
 
 /**
  * Shows synchronization status (idle / syncing / error + last-synced time) and
@@ -61,7 +62,7 @@ class SyncStatusComponent extends LitElement {
             case "error":
                 return "Fehler";
             default:
-                return this.status.lastSyncedAt ? "Synchronisiert" : "Nur lokal";
+                return this.status.lastSyncedAt ? `last sync ${formatLastSync(this.status.lastSyncedAt)}` : "Nur lokal";
         }
     }
 

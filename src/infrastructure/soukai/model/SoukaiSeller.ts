@@ -14,6 +14,9 @@ export class SoukaiSeller extends Model implements Seller {
     getEmail(): string {
         return this.orUndefined(this.email);
     }
+    getUrl(): string {
+        return this.orUndefined(this.homepage);
+    }
 
     private orUndefined(value: any): any | undefined {
         return value ? value : undefined;

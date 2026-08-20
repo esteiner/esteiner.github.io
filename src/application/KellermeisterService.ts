@@ -10,7 +10,6 @@ import type {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import type {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import type {Order} from "../domain/Order/Order.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
-import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
 
 /**
  * Application Use Case: Get Profile
@@ -231,18 +230,25 @@ export class KellermeisterService {
     }
 
     async ingestOrder(order: Order, cellarForCellarwork: string) {
-        await this.addBottles(order, cellarForCellarwork);
-        await this.moveProcessedOrders(new Array(order));
+        // Persist the freshly-built order (seller, customer, and order items
+        // embedded in one document; items referencing the new local products),
+        // then clear the source from the inbox — save-local-before-delete so a
+        // failed deletion never loses an already-processed order.
+        const processedOrder = await this.addBottles(order, cellarForCellarwork);
+        await this.orderRespository.saveProcessedOrder(processedOrder);
+        this.cachedOrders = null;
+        await this.orderRespository.deleteFromInbox(order);
         this.cachedBottles = null;
-        console.log("ingestOrder: processed order:", order);
+        console.log("ingestOrder: processed order:", processedOrder.getId());
     }
 
     /**
      * Per-resource ingestion: for each order item, persist the product as its own
      * resource, then persist one bottle resource per ordered unit (each
-     * referencing that product by URL).
+     * referencing that product by URL). Returns the freshly-built order with its
+     * seller, customer, and order items attached (to be saved as one document).
      */
-    async addBottles(order: Order, cellarForCellarwork: string): Promise<void> {
+    async addBottles(order: Order, cellarForCellarwork: string): Promise<Order> {
         const newOrder: Order = this.orderFactory.createOrder(order);
 
         for (const orderItem of order.getOrderItems() ?? []) {
@@ -253,16 +259,19 @@ export class KellermeisterService {
             newOrder.addOrderItem(newOrderItem);
 
             const product = this.productFactory.createProduct(orderItem.getProduct(), newOrderItem);
-            await this.productRepository.save(product);
+            const savedProduct = await this.productRepository.save(product);
+            // Embedded order item references the newly-created local product.
+            this.orderFactory.linkProduct(newOrderItem, savedProduct);
 
             const bottles: Bottle[] = [];
             for (let q = 0; q < orderItem.getOrderQuantity(); q++) {
-                const bottle: Bottle = this.bottleFactory.createFromProduct(product);
+                const bottle: Bottle = this.bottleFactory.createFromProduct(savedProduct);
                 bottle.setCellar(cellarForCellarwork);
                 bottles.push(bottle);
             }
             await this.bottleRepository.saveAll(bottles);
         }
+        return newOrder;
     }
 
     async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
@@ -344,24 +353,6 @@ export class KellermeisterService {
             return false;
         }
         return true;
-    }
-
-    private async moveProcessedOrders(unprocessedOrders: Order[]) {
-        for (const order of unprocessedOrders) {
-            await this.moveProcessedOrder(order);
-        }
-    }
-
-    private async moveProcessedOrder(unprocessedOrder: Order) {
-        if (unprocessedOrder instanceof SoukaiOrder) {
-            console.log("moveProcessedOrder: moving order:", unprocessedOrder.getSourceDocumentUrl());
-            // Save locally first, then clear the source from the Pod inbox (via
-            // the repository, using the authenticated session) so a failed
-            // deletion never loses the already-processed order.
-            await this.orderRespository.saveProcessedOrder(unprocessedOrder.clone())
-            this.cachedOrders = null;
-            await this.orderRespository.deleteFromInbox(unprocessedOrder);
-        }
     }
 
 }

@@ -8,6 +8,8 @@ import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browse
 import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
 import {CDI} from "../../cdi/CDI";
 import {getBuildVersion} from "../utils";
+import {formatLastSync} from "../components/sync-status-format.ts";
+import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
 
 @customElement('profile-page')
 class ProfilePage extends BasePage {
@@ -21,11 +23,26 @@ class ProfilePage extends BasePage {
     @state()
     numberOfBottles: number | undefined;
 
+    @state()
+    lastSyncedAt: Date | null = null;
+
     private cdi: CDI = CDI.getInstance();
+    private unsubscribe: (() => void) | null = null;
 
     connectedCallback() {
         super.connectedCallback();
         this.fetchUserProfile();
+        const coordinator = this.cdi.getSyncCoordinator();
+        this.lastSyncedAt = coordinator.getStatus().lastSyncedAt;
+        this.unsubscribe = coordinator.onStatusChange((status: SyncStatus) => {
+            this.lastSyncedAt = status.lastSyncedAt;
+        });
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.unsubscribe?.();
+        this.unsubscribe = null;
     }
 
     async fetchUserProfile() {
@@ -73,6 +90,10 @@ class ProfilePage extends BasePage {
                   <div class="group">
                       <label>Session</label>
                       <span class="value url">${this.session.info.sessionId}</span>
+                  </div>
+                  <div class="group">
+                      <label>Last Sync</label>
+                      <span class="value">${this.lastSyncedAt ? formatLastSync(this.lastSyncedAt) : "Nur lokal"}</span>
                   </div>
               </div>
               <div class="section-header"><p>Kellermeister</p></div>

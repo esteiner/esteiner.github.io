@@ -3,6 +3,8 @@ import type {Order} from "../../domain/Order/Order.ts";
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
 import {SoukaiSeller} from "./model/SoukaiSeller.ts";
+import {SoukaiCustomer} from "./model/SoukaiCustomer.ts";
+import {SoukaiContactPoint} from "./model/SoukaiContactPoint.ts";
 import {bootModels, withEngine, type Engine} from "soukai";
 import {SolidEngine} from "soukai-solid";
 import {deleteSolidDataset} from "@inrupt/solid-client";
@@ -32,14 +34,22 @@ export class SoukaiOrderRepository implements OrderRepository {
         private readonly auth: AuthService,
         private readonly inboxEngine: (session: SolidSession) => Engine = (session) => new SolidEngine(session.fetch),
     ) {
-        bootModels({SoukaiOrder, SoukaiOrderItem, SoukaiSeller});
+        bootModels({SoukaiOrder, SoukaiOrderItem, SoukaiSeller, SoukaiCustomer, SoukaiContactPoint});
     }
 
     async fetchOrders(): Promise<Order[]> {
         const orders = await fetchLive<SoukaiOrder>(SoukaiOrder, "orders", this.podBase());
         for (const order of orders) {
             await order.loadRelation("seller");
+            await order.loadRelation("customer");
+            await order.customer?.loadRelation("contactPoint");
             await order.loadRelation("positions");
+            // Each order item's product is a separate resource (referenced by
+            // productUrl), so — unlike the same-document seller/customer/items —
+            // it must be loaded explicitly or getProduct() stays undefined.
+            for (const item of order.getOrderItems()) {
+                await item.loadRelation("product");
+            }
         }
         return orders;
     }
@@ -56,6 +66,10 @@ export class SoukaiOrderRepository implements OrderRepository {
             const orders = await SoukaiOrder.from(inbox).all();
             for (const order of orders) {
                 await order.loadRelation("seller");
+                await order.loadRelation("customer");
+                // The customer's name/email live on its nested contactPoint
+                // (same document); load it so it flattens into the built order.
+                await order.customer?.loadRelation("contactPoint");
                 await order.loadRelation("positions");
             }
             return orders;

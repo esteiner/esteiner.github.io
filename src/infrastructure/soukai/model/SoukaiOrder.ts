@@ -2,6 +2,8 @@ import type {Relation} from "soukai";
 import Model from "./SoukaiOrder.schema";
 import type {Seller} from "../../../domain/Order/Seller.ts";
 import {SoukaiSeller} from "./SoukaiSeller.ts";
+import type {Customer} from "../../../domain/Order/Customer.ts";
+import {SoukaiCustomer} from "./SoukaiCustomer.ts";
 import type {Order} from "../../../domain/Order/Order.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
@@ -15,6 +17,14 @@ export class SoukaiOrder extends Model implements Order {
         return this
             .belongsToOne(SoukaiSeller, "sellerUrl")
             .usingSameDocument(true);;
+    }
+
+    declare public customer: SoukaiCustomer | undefined;
+    declare public relatedCustomer: SolidBelongsToOneRelation<SoukaiOrder, SoukaiCustomer, typeof SoukaiCustomer>;
+    public customerRelationship(): Relation {
+        return this
+            .belongsToOne(SoukaiCustomer, "customerUrl")
+            .usingSameDocument(true);
     }
 
     declare public positions?: SoukaiOrderItem[];
@@ -37,6 +47,9 @@ export class SoukaiOrder extends Model implements Order {
     getSeller(): Seller | undefined {
         return this.seller;
     }
+    getCustomer(): Customer | undefined {
+        return this.customer;
+    }
     getOrderItems(): SoukaiOrderItem[] {
         if (this.positions) {
             return this.positions;
@@ -45,7 +58,10 @@ export class SoukaiOrder extends Model implements Order {
     }
     addOrderItem(orderItem: OrderItem): Order {
         if (orderItem instanceof SoukaiOrderItem) {
-            this.positions?.push(orderItem);
+            // Assign through the relation setter (a freshly-built order has no
+            // loaded `positions`, so a plain push would be a no-op and the items
+            // would not be embedded in the order document on save).
+            this.positions = [...(this.positions ?? []), orderItem];
         }
         return this;
     }

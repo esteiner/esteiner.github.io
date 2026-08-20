@@ -11,6 +11,11 @@ export default defineSolidModelSchema({
     fields: {
         name: FieldType.String,
         email: FieldType.String,
-        url: FieldType.String
+        // Named `homepage` (not `url`) because `url` collides with SolidModel's
+        // own resource identity; mapped to schema:url, read as an IRI (Key).
+        homepage: {
+            type: FieldType.Key,
+            rdfProperty: 'schema:url'
+        }
     }
 });
