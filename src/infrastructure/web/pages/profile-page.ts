@@ -106,6 +106,9 @@ class ProfilePage extends BasePage {
                       <label>Flaschen</label>
                       <span class="value">${this.numberOfBottles}</span>
                   </div>
+                  <div class="group">
+                      <label>Keller</label>
+                  </div>
               </div>
               <div class="section-header"><p>Solid Apps</p></div>
               <div class="card">

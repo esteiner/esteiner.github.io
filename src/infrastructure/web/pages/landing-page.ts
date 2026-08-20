@@ -12,9 +12,8 @@ import '../components/kellermeister-button.ts';
 import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import '../components/sync-status.ts';
-import {getBuildVersion} from "../utils";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {NotAuthenticatedError} from "../../../application/errors.ts";
+import {syncFailureAction} from "../sync-ui-action.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
 import {formatLastSync} from "../components/sync-status-format.ts";
 
@@ -52,9 +51,6 @@ class LandingPage extends BasePage {
 
     @state()
     private status: SyncStatus = {state: "idle", lastSyncedAt: null, error: null};
-
-    @state()
-    private hint: string | null = null;
 
     private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
 
@@ -205,7 +201,8 @@ class LandingPage extends BasePage {
                 </div>
             ` : ''}
             <kellermeister-header>Kellermeister
-                <kellermeister-button icon="plus" ghost text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
+                <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
+                <kellermeister-button icon="search" text="Suche" @click="${this.handleSearchClick}" slot="actions" data-testid="new-cellar-button" size="small"></kellermeister-button>
             </kellermeister-header>
             <main>
                 <div class="cellar-grid">
@@ -231,8 +228,12 @@ class LandingPage extends BasePage {
             case "error":
                 return "Fehler";
             default:
-                return this.status.lastSyncedAt ? `last sync ${formatLastSync(this.status.lastSyncedAt)}` : "Sync - Nur lokal";
+                return this.status.lastSyncedAt ? `Sync - ${formatLastSync(this.status.lastSyncedAt)}` : "Sync - Nur lokal";
         }
+    }
+
+    private handleSearchClick() {
+        Router.go(router.urlForName('search-page'));
     }
 
     private async handleLoginClick() {
@@ -326,7 +327,7 @@ class LandingPage extends BasePage {
     }
 
     private async handleNewCellarClick() {
-        const name: string | null = prompt("Name des neuen Kellers", "Keller" + ((this._cellarsTask.value?.length ?? 0) - 1));
+        const name: string | null = prompt("Name des neuen Kellers", "Keller-" + ((this._cellarsTask.value?.length ?? 0) - 1));
         if (name) {
             await this.cdi.getKellermeisterService().createCellar(name);
             this.loadCellars();
@@ -336,11 +337,19 @@ class LandingPage extends BasePage {
     private async handleSyncClick(): Promise<void> {
         console.log("handleSyncClick: seesion info is logged in:", getDefaultSession().info.isLoggedIn);
 
-        this.hint = null;
         try {
             await this.cdi.getSyncCoordinator().requestSync("manual");
         } catch (error) {
-            this.hint = error instanceof NotAuthenticatedError ? "Bitte anmelden zum Synchronisieren." : "Synchronisierung fehlgeschlagen.";
+            // The manual path only rejects with NotAuthenticatedError; a
+            // logged-in run captures its own failures into the sync status
+            // (surfaced by syncLabel() as "Fehler"). Pressing Sync while logged
+            // out expresses the intent to sync, so start the login flow — the
+            // sync itself runs post-login (see main.ts).
+            if (syncFailureAction(error).kind === "login") {
+                await this.handleLoginClick();
+            } else {
+                console.warn("handleSyncClick: sync failed", error);
+            }
         }
     }
 
