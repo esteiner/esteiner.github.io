@@ -144,7 +144,7 @@ class ProfilePage extends BasePage {
               <div class="dialog-overlay" @click="${this.handleCannotDeleteClose}">
                   <div class="dialog" role="dialog" aria-modal="true" aria-label="Löschen nicht möglich" @click="${(e: Event) => e.stopPropagation()}">
                       <h2>Löschen nicht möglich</h2>
-                      <p>Keller "${this.cellarWithBottles.getName()}" enthält noch Flaschen und kann nicht gelöscht werden. Entferne zuerst alle Flaschen.</p>
+                      <p>Keller "${this.cellarWithBottles.getName()}" enthält noch Flaschen und kann nicht gelöscht werden. Buche zuerst alle Flaschen um.</p>
                       <div class="dialog-actions">
                           <button class="dialog-btn dialog-btn-cancel" @click="${this.handleCannotDeleteClose}">Schliessen</button>
                           <button class="dialog-btn dialog-btn-ok" @click="${this.handleGoToCellar}">Zum Keller</button>
@@ -205,11 +205,12 @@ class ProfilePage extends BasePage {
                       <label>Keller</label>
                       <span class="value">
                           ${this.cellars.length > 0
-                              ? this.cellars.map(cellar => html`
-                                  <div class="cellar-row">
-                                      <span>${cellar.getName()}</span>
-                                      <kellermeister-button icon="trash" size="small" ghost @click="${() => this.handleDeleteCellarClick(cellar)}"></kellermeister-button>
-                                  </div>`)
+                              ? html`<div class="cellar-list">
+                                  ${this.cellars.map(cellar => html`
+                                      <span class="cellar-name">${cellar.getName()}</span>
+                                      <kellermeister-button icon="trash" size="small" @click="${() => this.handleDeleteCellarClick(cellar)}"></kellermeister-button>
+                                  `)}
+                                </div>`
                               : "Keine Keller"}
                       </span>
                       <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" size="small" ghost></kellermeister-button>
@@ -361,10 +362,14 @@ class ProfilePage extends BasePage {
                 }
 
                 /* Each cellar row: name with a delete button right behind it. */
-                .cellar-row {
-                    display: flex;
+                /* Shared grid so names size to one column and the delete
+                   buttons line up in the next column, right after the names. */
+                .cellar-list {
+                    display: grid;
+                    grid-template-columns: max-content max-content;
                     align-items: center;
-                    gap: 8px;
+                    column-gap: 8px;
+                    row-gap: 4px;
                 }
 
                 label {
