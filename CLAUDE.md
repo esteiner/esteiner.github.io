@@ -31,7 +31,7 @@ The codebase follows a clean architecture with three layers:
 
 ### Data layer: Soukai + Solid
 
-Domain models extend Soukai's `SolidModel`. Data is persisted as RDF (Turtle) resources in the user's Solid Pod under `{storageUrl}kellermeister/`. The Soukai engine is initialized in `main.ts` and repositories are path-based (constructed from `storageUrl`).
+Domain models extend Soukai's `SolidModel`. Data is persisted as RDF (Turtle) resources in the user's Solid Pod under `{storageUrl}private/kellermeister/v1/`. The Soukai engine is initialized in `main.ts` and repositories are path-based (constructed from `storageUrl`).
 
 ### Startup sequence
 

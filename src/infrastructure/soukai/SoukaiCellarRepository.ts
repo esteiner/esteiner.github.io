@@ -4,6 +4,7 @@ import {SoukaiCellar} from "./model/SoukaiCellar.ts";
 import {bootModels} from "soukai";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional, WELL_KNOWN_CELLAR} from "../shared/resource-identity.ts";
+import {withLocalEngine} from "./engineScope.ts";
 
 /**
  * Local-first, per-resource cellar repository. Cellars are minted with a
@@ -26,7 +27,7 @@ export class SoukaiCellarRepository implements CellarRepository {
 
     async createCellar(name: string): Promise<Cellar> {
         const cellar = new SoukaiCellar({url: mintProvisional("cellars"), name, displayOrder: 10});
-        return await cellar.save();
+        return await withLocalEngine(() => cellar.save());
     }
 
     async createCellarForAltglass(): Promise<Cellar> {
@@ -43,7 +44,7 @@ export class SoukaiCellarRepository implements CellarRepository {
     }
 
     async deleteCellar(cellar: Cellar): Promise<void> {
-        await (cellar as SoukaiCellar).delete();
+        await withLocalEngine(() => (cellar as SoukaiCellar).delete());
     }
 
     async fetchCellarById(cellarId: string): Promise<Cellar | null> {
@@ -85,7 +86,7 @@ export class SoukaiCellarRepository implements CellarRepository {
         if (existing) {
             return existing;
         }
-        return await new SoukaiCellar({url: id, name, displayOrder}).save();
+        return await withLocalEngine(() => new SoukaiCellar({url: id, name, displayOrder}).save());
     }
 
     private async queryCellars(): Promise<SoukaiCellar[]> {

@@ -5,11 +5,12 @@ import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
 import {SoukaiSeller} from "./model/SoukaiSeller.ts";
 import {SoukaiCustomer} from "./model/SoukaiCustomer.ts";
 import {SoukaiContactPoint} from "./model/SoukaiContactPoint.ts";
-import {bootModels, withEngine, type Engine} from "soukai";
+import {bootModels, type Engine} from "soukai";
 import {SolidEngine} from "soukai-solid";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
 import {fetchLive} from "./localFirstQuery.ts";
+import {withLocalEngine, withRemoteEngine} from "./engineScope.ts";
 
 /**
  * Local-first, per-resource order repository. Processed orders are stored
@@ -39,18 +40,20 @@ export class SoukaiOrderRepository implements OrderRepository {
 
     async fetchOrders(): Promise<Order[]> {
         const orders = await fetchLive<SoukaiOrder>(SoukaiOrder, "orders", this.podBase());
-        for (const order of orders) {
-            await order.loadRelation("seller");
-            await order.loadRelation("customer");
-            await order.customer?.loadRelation("contactPoint");
-            await order.loadRelation("positions");
-            // Each order item's product is a separate resource (referenced by
-            // productUrl), so — unlike the same-document seller/customer/items —
-            // it must be loaded explicitly or getProduct() stays undefined.
-            for (const item of order.getOrderItems()) {
-                await item.loadRelation("product");
+        await withLocalEngine(async () => {
+            for (const order of orders) {
+                await order.loadRelation("seller");
+                await order.loadRelation("customer");
+                await order.customer?.loadRelation("contactPoint");
+                await order.loadRelation("positions");
+                // Each order item's product is a separate resource (referenced by
+                // productUrl), so — unlike the same-document seller/customer/items —
+                // it must be loaded explicitly or getProduct() stays undefined.
+                for (const item of order.getOrderItems()) {
+                    await item.loadRelation("product");
+                }
             }
-        }
+        });
         return orders;
     }
 
@@ -62,7 +65,7 @@ export class SoukaiOrderRepository implements OrderRepository {
             // or before the Pod container is resolved.
             return [];
         }
-        return await withEngine(this.inboxEngine(session), async () => {
+        return await withRemoteEngine(this.inboxEngine(session), async () => {
             const orders = await SoukaiOrder.from(inbox).all();
             for (const order of orders) {
                 await order.loadRelation("seller");
@@ -77,7 +80,7 @@ export class SoukaiOrderRepository implements OrderRepository {
     }
 
     async fetchOrderById(orderId: string): Promise<Order | null> {
-        const order = await SoukaiOrder.find(orderId);
+        const order = await withLocalEngine(() => SoukaiOrder.find(orderId));
         return order && !order.isSoftDeleted() ? order : null;
     }
 
@@ -85,7 +88,7 @@ export class SoukaiOrderRepository implements OrderRepository {
         if (order instanceof SoukaiOrder) {
             const uuid = globalThis.crypto.randomUUID();
             order.mintUrl(`local://orders/${uuid}`, false, "it");
-            return await order.save();
+            return await withLocalEngine(() => order.save());
         }
         throw new Error("Order must be of type SoukaiOrder");
     }

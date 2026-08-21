@@ -27,12 +27,13 @@ import {SoukaiProductRepository} from "./soukai/SoukaiProductRepository.ts";
 import {SoukaiBottleRepository} from "./soukai/SoukaiBottleRepository.ts";
 import {SolidSyncService} from "./solid/SolidSyncService.ts";
 import type {AuthService, SolidSession} from "../application/ports/AuthService.ts";
+import type {Cellar} from "../domain/Cellar/Cellar.ts";
 import {isProvisional, isPodUrl, rehomeUrl} from "./shared/resource-identity.ts";
 
 bootSolidModels();
 bootModels({SoukaiCellar, SoukaiBottle, SoukaiProduct, SoukaiOrder, SoukaiOrderItem, SoukaiSeller, SoukaiCustomer, SoukaiContactPoint, SoukaiRating});
 
-const POD_BASE = "https://alice.pod/kellermeister/";
+const POD_BASE = "https://alice.pod/private/kellermeister/v1/";
 
 let dbCounter = 0;
 let localEngine: IndexedDBEngine;
@@ -265,5 +266,39 @@ describe("local-first acceptance", () => {
         // contactPoint is embedded in the same document as the order.
         const docUrl = podOrder.getId().split("#")[0];
         expect(customer.contactPoint?.url.split("#")[0]).toBe(docUrl);
+    });
+
+    // Concurrency ------------------------------------------------------------
+    it("keeps local reads local while a sync holds the Pod engine", async () => {
+        const cellars = new SoukaiCellarRepository(() => POD_BASE);
+        await cellars.fetchCellars(); // let the startup bootstrap settle
+
+        // A Pod engine that records what it is asked to read and — on its first
+        // read — fires a local read and holds the Pod window open around it.
+        // That is exactly the window in which an ungated local read is misrouted
+        // to the Pod (as `local://cellars/`, which the Pod cannot fetch).
+        const containersRead: string[] = [];
+        let localRead: Promise<Cellar[]> | null = null;
+        const slowRemote: Engine = {
+            create: (collection, document, id) => remoteEngine.create(collection, document, id),
+            readOne: (collection, id) => remoteEngine.readOne(collection, id),
+            readMany: async (collection, filters) => {
+                containersRead.push(collection);
+                if (!localRead) {
+                    localRead = cellars.fetchCellars();
+                    await new Promise((resolve) => setTimeout(resolve, 10));
+                }
+                return await remoteEngine.readMany(collection, filters);
+            },
+            update: (collection, id, updates) => remoteEngine.update(collection, id, updates),
+            delete: (collection, id) => remoteEngine.delete(collection, id),
+        };
+
+        await new SolidSyncService(loggedInAuth, () => POD_BASE, (): Engine => slowRemote).synchronize();
+        const found = await localRead!;
+
+        // No `local://…` container was ever sent to the Pod engine.
+        expect(containersRead.filter((container) => !container.startsWith(POD_BASE))).toEqual([]);
+        expect(found.map((cellar) => cellar.getName()).sort()).toEqual(["Altglass", "Eingang"]);
     });
 });

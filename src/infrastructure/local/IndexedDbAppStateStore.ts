@@ -4,6 +4,7 @@ const DB_NAME = "kellermeister-appstate";
 const STORE = "appState";
 const KEY_WEBID = "webId";
 const KEY_LAST_SYNCED_AT = "lastSyncedAt";
+const KEY_SYNC_PENDING = "syncPending";
 
 /**
  * IndexedDB-backed {@link AppStateStore}. Uses a dedicated database — separate
@@ -87,5 +88,13 @@ export class IndexedDbAppStateStore implements AppStateStore {
 
     async setLastSyncedAt(date: Date): Promise<void> {
         await this.put(KEY_LAST_SYNCED_AT, date.toISOString());
+    }
+
+    async isSyncPending(): Promise<boolean> {
+        return await this.get(KEY_SYNC_PENDING) === true;
+    }
+
+    async setSyncPending(pending: boolean): Promise<void> {
+        await this.put(KEY_SYNC_PENDING, pending);
     }
 }

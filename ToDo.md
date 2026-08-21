@@ -1,7 +1,7 @@
 ToDo
 ===
 
-- [] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
+- [ ] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
 - [x] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
 - [x] Filter für Text auf Einkäufe Seite
 - [x] Profil Seite ist Text zu nahe am Rand
@@ -12,6 +12,11 @@ ToDo
 - [x] Foto-to-Order
 - [x] Inrupt Setup
 - [x] Icons einbauen
+- [ ] Login/Logout in Profil Seite
+- [x] Einkäufe auch im Offline Zustand anzeigen
+- [x] kein Sync bei Page Refresh
+- [x] Local-first mit IndexedDB
+- [ ] Bei Login mit anderer WebID müssen die lokale gespeicherten Daten gelöscht werden
 
 ### Prio 1
 
@@ -29,7 +34,7 @@ ToDo
 - [ ] App Styling (Layout, Farben, ...)
 - [ ] Flasche(n) löschen
 - [ ] Refresh nach neuen Keller erstellen
-- [ ] Keller löschen im Profil
+- [x] Keller löschen im Profil
 - [ ] WebID löschen im Profil
 - [ ] Eingang aus Foto via Email
 

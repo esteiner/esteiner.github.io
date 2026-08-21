@@ -20,6 +20,15 @@ describe("IndexedDbAppStateStore", () => {
     it("returns null for unset values", async () => {
         expect(await store.getWebId()).toBeNull();
         expect(await store.getLastSyncedAt()).toBeNull();
+        expect(await store.isSyncPending()).toBe(false);
+    });
+
+    it("round-trips the pending-sync flag (survives the login redirect)", async () => {
+        await store.setSyncPending(true);
+        expect(await new IndexedDbAppStateStore().isSyncPending()).toBe(true);
+
+        await store.setSyncPending(false);
+        expect(await new IndexedDbAppStateStore().isSyncPending()).toBe(false);
     });
 
     it("round-trips the WebID", async () => {

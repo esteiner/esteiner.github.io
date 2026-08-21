@@ -13,7 +13,7 @@ import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import '../components/sync-status.ts';
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
-import {syncFailureAction} from "../sync-ui-action.ts";
+import {shouldRememberSync, syncFailureAction} from "../sync-ui-action.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
 import {formatLastSync} from "../components/sync-status-format.ts";
 
@@ -83,7 +83,13 @@ class LandingPage extends BasePage {
 
     connectedCallback() {
         this.unsubscribe = this.cdi.getSyncCoordinator().onStatusChange((status) => {
+            // A finished sync may have pulled cellars in from the Pod (and has
+            // dropped the service's caches), so re-read them.
+            const syncFinished = this.status.state === "syncing" && status.state !== "syncing";
             this.status = status;
+            if (syncFinished) {
+                this.loadCellars();
+            }
         });
         super.connectedCallback();
         console.log("connectedCallback: logged in", this.isLoggedIn);
@@ -120,8 +126,11 @@ class LandingPage extends BasePage {
                 if (webIDProfile.getStorageUrls().length === 1) {
                     this.session = session;
                     this.isLoggedIn = session.info.isLoggedIn;
-                    // Resolve (provision if missing) the Pod container, then sync:
-                    // re-home + push data created offline, and pull anything remote.
+                    // Resolve (provision if missing) the Pod container. This does
+                    // NOT sync: a restored session is not a request to sync, so a
+                    // reload stays local. Only a remembered request (the user
+                    // pressed Sync, which sent them through login) runs here —
+                    // this is where a first login first learns the container base.
                     const storageRoot = webIDProfile.getStorageUrls()[0].toString();
                     const base = await resolveKellermeisterContainer(
                         storageRoot,
@@ -129,7 +138,7 @@ class LandingPage extends BasePage {
                         () => this.cdi.getCellarRepository().ensureWellKnownCellars(),
                     );
                     this.cdi.setPodContainerBase(base);
-                    await this.cdi.getReconnectSync().run();
+                    await this.cdi.getPendingSync().run();
                     this.loadCellars();
                 }
                 else if (webIDProfile.getStorageUrls().length === 0) {
@@ -333,13 +342,19 @@ class LandingPage extends BasePage {
 
         try {
             await this.cdi.getSyncCoordinator().requestSync("manual");
+            if (shouldRememberSync(this.cdi.getSyncCoordinator().getStatus().state)) {
+                // The run failed — typically offline. Remember it so coming back
+                // online completes the sync the user asked for.
+                await this.cdi.getPendingSync().remember();
+            }
         } catch (error) {
             // The manual path only rejects with NotAuthenticatedError; a
             // logged-in run captures its own failures into the sync status
             // (surfaced by syncLabel() as "Fehler"). Pressing Sync while logged
-            // out expresses the intent to sync, so start the login flow — the
-            // sync itself runs post-login (see main.ts).
+            // out expresses the intent to sync, so remember it and start the
+            // login flow — the sync itself runs post-login (see main.ts).
             if (syncFailureAction(error).kind === "login") {
+                await this.cdi.getPendingSync().remember();
                 await this.handleLoginClick();
             } else {
                 console.warn("handleSyncClick: sync failed", error);

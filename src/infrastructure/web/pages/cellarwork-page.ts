@@ -225,16 +225,19 @@ class CellarWorkPage extends BasePage {
         this.cellarIds = Array((this._bottlesTask.value ?? []).length).fill(undefined, 0);
     }
 
+    /**
+     * The cellars a bottle can be moved to. Local-first: cellars live in
+     * IndexedDB, so the transfer targets are available with or without a Solid
+     * session.
+     */
     async fetchCellars() {
-        if (this.session.info.isLoggedIn) {
-            const customCellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
-            const destinationCellars = customCellars.filter(cellar => cellar.getId() != this.sourceCellar?.getId());
-            const altglass = await this.cdi.getKellermeisterService().getCellarAltglass();
-            if (altglass && altglass.getId() != this.sourceCellar?.getId()) {
-                this.cellars = destinationCellars.concat([altglass]);
-            } else {
-                this.cellars = destinationCellars;
-            }
+        const customCellars = await this.cdi.getKellermeisterService().getAllVisibleCellars();
+        const destinationCellars = customCellars.filter(cellar => cellar.getId() != this.sourceCellar?.getId());
+        const altglass = await this.cdi.getKellermeisterService().getCellarAltglass();
+        if (altglass && altglass.getId() != this.sourceCellar?.getId()) {
+            this.cellars = destinationCellars.concat([altglass]);
+        } else {
+            this.cellars = destinationCellars;
         }
     }
 

@@ -5,6 +5,7 @@ import {SoukaiRating} from "./model/SoukaiRating.ts";
 import {bootModels} from "soukai";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional} from "../shared/resource-identity.ts";
+import {withLocalEngine} from "./engineScope.ts";
 
 /**
  * Local-first, per-resource product repository. A product is its own resource;
@@ -21,25 +22,29 @@ export class SoukaiProductRepository implements ProductRepository {
         if (!model.url) {
             model.url = mintProvisional("products");
         }
-        await model.save();
+        await withLocalEngine(() => model.save());
         return model;
     }
 
     async fetchById(productId: string): Promise<Product | null> {
-        const model = await SoukaiProduct.find(productId);
-        if (!model || model.isSoftDeleted()) {
-            return null;
-        }
-        await model.loadRelation("ratings");
-        return model;
+        return await withLocalEngine(async () => {
+            const model = await SoukaiProduct.find(productId);
+            if (!model || model.isSoftDeleted()) {
+                return null;
+            }
+            await model.loadRelation("ratings");
+            return model;
+        });
     }
 
     /** All live products with ratings resolved — used to join bottles on read. */
     async fetchAll(): Promise<SoukaiProduct[]> {
         const products = await fetchLive<SoukaiProduct>(SoukaiProduct, "products", this.podBase());
-        for (const product of products) {
-            await product.loadRelation("ratings");
-        }
+        await withLocalEngine(async () => {
+            for (const product of products) {
+                await product.loadRelation("ratings");
+            }
+        });
         return products;
     }
 }

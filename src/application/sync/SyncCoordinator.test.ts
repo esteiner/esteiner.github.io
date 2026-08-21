@@ -3,20 +3,7 @@ import {SyncCoordinator} from "./SyncCoordinator.ts";
 import {SynchronizeWithPod} from "./SynchronizeWithPod.ts";
 import {NotAuthenticatedError} from "../errors.ts";
 import type {AuthService, SolidSession} from "../ports/AuthService.ts";
-import type {AppStateStore} from "../ports/AppStateStore.ts";
-
-/** In-memory AppStateStore for tests. */
-function fakeAppState(seed?: {webId?: string | null; lastSyncedAt?: Date | null}) {
-    let webId: string | null = seed?.webId ?? null;
-    let lastSyncedAt: Date | null = seed?.lastSyncedAt ?? null;
-    const store: AppStateStore = {
-        getWebId: async () => webId,
-        setWebId: async (v) => { webId = v; },
-        getLastSyncedAt: async () => lastSyncedAt,
-        setLastSyncedAt: async (d) => { lastSyncedAt = d; },
-    };
-    return {store, getWebId: () => webId, getLastSyncedAt: () => lastSyncedAt};
-}
+import {fakeAppState} from "./appStateStore.fake.ts";
 
 const session: SolidSession = {isLoggedIn: true, webId: "https://alice.pod/profile#me", fetch};
 const loggedIn: AuthService = {isLoggedIn: () => true, getSession: () => session};

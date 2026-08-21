@@ -16,8 +16,9 @@ The system SHALL read unprocessed orders from the Pod inbox container located at
 - **AND** each order's seller, customer, and order items are populated
 
 #### Scenario: Inbox path is derived from the storage root
-- **WHEN** the Pod container base is `https://alice.pod/kellermeister/`
-- **THEN** the inbox container read is `https://alice.pod/inbox/kellermeister/`
+- **WHEN** the Pod container base is `https://alice.pod/private/kellermeister/v1/`
+- **THEN** the storage root is `https://alice.pod/`
+- **AND** the inbox container read is `https://alice.pod/inbox/kellermeister/`
 
 #### Scenario: Customer is read when modeled as a schema:Organization
 - **WHEN** an inbox order's `schema:customer` references a `schema:Organization` node (the shape the ingestion pipeline produces, mirroring the seller)

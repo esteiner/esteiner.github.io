@@ -10,18 +10,30 @@ import type {ProductFactory} from "../domain/Product/ProductFactory.ts";
 import type {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import type {Order} from "../domain/Order/Order.ts";
 import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
+import type {ReadModelCache} from "./ports/ReadModelCache.ts";
 
 /**
  * Application Use Case: Get Profile
  * Retrieves the Solid profile for a given WebID
  */
-export class KellermeisterService {
+export class KellermeisterService implements ReadModelCache {
 
     private cachedBottles: Bottle[] | null = null;
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
     constructor(private cellarRepository: CellarRepository, private bottleRepository: BottleRepository, private productRepository: ProductRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
+    }
+
+    /**
+     * Drop every cached read model, so the next read goes back to the
+     * repositories. Called after a sync, which changes the local store behind
+     * the caches' back.
+     */
+    invalidate(): void {
+        this.cachedBottles = null;
+        this.cachedCellars = null;
+        this.cachedOrders = null;
     }
 
     getAltglassId(): string {

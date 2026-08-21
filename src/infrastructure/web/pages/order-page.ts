@@ -1,20 +1,15 @@
 import {css, html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import {Task} from '@lit/task';
-import {getDefaultSession, type Session} from "@inrupt/solid-client-authn-browser";
 import {BasePage} from "../common/base-page.ts";
 import '../components/kellermeister-button.ts';
 import '../components/kellermeister-footer.ts';
 import "../components/orders-component.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {ProductFilter} from "../../../domain/Product/ProductFilter";
-import type {Order} from "../../../domain/Order/Order.ts";
 
 @customElement('order-page')
 class OrderPage extends BasePage {
-
-    @state()
-    session: Session = getDefaultSession()
 
     @state()
     filter: ProductFilter;
@@ -27,11 +22,11 @@ class OrderPage extends BasePage {
 
     private cdi: CDI = CDI.getInstance();
 
+    // Local-first: orders live in IndexedDB and are available with or without a
+    // Solid session — a session is only needed to ingest new ones from the Pod
+    // inbox (see cellarwork-page) and to sync.
     private _ordersTask = new Task(this, async () => {
-        if (this.session.info.isLoggedIn) {
-            return await this.cdi.getKellermeisterService().ordersGroupedByMonth(this.filter);
-        }
-        return new Map<Date, Order[]>();
+        return await this.cdi.getKellermeisterService().ordersGroupedByMonth(this.filter);
     });
 
     constructor() {

@@ -7,6 +7,7 @@ import {bootModels} from "soukai";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional} from "../shared/resource-identity.ts";
 import type {SoukaiProductRepository} from "./SoukaiProductRepository.ts";
+import {withLocalEngine} from "./engineScope.ts";
 
 /**
  * Local-first, per-resource bottle repository. Bottles are separate resources
@@ -46,7 +47,7 @@ export class SoukaiBottleRepository implements BottleRepository {
         if (!model.productUrl && model.getProduct()) {
             model.productUrl = (model.getProduct() as SoukaiProduct).url;
         }
-        await model.save();
+        await withLocalEngine(() => model.save());
         return model;
     }
 
@@ -57,6 +58,6 @@ export class SoukaiBottleRepository implements BottleRepository {
     }
 
     async delete(bottle: Bottle): Promise<void> {
-        await (bottle as SoukaiBottle).delete();
+        await withLocalEngine(() => (bottle as SoukaiBottle).delete());
     }
 }

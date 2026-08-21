@@ -1,7 +1,7 @@
 import {css, html, LitElement} from "lit";
 import {customElement, state} from "lit/decorators.js";
 import {CDI} from "../../cdi/CDI.ts";
-import {syncFailureAction} from "../sync-ui-action.ts";
+import {shouldRememberSync, syncFailureAction} from "../sync-ui-action.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
 import {formatLastSync} from "./sync-status-format.ts";
 
@@ -50,12 +50,18 @@ class SyncStatusComponent extends LitElement {
         this.hint = null;
         try {
             await this.cdi.getSyncCoordinator().requestSync("manual");
+            if (shouldRememberSync(this.cdi.getSyncCoordinator().getStatus().state)) {
+                // Failed (typically offline) → complete it on reconnect.
+                await this.cdi.getPendingSync().remember();
+            }
         } catch (error) {
             // No session → ask the host to start login (this component owns no
             // login flow); composed so the event escapes the shadow DOM. Other
             // failures remain a local hint.
             const action = syncFailureAction(error);
             if (action.kind === "login") {
+                // Remembered so the sync runs after the login redirect returns.
+                await this.cdi.getPendingSync().remember();
                 this.dispatchEvent(new CustomEvent("login-required", {bubbles: true, composed: true}));
             } else {
                 this.hint = action.message;

@@ -63,7 +63,7 @@ export function slugOf(url: string): string {
 /**
  * Deterministically derive the Pod URL for a resource from its slug.
  * `collectionContainer` is the concrete Pod container for the resource's
- * collection, e.g. `https://alice.pod/kellermeister/bottles/`.
+ * collection, e.g. `https://alice.pod/private/kellermeister/v1/bottles/`.
  */
 export function podUrl(collectionContainer: string, resourceUrl: string): string {
     const base = collectionContainer.endsWith("/") ? collectionContainer : `${collectionContainer}/`;

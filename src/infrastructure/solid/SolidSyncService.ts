@@ -1,9 +1,10 @@
-import {withEngine, type Engine} from "soukai";
+import {type Engine} from "soukai";
 import {SolidEngine, type SolidModel} from "soukai-solid";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
 import type {SyncService, SyncOutcome} from "../../application/ports/SyncService.ts";
 import type {Collection} from "../shared/resource-identity.ts";
 import {LOCAL_BASE, rehomeUrl} from "../shared/resource-identity.ts";
+import {withLocalEngine, withRemoteEngine} from "../soukai/engineScope.ts";
 import {SoukaiCellar} from "../soukai/model/SoukaiCellar.ts";
 import {SoukaiBottle} from "../soukai/model/SoukaiBottle.ts";
 import {SoukaiProduct} from "../soukai/model/SoukaiProduct.ts";
@@ -92,8 +93,13 @@ export class SolidSyncService implements SyncService {
      * Migrate provisional resources of a collection to their deterministic Pod
      * URL locally (rewriting cross-references), then drop the provisional record.
      * Provisional resources deleted before ever syncing are purged. Idempotent.
+     * Purely local work, so the whole migration runs in one gated scope.
      */
     private async rehome(spec: CollectionSpec, base: string): Promise<number> {
+        return await withLocalEngine(() => this.rehomeLocally(spec, base));
+    }
+
+    private async rehomeLocally(spec: CollectionSpec, base: string): Promise<number> {
         const provisional = await spec.model.from(`${LOCAL_BASE}${spec.collection}/`).all();
         let rehomed = 0;
         for (const model of provisional) {
@@ -127,21 +133,26 @@ export class SolidSyncService implements SyncService {
 
     private async sweep(spec: CollectionSpec, base: string, solidEngine: Engine): Promise<number> {
         const container = `${base}${spec.collection}/`;
-        const localModels = await spec.model.from(container).all();
-        const remoteModels = await withEngine(solidEngine, () => spec.model.from(container).all());
-
-        if (spec.embedded) {
-            // The embedded seller/customer/items must be loaded so they survive
-            // synchronize()/create — each side under the engine that read it.
-            for (const m of localModels) {
-                await this.loadEmbedded(m);
-            }
-            await withEngine(solidEngine, async () => {
-                for (const m of remoteModels) {
+        // The embedded seller/customer/items must be loaded so they survive
+        // synchronize()/create — each side under the engine that read it.
+        const localModels = await withLocalEngine(async () => {
+            const models = await spec.model.from(container).all();
+            if (spec.embedded) {
+                for (const m of models) {
                     await this.loadEmbedded(m);
                 }
-            });
-        }
+            }
+            return models;
+        });
+        const remoteModels = await withRemoteEngine(solidEngine, async () => {
+            const models = await spec.model.from(container).all();
+            if (spec.embedded) {
+                for (const m of models) {
+                    await this.loadEmbedded(m);
+                }
+            }
+            return models;
+        });
 
         const localByUrl = new Map(localModels.map((m) => [m.url, m]));
         const remoteByUrl = new Map(remoteModels.map((m) => [m.url, m]));
@@ -153,23 +164,21 @@ export class SolidSyncService implements SyncService {
             const remote = remoteByUrl.get(url);
 
             if (local && remote) {
-                await spec.model.synchronize(local, remote);
-                await local.save();
-                await withEngine(solidEngine, () => remote.save());
+                await withLocalEngine(async () => {
+                    await spec.model.synchronize(local, remote);
+                    await local.save();
+                });
+                await withRemoteEngine(solidEngine, () => remote.save());
                 reconciled++;
             } else if (local && !remote && !local.isSoftDeleted()) {
-                if (spec.embedded) {
-                    await withEngine(solidEngine, () => this.rebuildOrder(local, local.url, base).save());
-                } else {
-                    await withEngine(solidEngine, () => new spec.model(local.getAttributes()).save());
-                }
+                await withRemoteEngine(solidEngine, () => spec.embedded
+                    ? this.rebuildOrder(local, local.url, base).save()
+                    : new spec.model(local.getAttributes()).save());
                 reconciled++;
             } else if (!local && remote && !remote.isSoftDeleted()) {
-                if (spec.embedded) {
-                    await this.rebuildOrder(remote, remote.url, base).save();
-                } else {
-                    await new spec.model(remote.getAttributes()).save();
-                }
+                await withLocalEngine(() => spec.embedded
+                    ? this.rebuildOrder(remote, remote.url, base).save()
+                    : new spec.model(remote.getAttributes()).save());
                 reconciled++;
             }
         }

@@ -1,9 +1,10 @@
 import type {Collection} from "../shared/resource-identity.ts";
+import {POD_CONTAINER_PATH} from "./podContainerPath.ts";
 
 const STORAGE_KEY = "km.podContainerBase";
 
 /**
- * Holds the resolved Pod container base (e.g. `https://alice.pod/kellermeister/`)
+ * Holds the resolved Pod container base (e.g. `https://alice.pod/private/kellermeister/v1/`)
  * once a session exists, and derives the per-collection subcontainers
  * (`cellars/`, `bottles/`, `products/`, `orders/`).
  *
@@ -16,7 +17,7 @@ export class PodContainerRegistry {
     private base: string | null;
 
     constructor() {
-        this.base = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+        this.base = readPersistedBase();
     }
 
     get(): string | null {
@@ -44,14 +45,31 @@ export class PodContainerRegistry {
 
     /**
      * The Pod inbox container for unprocessed orders (`{storageRoot}inbox/kellermeister/`),
-     * a sibling of the Kellermeister base, or null if the base is unknown. The
-     * storage root is the base with its trailing `kellermeister/` segment removed.
+     * or null if the base is unknown. The storage root is the base with its
+     * trailing {@link POD_CONTAINER_PATH} segment removed.
      */
     inboxContainer(): string | null {
         if (!this.base) {
             return null;
         }
-        const storageRoot = this.base.replace(/kellermeister\/$/, "");
+        const storageRoot = this.base.endsWith(POD_CONTAINER_PATH)
+            ? this.base.slice(0, -POD_CONTAINER_PATH.length)
+            : this.base;
         return `${storageRoot}inbox/kellermeister/`;
     }
+}
+
+/**
+ * The persisted base, or null if there is none — or if it belongs to an earlier
+ * container layout (e.g. `{storageRoot}kellermeister/`, before the move to
+ * {@link POD_CONTAINER_PATH}). Such a base MUST NOT be used: it would make the
+ * app sync into the old container and break the inbox derivation. Discarding it
+ * leaves the app in its pre-login state until the base is resolved again.
+ */
+function readPersistedBase(): string | null {
+    if (typeof localStorage === "undefined") {
+        return null;
+    }
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored && stored.endsWith(POD_CONTAINER_PATH) ? stored : null;
 }

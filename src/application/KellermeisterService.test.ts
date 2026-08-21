@@ -268,6 +268,33 @@ describe('KellermeisterService', () => {
     });
 
     // -----------------------------------------------------------------------
+    // invalidate (called after a sync)
+    // -----------------------------------------------------------------------
+
+    describe('invalidate', () => {
+        it('drops the cellar, bottle and order caches so the next reads re-fetch', async () => {
+            const { service, cellarRepo, bottleRepo, orderRepo } = makeService();
+            vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([makeCellar('c1')]);
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([makeBottle('p1', 'c1')]);
+            vi.mocked(orderRepo.fetchOrders).mockResolvedValue([makeOrder(new Date(2024, 0, 1))]);
+
+            await service.getAllCellars();
+            await service.getAllBottles();
+            await service.getAllOrders();
+
+            service.invalidate();
+
+            await service.getAllCellars();
+            await service.getAllBottles();
+            await service.getAllOrders();
+
+            expect(cellarRepo.fetchCellars).toHaveBeenCalledTimes(2);
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledTimes(2);
+            expect(orderRepo.fetchOrders).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    // -----------------------------------------------------------------------
     // getAllOrders
     // -----------------------------------------------------------------------
 

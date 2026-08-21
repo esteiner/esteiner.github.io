@@ -31,14 +31,15 @@ void (async () => {
     // Restore any existing Solid session (login is NOT required to use the app).
     await CDI.getInstance().getSolidService().restoreSession();
 
-    // Post-login synchronization: after the session is restored (e.g. returning
-    // from the OIDC redirect started by pressing Sync while logged out), trigger
-    // a sync so the requested sync actually runs. Uses the reconnect path, which
-    // is skipped silently when there is no session.
-    void CDI.getInstance().getReconnectSync().run();
+    // Post-login synchronization: run the sync the user asked for before being
+    // sent through the OIDC login flow (pressing Sync while logged out). Only a
+    // remembered request triggers a sync — a plain reload does not.
+    void CDI.getInstance().getPendingSync().run();
 
-    // On reconnect, retry syncing (skipped silently if there is no session).
-    const connectivity = new ConnectivityMonitor(() => CDI.getInstance().getReconnectSync().run());
+    // On reconnect, complete a remembered sync — a sync the user asked for that
+    // could not run because the device was offline (or logged out). Coming back
+    // online never syncs on its own.
+    const connectivity = new ConnectivityMonitor(() => CDI.getInstance().getPendingSync().run());
     connectivity.start();
 })();
 

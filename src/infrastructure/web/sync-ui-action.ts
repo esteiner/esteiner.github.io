@@ -1,4 +1,5 @@
 import {NotAuthenticatedError} from "../../application/errors.ts";
+import type {SyncState} from "../../application/sync/SyncCoordinator.ts";
 
 /**
  * How the UI should react when a manual sync request fails. A missing session
@@ -15,4 +16,15 @@ export function syncFailureAction(error: unknown): SyncFailureAction {
         return {kind: "login"};
     }
     return {kind: "hint", message: "Synchronisierung fehlgeschlagen."};
+}
+
+/**
+ * Whether a manual sync that has returned should be remembered so it can be
+ * completed later (see PendingSync). A run that captured a failure — typically
+ * because the device is offline — is remembered, so coming back online finishes
+ * what the user asked for. A successful run, or one that was coalesced into an
+ * in-flight run, is not.
+ */
+export function shouldRememberSync(state: SyncState): boolean {
+    return state === "error";
 }

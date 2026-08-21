@@ -11,6 +11,7 @@ import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
 import {SyncCoordinator} from "../../application/sync/SyncCoordinator.ts";
 import {ReconnectSync} from "../../application/sync/ReconnectSync.ts";
+import {PendingSync} from "../../application/sync/PendingSync.ts";
 import {SoukaiCellarRepository} from "../soukai/SoukaiCellarRepository.ts";
 import {SoukaiBottleRepository} from "../soukai/SoukaiBottleRepository.ts";
 import {SoukaiProductRepository} from "../soukai/SoukaiProductRepository.ts";
@@ -42,6 +43,7 @@ export class CDI {
     private readonly syncService: SolidSyncService;
     private readonly syncCoordinator: SyncCoordinator;
     private readonly reconnectSync: ReconnectSync;
+    private readonly pendingSync: PendingSync;
 
     private constructor() {
         this.containers = new PodContainerRegistry();
@@ -69,8 +71,9 @@ export class CDI {
 
         // Sync layer
         this.syncService = new SolidSyncService(this.authService, podBase);
-        this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService), this.appStateStore);
+        this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService, this.kellermeisterService), this.appStateStore);
         this.reconnectSync = new ReconnectSync(this.syncCoordinator, {maxRetries: 4, baseDelayMs: 2000});
+        this.pendingSync = new PendingSync(this.authService, this.appStateStore, this.reconnectSync, () => podBase() !== null);
     }
 
     public static getInstance(): CDI {
@@ -104,8 +107,8 @@ export class CDI {
         return this.syncCoordinator;
     }
 
-    public getReconnectSync(): ReconnectSync {
-        return this.reconnectSync;
+    public getPendingSync(): PendingSync {
+        return this.pendingSync;
     }
 
     public getPodContainerRegistry(): PodContainerRegistry {

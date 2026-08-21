@@ -37,17 +37,19 @@ describe("resolveKellermeisterContainer", () => {
 
         const base = await resolveKellermeisterContainer("https://alice.pod/", fakeFetch, ensureWellKnownCellars);
 
-        expect(base).toBe("https://alice.pod/kellermeister/");
+        expect(base).toBe("https://alice.pod/private/kellermeister/v1/");
         expect(ensureWellKnownCellars).toHaveBeenCalledTimes(1);
         // The ensure step runs only after all subcontainers have been created.
         expect(order[order.length - 1]).toBe("ensure");
-        expect(order).toContain("create:https://alice.pod/kellermeister/cellars/");
+        for (const collection of ["cellars", "bottles", "products", "orders"]) {
+            expect(order).toContain(`create:https://alice.pod/private/kellermeister/v1/${collection}/`);
+        }
     });
 
     it("works without a callback (no ensure step)", async () => {
         getSolidDataset.mockResolvedValue({});
         const base = await resolveKellermeisterContainer("https://alice.pod", fakeFetch);
-        expect(base).toBe("https://alice.pod/kellermeister/");
+        expect(base).toBe("https://alice.pod/private/kellermeister/v1/");
         expect(createContainerAt).not.toHaveBeenCalled();
     });
 });
