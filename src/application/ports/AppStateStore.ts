@@ -15,4 +15,13 @@ export interface AppStateStore {
 
     isSyncPending(): Promise<boolean>;
     setSyncPending(pending: boolean): Promise<void>;
+
+    /**
+     * The WebID the user confirmed switching to, if any. Recorded before the
+     * login flow navigates away so the confirmation is not asked for a second
+     * time when the session comes back; scoped to that one WebID, so an identity
+     * provider authenticating someone else is still confirmed separately.
+     */
+    getConfirmedIdentitySwitch(): Promise<string | null>;
+    setConfirmedIdentitySwitch(webId: string | null): Promise<void>;
 }

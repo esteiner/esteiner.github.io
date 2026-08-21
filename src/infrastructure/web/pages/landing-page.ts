@@ -49,10 +49,15 @@ class LandingPage extends BasePage {
     @state()
     private showImageLightbox: boolean = false;
 
+    /** The WebID awaiting a wipe confirmation, with the identity it replaces. */
+    @state()
+    private switchToConfirm: {webId: string; previousWebId: string} | null = null;
+
     @state()
     private status: SyncStatus = {state: "idle", lastSyncedAt: null, error: null};
 
     private _webIdResolve: ((profile: WebIDProfile | null) => void) | null = null;
+    private _switchResolve: ((confirmed: boolean) => void) | null = null;
 
     private cdi: CDI = CDI.getInstance();
     private unsubscribe: (() => void) | null = null;
@@ -118,9 +123,15 @@ class LandingPage extends BasePage {
     async sessionChangedCallback(session: Session) {
         if (session.info.isLoggedIn && session.info.webId != null) {
             console.log("sessionChangedCallback: fetched user session with WebId:", session.info.webId);
-            // Persist the WebID used so it is available offline / before a session
-            // is restored (local-only device metadata).
-            void this.cdi.getAppStateStore().setWebId(session.info.webId);
+            // Authoritative identity check, BEFORE the session is used (before the
+            // container is resolved and before any sync): the identity provider may
+            // authenticate a WebID other than the one typed, and a restored session
+            // never passes through the login dialog. This also records the WebID —
+            // it must NOT be written independently, or the next switch would be
+            // undetectable.
+            if (!await this.adoptIdentity(session.info.webId)) {
+                return;
+            }
             const webIDProfile: WebIDProfile | null = await this.cdi.getSolidService().getWebIDProfile(new URL(session.info.webId));
             if (webIDProfile) {
                 if (webIDProfile.getStorageUrls().length === 1) {
@@ -172,6 +183,26 @@ class LandingPage extends BasePage {
             ${this.showImageLightbox ? html`
                 <div class="lightbox-overlay" @click="${() => this.showImageLightbox = false}">
                     <img class="lightbox-img" src="/Prozess_Foto.png" />
+                </div>
+            ` : ''}
+            ${this.switchToConfirm ? html`
+                <div class="dialog-overlay" @click="${this.handleSwitchCancel}">
+                    <div class="dialog" role="dialog" aria-modal="true" aria-label="Andere WebID" @click="${(e: Event) => e.stopPropagation()}">
+                        <h2>Andere WebID</h2>
+                        <p>
+                            Auf diesem Gerät wurde zuletzt <strong>${this.switchToConfirm.previousWebId}</strong> verwendet.
+                            Beim Anmelden mit einer anderen WebID werden alle lokal gespeicherten Daten
+                            (Keller, Flaschen, Weine, Einkäufe) auf diesem Gerät gelöscht.
+                        </p>
+                        <p>
+                            Daten, die noch nicht mit dem Pod von ${this.switchToConfirm.previousWebId} synchronisiert
+                            wurden, sind danach unwiederbringlich verloren. Brich ab, wenn du zuerst synchronisieren willst.
+                        </p>
+                        <div class="dialog-actions">
+                            <button class="dialog-btn dialog-btn-cancel" @click="${this.handleSwitchCancel}">Abbrechen</button>
+                            <button class="dialog-btn dialog-btn-ok" @click="${this.handleSwitchConfirm}">Daten löschen und anmelden</button>
+                        </div>
+                    </div>
                 </div>
             ` : ''}
             ${this.showWebIdDialog ? html`
@@ -272,6 +303,29 @@ class LandingPage extends BasePage {
         });
     }
 
+    /**
+     * Ask whether the local data of `previousWebId` may be deleted so `webId`
+     * can be adopted. Resolves false when the user cancels or dismisses.
+     */
+    private confirmIdentitySwitch(webId: string, previousWebId: string): Promise<boolean> {
+        this.switchToConfirm = {webId, previousWebId};
+        return new Promise((resolve) => {
+            this._switchResolve = resolve;
+        });
+    }
+
+    private handleSwitchConfirm() {
+        this.switchToConfirm = null;
+        this._switchResolve?.(true);
+        this._switchResolve = null;
+    }
+
+    private handleSwitchCancel() {
+        this.switchToConfirm = null;
+        this._switchResolve?.(false);
+        this._switchResolve = null;
+    }
+
     private async handleWebIdOk() {
         const input = (this.webIdSelected === '__new__' ? this.webIdInput : this.webIdSelected).trim();
         if (!input) {
@@ -286,6 +340,14 @@ class LandingPage extends BasePage {
             if (profile) {
                 this.saveWebIdToHistory(input);
                 this.showWebIdDialog = false;
+                // The chosen WebID is known here, BEFORE the OIDC redirect
+                // navigates away — the only point where the warning is genuinely
+                // in advance. Cancelling starts no login and touches nothing.
+                if (!await this.confirmIdentitySwitchIfNeeded(input)) {
+                    this._webIdResolve?.(null);
+                    this._webIdResolve = null;
+                    return;
+                }
                 this._webIdResolve?.(profile);
                 this._webIdResolve = null;
             } else {
@@ -301,6 +363,67 @@ class LandingPage extends BasePage {
         } finally {
             this.webIdLoading = false;
         }
+    }
+
+    /**
+     * Adopt `webId` as this device's identity, wiping the previous identity's
+     * local data first if it differs. Returns whether the session may be used.
+     *
+     * A wipe leaves every in-memory holder stale — CDI's eagerly built
+     * repositories, the cellar bootstrap promise, the service's cached read
+     * models, the container registry — so the page is reloaded rather than
+     * re-initialised by hand: the startup path is the one exercised on every
+     * visit. Cancelling does NOT adopt the session: log out and keep the data.
+     */
+    private async adoptIdentity(webId: string): Promise<boolean> {
+        const appState = this.cdi.getAppStateStore();
+        const check = await this.cdi.getSwitchIdentity().check(webId);
+        if (check.kind === "proceed") {
+            // Drop any confirmation left over for a WebID that was never adopted
+            // (e.g. the provider authenticated someone else), so it cannot
+            // suppress the warning for a real switch to that WebID later.
+            if (await appState.getConfirmedIdentitySwitch()) {
+                await appState.setConfirmedIdentitySwitch(null);
+            }
+            await this.cdi.getSwitchIdentity().switchTo(webId);
+            return true;
+        }
+        const alreadyConfirmed = await appState.getConfirmedIdentitySwitch() === webId;
+        if (!alreadyConfirmed && !await this.confirmIdentitySwitch(webId, check.previousWebId)) {
+            await appState.setConfirmedIdentitySwitch(null);
+            this.cdi.getSolidService().logout();
+            return false;
+        }
+        try {
+            await this.cdi.getSwitchIdentity().switchTo(webId);
+        } catch (error) {
+            // The wipe can fail while another tab of the app holds the local
+            // database open. Adopting the session anyway would show the previous
+            // identity's data to the new one, so refuse and say why.
+            console.error("adoptIdentity: wiping the local data failed", error);
+            alert("Die lokalen Daten konnten nicht gelöscht werden. Bitte schliesse andere offene Tabs von Kellermeister und melde dich erneut an.");
+            this.cdi.getSolidService().logout();
+            return false;
+        }
+        window.location.reload();
+        return false; // the reload takes over; do not continue with stale state
+    }
+
+    /**
+     * Warn about (and confirm) a WebID switch before it happens. Returns whether
+     * to go ahead. A confirmation is remembered against that WebID so the
+     * session-establishment check does not ask again after the OIDC redirect.
+     */
+    private async confirmIdentitySwitchIfNeeded(webId: string): Promise<boolean> {
+        const check = await this.cdi.getSwitchIdentity().check(webId);
+        if (check.kind === "proceed") {
+            return true;
+        }
+        const confirmed = await this.confirmIdentitySwitch(webId, check.previousWebId);
+        if (confirmed) {
+            await this.cdi.getAppStateStore().setConfirmedIdentitySwitch(webId);
+        }
+        return confirmed;
     }
 
     private cellarIconName(cellarId: string): string {

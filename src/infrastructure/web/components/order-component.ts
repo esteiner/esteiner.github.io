@@ -45,9 +45,6 @@ class OrderComponent extends BaseComponent {
     }
 
     protected render() {
-        console.log(this.order?.getOrderNumber());
-        console.log(this.order);
-        console.log(this.order?.getOrderItems());
         if (this.order && this.order.getOrderItems()) {
             return html`
                 <ul>

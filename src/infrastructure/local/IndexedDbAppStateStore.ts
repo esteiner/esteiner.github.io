@@ -1,10 +1,12 @@
 import type {AppStateStore} from "../../application/ports/AppStateStore.ts";
 
-const DB_NAME = "kellermeister-appstate";
+/** The app-state database name; shared with the local-data wipe. */
+export const APP_STATE_DB_NAME = "kellermeister-appstate";
 const STORE = "appState";
 const KEY_WEBID = "webId";
 const KEY_LAST_SYNCED_AT = "lastSyncedAt";
 const KEY_SYNC_PENDING = "syncPending";
+const KEY_CONFIRMED_SWITCH = "confirmedIdentitySwitch";
 
 /**
  * IndexedDB-backed {@link AppStateStore}. Uses a dedicated database — separate
@@ -23,7 +25,7 @@ export class IndexedDbAppStateStore implements AppStateStore {
 
     private openDb(): Promise<IDBDatabase> {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, 1);
+            const request = indexedDB.open(APP_STATE_DB_NAME, 1);
             request.onupgradeneeded = () => {
                 const db = request.result;
                 if (!db.objectStoreNames.contains(STORE)) {
@@ -96,5 +98,14 @@ export class IndexedDbAppStateStore implements AppStateStore {
 
     async setSyncPending(pending: boolean): Promise<void> {
         await this.put(KEY_SYNC_PENDING, pending);
+    }
+
+    async getConfirmedIdentitySwitch(): Promise<string | null> {
+        const value = await this.get(KEY_CONFIRMED_SWITCH);
+        return typeof value === "string" && value ? value : null;
+    }
+
+    async setConfirmedIdentitySwitch(webId: string | null): Promise<void> {
+        await this.put(KEY_CONFIRMED_SWITCH, webId);
     }
 }

@@ -6,6 +6,8 @@ import type {SolidService} from "../../application/authentication/SolidService.t
 import type {AuthService} from "../../application/ports/AuthService.ts";
 import type {AppStateStore} from "../../application/ports/AppStateStore.ts";
 import {IndexedDbAppStateStore} from "../local/IndexedDbAppStateStore.ts";
+import {IndexedDbLocalDataStore} from "../local/IndexedDbLocalDataStore.ts";
+import {SwitchIdentity} from "../../application/identity/SwitchIdentity.ts";
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
@@ -44,6 +46,7 @@ export class CDI {
     private readonly syncCoordinator: SyncCoordinator;
     private readonly reconnectSync: ReconnectSync;
     private readonly pendingSync: PendingSync;
+    private readonly switchIdentity: SwitchIdentity;
 
     private constructor() {
         this.containers = new PodContainerRegistry();
@@ -74,6 +77,9 @@ export class CDI {
         this.syncCoordinator = new SyncCoordinator(this.authService, new SynchronizeWithPod(this.authService, this.syncService, this.kellermeisterService), this.appStateStore);
         this.reconnectSync = new ReconnectSync(this.syncCoordinator, {maxRetries: 4, baseDelayMs: 2000});
         this.pendingSync = new PendingSync(this.authService, this.appStateStore, this.reconnectSync, () => podBase() !== null);
+
+        // Identity ownership of the local store (wipe on a WebID switch).
+        this.switchIdentity = new SwitchIdentity(this.appStateStore, new IndexedDbLocalDataStore(this.containers));
     }
 
     public static getInstance(): CDI {
@@ -109,6 +115,10 @@ export class CDI {
 
     public getPendingSync(): PendingSync {
         return this.pendingSync;
+    }
+
+    public getSwitchIdentity(): SwitchIdentity {
+        return this.switchIdentity;
     }
 
     public getPodContainerRegistry(): PodContainerRegistry {

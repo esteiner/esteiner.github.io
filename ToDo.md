@@ -16,7 +16,7 @@ ToDo
 - [x] Einkäufe auch im Offline Zustand anzeigen
 - [x] kein Sync bei Page Refresh
 - [x] Local-first mit IndexedDB
-- [ ] Bei Login mit anderer WebID müssen die lokale gespeicherten Daten gelöscht werden
+- [x] Bei Login mit anderer WebID müssen die lokale gespeicherten Daten gelöscht werden
 
 ### Prio 1
 

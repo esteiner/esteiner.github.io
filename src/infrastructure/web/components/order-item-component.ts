@@ -50,9 +50,6 @@ class OrderItemComponent extends BaseComponent {
     }
 
     protected render() {
-        console.log("orderItemComponent", this.orderItem);
-        console.log("orderItemComponent", this.orderItem?.getPrice());
-        console.log("orderItemComponent", this.orderItem?.getProduct());
         return html`
             <div>
                 <div class="collapsed">

@@ -38,6 +38,18 @@ export class PodContainerRegistry {
         }
     }
 
+    /**
+     * Forget the resolved base, in memory and in localStorage. Used when the
+     * local data is wiped on a WebID switch: the cached field would otherwise
+     * keep the previous identity's container live for the rest of the session.
+     */
+    clear(): void {
+        this.base = null;
+        if (typeof localStorage !== "undefined") {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+    }
+
     /** The Pod subcontainer for a collection, or null if the base is unknown. */
     container(collection: Collection): string | null {
         return this.base ? `${this.base}${collection}/` : null;
