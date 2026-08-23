@@ -279,7 +279,7 @@ class LandingPage extends BasePage {
     }
 
     private async handleLoginClick() {
-        console.log("handleLoginClick: seesion info is logged in:", getDefaultSession().info.isLoggedIn);
+        console.log("handleLoginClick: session info is logged in:", getDefaultSession().info.isLoggedIn);
         if (getDefaultSession().info.isLoggedIn) {
             this.session = getDefaultSession();
             return;
@@ -461,7 +461,7 @@ class LandingPage extends BasePage {
     }
 
     private async handleSyncClick(): Promise<void> {
-        console.log("handleSyncClick: seesion info is logged in:", getDefaultSession().info.isLoggedIn);
+        console.log("handleSyncClick: session info is logged in:", getDefaultSession().info.isLoggedIn);
 
         try {
             await this.cdi.getSyncCoordinator().requestSync("manual");

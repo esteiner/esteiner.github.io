@@ -76,11 +76,14 @@ export class SyncCoordinator {
     }
 
     private async run(): Promise<void> {
+        console.log("run: started...");
+        const syncStart = Date.now();
         this.running = true;
         this.setStatus({state: "syncing", error: null});
         try {
             await this.synchronize.execute();
             const lastSyncedAt = new Date();
+            console.log("run: finished in (seconds)", (Date.now() - syncStart)/1000);
             this.setStatus({state: "idle", lastSyncedAt, error: null});
             await this.appState?.setLastSyncedAt(lastSyncedAt);
         } catch (error) {

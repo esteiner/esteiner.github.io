@@ -24,6 +24,7 @@ ToDo
 - [x] Optimierung: Porto, Geschenkpackung, Rabatt, etc. aus Bestellung entfernen
 - [x] Server von Python auf Quarkus migrieren
 - [ ] Solid Bootstrapping via WebID -> oidcIssuer(s) / storage(s) -> Type Indices
+- [x] Upload von order.ttl(s) im UI
 
 ### Prio 2
 

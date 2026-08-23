@@ -13,6 +13,7 @@ import {getBuildVersion} from "../utils";
 import {formatLastSync} from "../components/sync-status-format.ts";
 import type {SyncStatus} from "../../../application/sync/SyncCoordinator.ts";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import type {InboxUploadOutcome} from "../../../application/ports/InboxUploader.ts";
 
 @customElement('profile-page')
 class ProfilePage extends BasePage {
@@ -34,6 +35,13 @@ class ProfilePage extends BasePage {
 
     @state()
     private storedWebId: string | null = null;
+
+    /** In-flight flag and last outcome of the Debug inbox upload. */
+    @state()
+    private uploading: boolean = false;
+
+    @state()
+    private uploadResults: InboxUploadOutcome[] = [];
 
     @state()
     private cellarToDelete: Cellar | null = null;
@@ -219,6 +227,10 @@ class ProfilePage extends BasePage {
               <div class="section-header"><p>Solid Apps</p></div>
               <div class="card">
                   <div class="group">
+                      <label>Solid Filemanager</label>
+                      <div class="value"><a class="link" target="_blank" href="https://otto-aa.github.io/">https://otto-aa.github.io/</a></div>
+                  </div>
+                  <div class="group">
                       <label>Solid File Manager</label>
                       <div class="value"><a class="link" target="_blank" href="https://solid-file-manager.theodi.org/">https://solid-file-manager.theodi.org/</a></div>
                   </div>
@@ -227,11 +239,73 @@ class ProfilePage extends BasePage {
                       <div class="value"><a class="link" target="_blank" href="https://solidos.github.io/mashlib/dist/browse.html?uri=${this.solidUserProfile?.storageUrls}">https://solidos.github.io/mashlib/dist/browse.html</a></div>
                   </div>
               </div>
+              <div class="section-header"><p>Debug</p></div>
+              <div class="card">
+                  <div class="group">
+                      <label>Inbox Upload</label>
+                      ${this.renderInboxUpload()}
+                  </div>
+              </div>
           </main>
           <footer>
               <kellermeister-footer></kellermeister-footer>
           </footer>
         `;
+    }
+
+    /**
+     * Debug affordance: drop a file into the Pod inbox that order ingestion
+     * reads. Unavailable — with the reason shown — without a session or before
+     * the Pod container is resolved, which is the precondition ingestion itself
+     * applies.
+     */
+    private renderInboxUpload() {
+        const availability = this.cdi.getInboxUploader().availability();
+        if (!availability.available) {
+            return html`<div class="value">Nicht verfügbar: ${availability.reason}</div>`;
+        }
+        return html`
+            <div class="value">
+                <input
+                    class="upload-input"
+                    type="file"
+                    multiple
+                    ?disabled="${this.uploading}"
+                    @change="${this.handleInboxUpload}"
+                />
+                ${this.uploading ? html`<p class="upload-status">Wird hochgeladen…</p>` : ''}
+                ${this.uploadResults.map((outcome) => outcome.ok
+                    ? html`<p class="upload-status">${outcome.file} → <a class="link" target="_blank" href="${outcome.url}">${outcome.url}</a></p>`
+                    : html`<p class="upload-status upload-error">${outcome.file}: ${outcome.message}</p>`)}
+            </div>
+        `;
+    }
+
+    private async handleInboxUpload(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const files = Array.from(input.files ?? []);
+        if (files.length === 0) {
+            return;
+        }
+        this.uploadResults = [];
+        this.uploading = true;
+        try {
+            // Resolves with one outcome per file, including the failed ones —
+            // the server assigns each name, so the created URL is reported.
+            this.uploadResults = await this.cdi.getInboxUploader().uploadAll(files);
+        } catch (error) {
+            // Only the precondition rejects; individual failures come back as outcomes.
+            console.error("handleInboxUpload: upload failed", error);
+            this.uploadResults = files.map((file) => ({
+                file: file.name,
+                ok: false as const,
+                message: error instanceof Error ? error.message : String(error),
+            }));
+        } finally {
+            this.uploading = false;
+            // Allow re-picking the same files (a change event needs a new value).
+            input.value = '';
+        }
     }
 
     private handleLogoutClick() {
@@ -385,6 +459,21 @@ class ProfilePage extends BasePage {
                     font-size: 11px;
                     word-break: break-all;
                     color: var(--km-text, #1A1917);
+                }
+
+                .upload-input {
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 12px;
+                    max-width: 100%;
+                }
+
+                .upload-status {
+                    margin: 6px 0 0;
+                    font-size: 11px;
+                }
+
+                .upload-error {
+                    color: #C0392B;
                 }
 
                 .link {
