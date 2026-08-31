@@ -14,7 +14,9 @@ export class SoukaiBottle extends Model implements Bottle {
         return this.url as string;
     }
     getCellar(): string {
-        return this.cellarUrl;
+        // cellarUrl is optional at the schema level (a bottle can be built before
+        // its cellar is assigned), but every persisted/read bottle has one.
+        return this.cellarUrl as string;
     }
     setCellar(cellarId: string): void {
         this.cellarUrl = cellarId;

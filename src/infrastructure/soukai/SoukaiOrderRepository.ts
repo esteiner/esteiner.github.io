@@ -21,6 +21,15 @@ import {withLocalEngine, withRemoteEngine} from "./engineScope.ts";
 export class SoukaiOrderRepository implements OrderRepository {
 
     /**
+     * Maps an unprocessed order's id (its synthetic inbox identifier, e.g.
+     * `https://kellermeister.ch/orders/1004727`) to the URL of the inbox document
+     * it was read from. Populated by `fetchUnprocessedOrders`, consumed by
+     * `deleteFromInbox`: an inbox order's own url is NOT the inbox file, so the
+     * source document must be tracked rather than derived from the model.
+     */
+    private readonly inboxDocumentByOrderId = new Map<string, string>();
+
+    /**
      * @param inboxEngine builds the engine used to read the Pod inbox. Defaults
      *   to `SolidEngine` over the authenticated fetch; overridable in tests to
      *   simulate the inbox with a local engine.
@@ -61,15 +70,30 @@ export class SoukaiOrderRepository implements OrderRepository {
             // or before the Pod container is resolved.
             return [];
         }
-        return await withRemoteEngine(this.inboxEngine(session), async () => {
-            const orders = await SoukaiOrder.all({from: inbox});
-            for (const order of orders) {
-                await order.loadRelation("seller");
-                await order.loadRelation("customer");
-                // The customer's name/email live on its nested contactPoint
-                // (same document); load it so it flattens into the built order.
-                await order.customer?.loadRelation("contactPoint");
-                await order.loadRelation("positions");
+        const engine = this.inboxEngine(session);
+        return await withRemoteEngine(engine, async () => {
+            // An inbox order embeds ALL of its parts — order items, product,
+            // seller, customer, and the customer's contactPoint — in the single
+            // inbox document, each identified by a synthetic, non-dereferenceable
+            // absolute URL (e.g. https://kellermeister.ch/orders/1004727/1).
+            // `createManyFromDocument` materializes the whole embedded graph from
+            // the document's quads (relations included), with NO fetch of those
+            // identifiers (which are CORS-blocked in the browser and resolve to
+            // nothing). We do NOT call loadRelation: it would re-load via a fetch
+            // and clear the already-correct same-document relation.
+            //
+            // We read the container's documents ourselves (rather than
+            // `SoukaiOrder.all`) so we can remember each order's SOURCE document
+            // URL for deleteFromInbox — the order's own url is a synthetic
+            // identifier, not the inbox file.
+            const documents = await engine.readDocuments({containerUrl: inbox});
+            this.inboxDocumentByOrderId.clear();
+            const orders: SoukaiOrder[] = [];
+            for (const document of Object.values(documents)) {
+                for (const order of await SoukaiOrder.createManyFromDocument(document)) {
+                    this.inboxDocumentByOrderId.set(order.getId(), document.url);
+                    orders.push(order);
+                }
             }
             return orders;
         });
@@ -96,7 +120,11 @@ export class SoukaiOrderRepository implements OrderRepository {
         if (!session.isLoggedIn || !(order instanceof SoukaiOrder)) {
             return;
         }
-        const sourceUrl = order.getDocumentUrl();
+        // Delete the actual inbox document the order was read from — NOT
+        // `order.getDocumentUrl()`, which for an inbox order derives from its
+        // synthetic identifier (e.g. https://kellermeister.ch/orders/1004727) and
+        // would issue a cross-origin, CORS-blocked request to a non-existent URL.
+        const sourceUrl = this.inboxDocumentByOrderId.get(order.getId());
         if (sourceUrl) {
             await deleteSolidDataset(sourceUrl, {fetch: session.fetch});
         }

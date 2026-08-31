@@ -1,10 +1,4 @@
-# inbox-order-ingestion Specification
-
-## Purpose
-
-Kellermeister ingests orders delivered to the user's Solid Pod inbox and turns them into cellar contents. Because the inbox lives in the Pod, ingestion is online-only: it requires an authenticated session and a resolved Pod base, and yields nothing otherwise. When the cellarwork page opens for a logged-in user, each unprocessed inbox order becomes persisted products and one bottle per ordered unit in the `cellarwork` cellar. Processed orders are then stored locally and removed from the Pod inbox so they are never ingested twice.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Read unprocessed orders from the Pod inbox
 
@@ -59,49 +53,6 @@ Every part of an inbox order — the order, its order items, the product referen
 #### Scenario: Reading a persisted order resolves each item's product
 - **WHEN** a persisted order is read back from local storage
 - **THEN** each of its order items has its product (a separate resource referenced by `productUrl`) resolved, so `getProduct()` returns the product rather than being unresolved
-
-### Requirement: Order, seller, customer, and order items persist in one document
-
-When an ingested order is persisted, the system SHALL store the order together with its seller, its customer (the object referenced by `schema:customer`), and all of its order items in the **same RDF document** (a single Turtle resource), using same-document relationships. The persisted order MUST be the freshly-built order produced during ingestion — whose order items reference the newly-created local products — not the raw inbox order.
-
-#### Scenario: All order parts are embedded in the order document
-- **WHEN** an inbox order with a seller, a customer, and two order items is ingested
-- **THEN** the persisted order, its seller, its customer, and both order items reside in one document (they share the order's document URL)
-- **AND** the persisted order's items reference the newly-created local products, not the inbox product URLs
-
-#### Scenario: Customer is carried over from the source order
-- **WHEN** the source inbox order has an object referenced by `schema:customer`
-- **THEN** the persisted order exposes that customer via its customer relationship
-- **AND** the customer is stored inside the order document
-
-#### Scenario: Missing customer is tolerated
-- **WHEN** the source inbox order has no `schema:customer`
-- **THEN** the order is persisted without a customer and no error is raised
-
-### Requirement: Inbox ingestion is online-only
-
-Reading unprocessed orders SHALL require an authenticated session and a resolved Pod base. When the user is logged out, or the Pod base has not yet been resolved, the system MUST return an empty list of unprocessed orders and MUST NOT throw.
-
-#### Scenario: Logged out yields no unprocessed orders
-- **WHEN** unprocessed orders are requested and no authenticated session exists
-- **THEN** an empty list is returned and no error is raised
-
-#### Scenario: Pod base not yet resolved yields no unprocessed orders
-- **WHEN** unprocessed orders are requested and the Pod container base is not yet resolved
-- **THEN** an empty list is returned and no error is raised
-
-### Requirement: Ingest inbox orders into the cellarwork cellar on page open
-
-When the cellarwork page is opened by a logged-in user, the system SHALL ingest each unprocessed order into the `cellarwork` cellar: for every order item with a quantity, the product SHALL be persisted and one bottle SHALL be created per ordered unit, each bottle placed in the `cellarwork` cellar.
-
-#### Scenario: Orders become products and bottles in cellarwork
-- **WHEN** the cellarwork page opens and there is one unprocessed order with an item of quantity 3
-- **THEN** the item's product is saved
-- **AND** 3 bottles referencing that product are created in the cellarwork cellar
-
-#### Scenario: Nothing to ingest
-- **WHEN** the cellarwork page opens and the inbox has no unprocessed orders
-- **THEN** no products or bottles are created and the page shows the existing cellarwork contents
 
 ### Requirement: Processed orders are stored locally and removed from the inbox
 

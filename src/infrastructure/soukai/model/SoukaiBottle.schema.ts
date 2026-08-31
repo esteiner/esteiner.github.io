@@ -14,8 +14,12 @@ export default defineSchema({
     fields: {
         productUrl: url().optional().rdfProperty("schema:subjectOf"),
         // `cellarUrl` is stored as a plain string literal (not an IRI), matching
-        // the legacy schema which typed it as String rather than Key.
-        cellarUrl: string().rdfProperty("schema:cellar"),
+        // the legacy schema which typed it as String rather than Key. It is
+        // `.optional()` so a bottle can be constructed before its cellar is
+        // assigned (the ingestion path does `createFromProduct(...)` then
+        // `setCellar(...)`); soukai-bis parses required fields at construction,
+        // whereas soukai-solid's `required` only applied at save-serialization.
+        cellarUrl: string().optional().rdfProperty("schema:cellar"),
         orderItemId: url().optional().rdfProperty("schema:orderItemId"),
 
         // Legacy: rating moved to Product (as schema:Rating instances). Kept here
