@@ -13,6 +13,9 @@ const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:5173';
 
 export default defineConfig({
   testDir: './specs',
+  // Start (and stop) the dedicated e2e Pod on port 3001 around the whole run.
+  globalSetup: resolve(e2eDir, 'global-setup.ts'),
+  globalTeardown: resolve(e2eDir, 'global-teardown.ts'),
   // Solid login is a real redirect flow — give it room and don't hammer the Pod.
   fullyParallel: false,
   workers: 1,
@@ -33,7 +36,7 @@ export default defineConfig({
     },
   ],
   // Playwright starts the Vite dev server itself and tears it down afterwards.
-  // The Pod server at :3000 is an external precondition and is NOT managed here.
+  // The Pod server (port 3001) is started by globalSetup, not here.
   webServer: {
     command: 'npm run dev',
     url: baseURL,

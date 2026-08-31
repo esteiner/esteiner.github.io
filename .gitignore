@@ -24,6 +24,8 @@
 # E2E test credentials and auth state
 /e2e/.env
 /e2e/.auth/
+# Throwaway rewritten Pod data used by the self-started e2e Pod
+/e2e/.pod-data/
 
 # LLMs
 CLAUDE.local.md

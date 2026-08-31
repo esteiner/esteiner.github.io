@@ -1,10 +1,4 @@
-# E2E Testing
-
-## Purpose
-
-Browser-driven end-to-end testing of the app against a live Solid Pod. It exercises the real login flow, routing, Solid Pod data loading, and Lit UI rendering together — catching regressions that the unit-test suite cannot. The harness authenticates against a pre-seeded Pod account, runs independently of the unit-test/build pipelines, and verifies that cellar contents are rendered correctly in the UI.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: End-to-end test harness
 
@@ -48,12 +42,3 @@ The harness SHALL provide a reusable login helper that authenticates the app aga
 
 - **WHEN** the e2e sources are inspected
 - **THEN** the account email and password are read from environment variables (e.g. an `e2e/.env` file) that are excluded from version control, and no secret is written into a tracked file
-
-### Requirement: Cellar contents are verified in the UI
-
-The harness SHALL be able to navigate an authenticated session to the cellar page for a named cellar and assert the bottles it lists. As the first test, it SHALL open the cellar page for the cellar named **"Hütte"** and verify that exactly one bottle of the product **"Aagne Pinot noir spätlese 2021 (1.5l)"** is listed.
-
-#### Scenario: Hütte lists one Aagne Pinot noir spätlese 2021 (1.5l)
-
-- **WHEN** an authenticated user opens the cellar page for "Hütte"
-- **THEN** the product "Aagne Pinot noir spätlese 2021 (1.5l)" is listed with a count of exactly one bottle

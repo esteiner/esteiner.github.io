@@ -6,15 +6,12 @@ loading, and Lit UI rendering together. Everything for e2e lives under this
 
 ## Prerequisites
 
-1. **A running Pod server at `http://localhost:3000`** with the pre-seeded
-   account whose WebID is `http://localhost:3000/edwin/profile/card#me`. Start
-   the bundled Community Solid Server:
-
-   ```bash
-   cd community-solid-server && docker compose up
-   ```
-
-   The tests do **not** start or seed the Pod — it is an external precondition.
+1. **Docker.** The suite starts its own Community Solid Server on
+   `http://localhost:3001` for the duration of a run and stops it afterwards —
+   you do **not** need to start or seed a Pod yourself. It serves a throwaway
+   per-run copy of `community-solid-server/.volumes/data` with its
+   `localhost:3000` identifiers rewritten to `localhost:3001`, so the committed
+   3000 seed is never touched and a dev Pod on 3000 can run alongside.
 
 2. **Credentials.** Copy the example env file and fill in the account's
    email/password (the file is gitignored):
@@ -30,9 +27,9 @@ loading, and Lit UI rendering together. Everything for e2e lives under this
    npx playwright install chromium
    ```
 
-The Vite dev server is started automatically by Playwright (`webServer`), so you
-do not need to run `npm run dev` yourself. To point at an already-running app,
-set `E2E_BASE_URL` in `e2e/.env`.
+Both the Pod (port 3001, via `globalSetup`) and the Vite dev server (via
+`webServer`) are started automatically by Playwright. To point at an
+already-running app, set `E2E_BASE_URL` in `e2e/.env`.
 
 ## Running
 
@@ -45,11 +42,15 @@ npm run test:e2e:ui     # interactive Playwright UI
 
 ```
 e2e/
-  playwright.config.ts     # webServer (Vite), baseURL, chromium project, loads .env
+  playwright.config.ts     # globalSetup/teardown + webServer (Vite), loads .env
+  global-setup.ts          # copy+rewrite seed → start Pod on 3001 → wait ready
+  global-teardown.ts       # stop the Pod container, delete the copy
   .env.example             # documents E2E_EMAIL / E2E_PASSWORD
   fixtures/auth.ts         # `authedPage` fixture — a logged-in page
+  helpers/pod.ts           # Pod data prep + Docker lifecycle (port 3001)
   helpers/login.ts         # drives WebID entry → Pod login → consent → redirect
   specs/                   # test specs
+  .pod-data/               # throwaway rewritten Pod data (gitignored)
 ```
 
 ## Notes

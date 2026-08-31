@@ -1,7 +1,11 @@
 import { expect, type Page } from '@playwright/test';
+import { POD_ORIGIN } from './pod';
 
-/** WebID of the pre-seeded test account on the local Pod server. */
-export const TEST_WEBID = 'http://localhost:3000/edwin/profile/card#me';
+/** Host:port of the e2e Pod, e.g. "localhost:3001" — used to detect redirects. */
+const podHost = POD_ORIGIN.replace(/^https?:\/\//, '');
+
+/** WebID of the pre-seeded test account on the self-started e2e Pod. */
+export const TEST_WEBID = `${POD_ORIGIN}/edwin/profile/card#me`;
 
 function requiredEnv(name: string): string {
   const value = process.env[name];
@@ -39,7 +43,7 @@ export async function login(page: Page, webId: string = TEST_WEBID): Promise<voi
   await page.getByRole('button', { name: /^OK$/ }).click();
 
   // The app resolves the OIDC issuer and redirects to the Pod's login page.
-  await page.waitForURL(/localhost:3000/, { timeout: 30_000 });
+  await page.waitForURL((url) => url.href.includes(podHost), { timeout: 30_000 });
 
   await completePodLogin(page, email, password);
 
@@ -48,7 +52,7 @@ export async function login(page: Page, webId: string = TEST_WEBID): Promise<voi
   // landing page only re-reads its cellar list once that sync *finishes*
   // (syncing → done), so the Pod cellars (e.g. "Hütte") appear only then. This
   // can take a while for a large Pod, so wait generously.
-  await page.waitForURL((url) => !/localhost:3000/.test(url.href), { timeout: 30_000 });
+  await page.waitForURL((url) => !url.href.includes(podHost), { timeout: 30_000 });
   await expect(page.getByRole('button', { name: 'Hütte' })).toBeVisible({ timeout: 150_000 });
 }
 
