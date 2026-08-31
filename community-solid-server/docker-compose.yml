@@ -1,0 +1,24 @@
+# Community Solid Server for local development and e2e tests.
+# Serves the seeded account (WebID http://localhost:3000/edwin/profile/card#me)
+# from ./.volumes/data using the committed ACP config ./config/kellermeister.json.
+#
+#   docker compose up        # start the Pod on http://localhost:3000
+#   docker compose down      # stop it
+#
+# The custom config is mounted at /config (NOT /community-server/config, which
+# holds the built-in css:config/* fragments that kellermeister.json imports).
+
+services:
+  community-solid-server:
+    image: solidproject/community-server:7.2.0
+    container_name: css
+    ports:
+      - "3000:3000"
+    environment:
+      - CSS_CONFIG=/config/kellermeister.json
+      - CSS_BASE_URL=http://localhost:3000/
+      - CSS_PORT=3000
+      - CSS_ROOT_FILE_PATH=/data
+    volumes:
+      - ./config:/config
+      - ./.volumes/data:/data
