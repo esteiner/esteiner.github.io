@@ -2,10 +2,9 @@ import Model from "./SoukaiRating.schema";
 import type {Rating} from "../../../domain/Product/Rating.ts";
 
 export class SoukaiRating extends Model implements Rating {
-    static timestamps = false;
 
     getId(): string {
-        return this.url;
+        return this.url as string;
     }
     getValue(): number {
         return this.orUndefined(this.value);

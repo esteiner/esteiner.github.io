@@ -1,7 +1,7 @@
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import type {Cellar} from "../../domain/Cellar/Cellar.ts";
 import {SoukaiCellar} from "./model/SoukaiCellar.ts";
-import {bootModels} from "soukai";
+import {bootSoukaiModels} from "./bootModels.ts";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional, WELL_KNOWN_CELLAR} from "../shared/resource-identity.ts";
 import {withLocalEngine} from "./engineScope.ts";
@@ -21,7 +21,7 @@ export class SoukaiCellarRepository implements CellarRepository {
     private readonly ready: Promise<void>;
 
     constructor(private readonly podBase: () => string | null) {
-        bootModels({SoukaiCellar});
+        bootSoukaiModels();
         this.ready = this.ensureWellKnownCellars();
     }
 

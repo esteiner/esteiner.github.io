@@ -1,7 +1,22 @@
 <#it> a <https://schema.org/ListItem>;
-    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/0fe9d702-4722-4aa0-bee7-f3d2f2236e81#it";
+    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it";
     <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/9318239c-bb75-420a-a6dc-afe5f1bcaceb#it>.
 <#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:57:18.011Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:57:18.011Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-31T16:19:18.104Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-8e3dc7dd-d320-4224-a9a8-774669ea3380> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-23T16:57:18.011Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/subjectOf>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/products/9318239c-bb75-420a-a6dc-afe5f1bcaceb#it>.
+<#it-operation-e9001931-c6b7-4539-975b-f7b339ff9e6b> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-23T16:57:18.011Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
+    <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/0fe9d702-4722-4aa0-bee7-f3d2f2236e81#it".
+<#it-operation-ad44fb52-8a0d-4bb0-a862-57e9522ec7a8> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T16:19:18.104Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
+    <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it".

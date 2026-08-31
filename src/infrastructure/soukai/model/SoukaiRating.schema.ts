@@ -1,21 +1,18 @@
-import {FieldType} from "soukai";
-import {defineSolidModelSchema} from "soukai-solid";
+import "soukai-bis/patch-zod";
+import {defineSchema} from "soukai-bis";
+import {date, number} from "zod";
 
 // https://schema.org/Rating
-export default defineSolidModelSchema({
+export default defineSchema({
     rdfContexts: {
-        schema: 'https://schema.org/'
+        schema: "https://schema.org/",
     },
-    rdfsClasses: ['schema:Rating'],
+    rdfClass: "schema:Rating",
+    timestamps: false,
+    history: false,
 
     fields: {
-        value: {
-            type: FieldType.Number,
-            rdfProperty: 'schema:ratingValue'
-        },
-        date: {
-            type: FieldType.Date,
-            rdfProperty: 'schema:dateCreated'
-        }
-    }
+        value: number().optional().rdfProperty("schema:ratingValue"),
+        date: date().optional().rdfProperty("schema:dateCreated"),
+    },
 });

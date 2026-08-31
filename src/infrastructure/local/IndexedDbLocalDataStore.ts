@@ -1,4 +1,4 @@
-import {getEngine, IndexedDBEngine} from "soukai";
+import {getEngine, getNamespace, IndexedDBEngine} from "soukai-bis";
 import type {LocalDataStore} from "../../application/ports/LocalDataStore.ts";
 import type {PodContainerRegistry} from "../solid/PodContainerRegistry.ts";
 import {APP_STATE_DB_NAME} from "./IndexedDbAppStateStore.ts";
@@ -26,16 +26,16 @@ export class IndexedDbLocalDataStore implements LocalDataStore {
     }
 
     /**
-     * Purge the Soukai database through the ENGINE rather than deleting it by
-     * name: `indexedDB.deleteDatabase` blocks while connections are open, and
-     * the global engine holds them. `purgeDatabase()` closes its own
-     * connections first, so it must run on that same instance.
+     * Purge the soukai-bis database. `indexedDB.deleteDatabase` blocks while
+     * connections are open and the global engine holds them, so close the engine
+     * first, then delete the database (named after the soukai-bis namespace).
      */
     private async purgeDomainData(): Promise<void> {
         const engine = getEngine();
         if (engine instanceof IndexedDBEngine) {
-            await engine.purgeDatabase();
+            await engine.close();
         }
+        await deleteDatabase(getNamespace());
     }
 }
 

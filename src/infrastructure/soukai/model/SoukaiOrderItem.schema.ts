@@ -1,25 +1,27 @@
-import {FieldType} from "soukai";
-import {defineSolidModelSchema} from "soukai-solid";
+import "soukai-bis/patch-zod";
+import {belongsToOne, defineSchema, requireBootedModel} from "soukai-bis";
+import {number, string, url} from "zod";
 
 // https://schema.org/OrderItem
-export default defineSolidModelSchema({
+export default defineSchema({
     rdfContexts: {
-        schema: 'https://schema.org/',
-        km: 'https://vocab.kellermeister.ch/wine/'
+        schema: "https://schema.org/",
+        km: "https://vocab.kellermeister.ch/wine/",
     },
-    rdfsClasses: ['schema:OrderItem'],
+    rdfClass: "schema:OrderItem",
+    timestamps: false,
+    history: false,
 
     fields: {
-        orderQuantity: FieldType.Number,
-        price: FieldType.Number,
-        priceCurrency: FieldType.String,
-        orderUrl: {
-            type: FieldType.Key,
-            rdfProperty: 'km:order'
-        },
-        productUrl: {
-            type: FieldType.Key,
-            rdfProperty: 'schema:orderedItem'
-        }
-    }
+        orderQuantity: number().optional().rdfProperty("schema:orderQuantity"),
+        price: number().optional().rdfProperty("schema:price"),
+        priceCurrency: string().optional().rdfProperty("schema:priceCurrency"),
+        orderUrl: url().optional().rdfProperty("km:order"),
+        productUrl: url().optional().rdfProperty("schema:orderedItem"),
+    },
+
+    relations: {
+        order: belongsToOne(() => requireBootedModel("SoukaiOrder"), "orderUrl").usingSameDocument(),
+        product: belongsToOne(() => requireBootedModel("SoukaiProduct"), "productUrl"),
+    },
 });

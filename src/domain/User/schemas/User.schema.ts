@@ -1,20 +1,22 @@
-import {FieldType} from "soukai";
-import {defineSolidModelSchema} from "soukai-solid";
+import "soukai-bis/patch-zod";
+import {defineSchema} from "soukai-bis";
+import {string, url} from "zod";
 
 // https://schema.org/Person
-export default defineSolidModelSchema({
+// NOTE: currently unused (the app reads the Solid session/profile directly);
+// kept and migrated to soukai-bis for consistency with the other models.
+export default defineSchema({
     rdfContexts: {
-        schema: 'https://schema.org/',
-        foaf: 'http://xmlns.com/foaf/0.1/',
-        pim: 'http://www.w3.org/ns/pim/space#'
+        schema: "https://schema.org/",
+        foaf: "http://xmlns.com/foaf/0.1/",
+        pim: "http://www.w3.org/ns/pim/space#",
     },
-    rdfsClasses: ['schema:Person'],
+    rdfClass: "schema:Person",
+    timestamps: false,
+    history: false,
 
     fields: {
-        name: FieldType.String,
-        storageUrl: {
-            type: FieldType.Key,
-            rdfProperty: 'pim:storage',
-        },
-    }
+        name: string().optional().rdfProperty("schema:name"),
+        storageUrl: url().optional().rdfProperty("pim:storage"),
+    },
 });

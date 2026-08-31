@@ -8,9 +8,8 @@ export class SoukaiBottleFactory implements BottleFactory {
     createFromProduct(product: Product): SoukaiBottle {
         const bottle: SoukaiBottle = new SoukaiBottle();
         if (product instanceof SoukaiProduct) {
-            bottle.relatedProduct.addRelated(product as SoukaiProduct)
+            bottle.relatedProduct.setRelated(product as SoukaiProduct);
         }
-        // const relation = bottle.getRelation('product');
         return bottle;
     }
 

@@ -13,13 +13,8 @@ import type {OrderRepository} from "../domain/Order/OrderRepository.ts";
 import type {BottleFactory} from "../domain/Bottle/BottleFactory.ts";
 import type {OrderFactory} from "../domain/Order/OrderFactory.ts";
 import {SoukaiProduct} from "../infrastructure/soukai/model/SoukaiProduct.ts";
-import { bootSolidModels } from "soukai-solid";
-import {bootModels, InMemoryEngine, setEngine} from "soukai";
-import {SoukaiSeller} from "../infrastructure/soukai/model/SoukaiSeller.ts";
+import {installMemoryEngine, bootSoukaiModels} from "../testing/soukai.ts";
 import {SoukaiOrder} from "../infrastructure/soukai/model/SoukaiOrder.ts";
-import {SoukaiOrderItem} from "../infrastructure/soukai/model/SoukaiOrderItem.ts";
-import {SoukaiBottle} from "../infrastructure/soukai/model/SoukaiBottle.ts";
-import {SoukaiRating} from "../infrastructure/soukai/model/SoukaiRating.ts";
 import {SoukaiCellar} from "../infrastructure/soukai/model/SoukaiCellar.ts";
 
 // Prevent the Inrupt imports inside KellermeisterService from failing in node
@@ -29,24 +24,28 @@ vi.mock('@inrupt/solid-client-authn-browser', () => ({ fetch: vi.fn() }));
 // Boot Soukai models once at module load so model constructors used inside
 // describe-level helpers (e.g. `const cellarA = makeCellar(...)`) don't run
 // before the Metadata/history models are registered.
-bootSolidModels();
-bootModels({ SoukaiCellar, SoukaiSeller, SoukaiOrder, SoukaiOrderItem, SoukaiProduct, SoukaiRating, SoukaiBottle });
+bootSoukaiModels();
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
+// soukai-bis validates the model `url` as a real URL (Zod `url()`), so wrap the
+// opaque test ids into valid local URLs. Identity is consistent across helpers,
+// so cellar/product grouping still matches.
+const u = (id: string): string => `local://test/${encodeURIComponent(id)}#it`;
+
 function makeCellar(id: string): Cellar {
     const cellar = new SoukaiCellar();
     // SoukaiCellar.getId() returns this.url
-    cellar.url = id;
+    cellar.url = u(id);
     cellar.name = "name";
     return cellar
 }
 
 function makeProduct(id: string, name?: string): Product {
     const product = new SoukaiProduct();
-    product.id = id;
+    product.url = u(id);
     product.name = name;
     return product;
 }
@@ -55,7 +54,7 @@ function makeBottle(productId: string, cellarId: string, productName?: string): 
     const product = makeProduct(productId, productName);
     return {
         getProduct: () => product,
-        getCellar: () => cellarId,
+        getCellar: () => u(cellarId),
     } as unknown as Bottle;
 }
 
@@ -112,7 +111,7 @@ function makeService() {
         createOrderItem: vi.fn(),
         linkProduct: vi.fn(),
     };
-    setEngine(new InMemoryEngine());
+    installMemoryEngine();
     const service = new KellermeisterService(cellarRepo, bottleRepo, productRepo, orderRepo, bottleFactory, orderFactory, productFactory);
     return { service, cellarRepo, bottleRepo, productRepo, orderRepo, bottleFactory, orderFactory, productFactory };
 }
@@ -183,7 +182,7 @@ describe('KellermeisterService', () => {
             const { service, cellarRepo } = makeService();
             const cellar = makeCellar('c1');
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([cellar]);
-            expect(await service.getCellarById('c1')).toEqual(cellar);
+            expect(await service.getCellarById(u('c1'))).toEqual(cellar);
         });
 
         it('createCellar delegates to the repository', async () => {
@@ -217,8 +216,8 @@ describe('KellermeisterService', () => {
             const c2 = makeCellar('c2');
             vi.mocked(cellarRepo.fetchCellars).mockResolvedValue([c1, c2]);
 
-            expect(await service.getCellarById('c1')).toBe(c1);
-            expect(await service.getCellarById('c2')).toBe(c2);
+            expect(await service.getCellarById(u('c1'))).toBe(c1);
+            expect(await service.getCellarById(u('c2'))).toBe(c2);
             expect(cellarRepo.fetchCellars).toHaveBeenCalledOnce();
         });
 

@@ -1,31 +1,20 @@
-import type {Relation} from "soukai";
-import {type SolidBelongsToOneRelation} from "soukai-solid";
+import type {BelongsToOneRelation} from "soukai-bis";
 import Model from "./SoukaiOrderItem.schema";
 import type {OrderItem} from "../../../domain/Order/OrderItem.ts";
 import {SoukaiOrder} from "./SoukaiOrder.ts";
 import {SoukaiProduct} from "./SoukaiProduct.ts";
 
 export class SoukaiOrderItem extends Model implements OrderItem {
-  static timestamps = false;
 
+  // Relation wiring lives in SoukaiOrderItem.schema.ts.
   declare public order: SoukaiOrder;
-  declare public relatedOrder: SolidBelongsToOneRelation<SoukaiOrderItem, SoukaiOrder, typeof SoukaiOrder>;
-  public orderRelationship() : Relation {
-    return this
-        .belongsToOne(SoukaiOrder, 'orderUrl')
-        .usingSameDocument(true);
-  }
+  declare public relatedOrder: BelongsToOneRelation<this, SoukaiOrder, typeof SoukaiOrder>;
 
   declare public product: SoukaiProduct;
-  declare public relatedProduct: SolidBelongsToOneRelation<SoukaiOrderItem, SoukaiProduct, typeof SoukaiProduct>;
-  // Per-resource: the Product is its own Pod resource, referenced by URL.
-  public productRelationship() : Relation {
-    return this
-        .belongsToOne(SoukaiProduct, 'productUrl');
-  }
+  declare public relatedProduct: BelongsToOneRelation<this, SoukaiProduct, typeof SoukaiProduct>;
 
   getId(): string {
-    return super.getIdAttribute();
+    return this.url as string;
   }
   getPrice(): number {
     return this.orUndefined(this.price);

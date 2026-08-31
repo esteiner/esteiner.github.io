@@ -2,8 +2,7 @@ import type {BottleRepository} from "../../domain/Bottle/BottleRepository.ts";
 import type {Bottle} from "../../domain/Bottle/Bottle.ts";
 import {SoukaiBottle} from "./model/SoukaiBottle.ts";
 import {SoukaiProduct} from "./model/SoukaiProduct.ts";
-import {SoukaiRating} from "./model/SoukaiRating.ts";
-import {bootModels} from "soukai";
+import {bootSoukaiModels} from "./bootModels.ts";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional} from "../shared/resource-identity.ts";
 import type {SoukaiProductRepository} from "./SoukaiProductRepository.ts";
@@ -20,7 +19,7 @@ export class SoukaiBottleRepository implements BottleRepository {
         private readonly podBase: () => string | null,
         private readonly productRepository: SoukaiProductRepository,
     ) {
-        bootModels({SoukaiBottle, SoukaiProduct, SoukaiRating});
+        bootSoukaiModels();
     }
 
     async fetchBottles(): Promise<Bottle[]> {
@@ -31,7 +30,7 @@ export class SoukaiBottleRepository implements BottleRepository {
         for (const bottle of bottles) {
             const product = bottle.productUrl ? productByUrl.get(bottle.productUrl) : undefined;
             if (product) {
-                bottle.product = product;
+                bottle.relatedProduct.setRelated(product);
             }
         }
         // Preserve the previous invariant: only bottles with a resolved product

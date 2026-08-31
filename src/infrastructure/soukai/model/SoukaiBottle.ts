@@ -1,22 +1,17 @@
-import {type Relation} from "soukai";
-import {type SolidBelongsToOneRelation} from "soukai-solid";
+import type {BelongsToOneRelation} from "soukai-bis";
 import Model from "./SoukaiBottle.schema";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import {SoukaiProduct} from "./SoukaiProduct.ts";
 
 export class SoukaiBottle extends Model implements Bottle {
 
+    // Relation wiring lives in SoukaiBottle.schema.ts (per-resource: a Product is
+    // its own Pod resource, referenced by URL, NOT embedded in the bottle document).
     declare public product: SoukaiProduct;
-    declare public relatedProduct: SolidBelongsToOneRelation<SoukaiBottle, SoukaiProduct, typeof SoukaiProduct>;
-    // Per-resource: a Product is its own Pod resource, referenced by URL (NOT
-    // embedded in the same document as the bottle).
-    public productRelationship() : Relation {
-        return this
-            .belongsToOne(SoukaiProduct, 'productUrl');
-    }
+    declare public relatedProduct: BelongsToOneRelation<this, SoukaiProduct, typeof SoukaiProduct>;
 
     getId(): string {
-        return this.url;
+        return this.url as string;
     }
     getCellar(): string {
         return this.cellarUrl;
@@ -41,6 +36,3 @@ export class SoukaiBottle extends Model implements Bottle {
     }
 
 }
-
-// Local-first: retain the operation log and propagate deletions across devices.
-SoukaiBottle.useSoftDeletes(true);

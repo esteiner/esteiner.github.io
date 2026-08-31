@@ -25,7 +25,7 @@ export class SoukaiProductFactory implements ProductFactory  {
         newProduct.trinkfensterVon = product.getDrinkingWindowFrom();
         newProduct.trinkfensterBis = product.getDrinkingWindowTo();
         if (orderItem instanceof SoukaiOrderItem) {
-            newProduct.relatedOrderItem.addRelated(orderItem);
+            newProduct.relatedOrderItem.setRelated(orderItem);
         }
         newProduct.price = orderItem.getPrice();
         newProduct.priceCurrency = orderItem.getPriceCurrency();

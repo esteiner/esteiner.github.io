@@ -1,4 +1,4 @@
-import {withEngine, type Engine} from "soukai";
+import {runWithEngine, type Engine} from "soukai-bis";
 
 /**
  * Serializes every access to the Soukai engine.
@@ -37,5 +37,5 @@ export function withLocalEngine<T>(operation: () => Promise<T>): Promise<T> {
 
 /** Run an operation against a remote (Pod) engine, excluding all local work. */
 export function withRemoteEngine<T>(engine: Engine, operation: () => Promise<T>): Promise<T> {
-    return serialize(() => withEngine(engine, operation));
+    return serialize(() => runWithEngine(engine, operation));
 }

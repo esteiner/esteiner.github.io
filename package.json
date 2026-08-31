@@ -22,8 +22,8 @@
     "@noeldemartin/utils": "^0.7.3",
     "@vaadin/router": "2.0.1",
     "lit": "^3.3.1",
-    "soukai": "^0.7.1",
-    "soukai-solid": "^0.7.1"
+    "soukai-bis": "^0.0.0-next.38850539d916fc4f4d1f289c8e361bb64e4650e4",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.0",

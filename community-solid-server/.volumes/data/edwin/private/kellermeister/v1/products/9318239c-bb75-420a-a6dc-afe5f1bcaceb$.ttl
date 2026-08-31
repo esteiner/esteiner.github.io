@@ -16,14 +16,14 @@
     <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
     <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
     <https://vocab.kellermeister.ch/wine/weinname> "7 Crus";
-    <https://vocab.kellermeister.ch/wine/hasRating> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>.
-<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
-    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-31T07:22:22.258Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
-    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-31T09:44:22.195Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.kellermeister.ch/wine/hasRating> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>, <#aaacb95f-dca8-4c28-81d8-6184e5f0a24f>, <#de0050b4-b7da-4536-95a4-6fe2147cf76e>.
 <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26> a <https://schema.org/Rating>;
     <https://schema.org/dateCreated> "2026-08-31T09:44:22.194Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://schema.org/ratingValue> 3.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-31T07:22:22.258Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-31T16:23:10.684Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-0bfc2ac7-49cf-4688-bccf-2458a6fee43b> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T07:22:22.258Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -114,3 +114,13 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T09:44:22.195Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
     <https://vocab.noeldemartin.com/crdt/value> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>.
+<#it-operation-b92691d0-9d9d-485c-8d09-fce1d316241a> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T16:19:18.100Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
+    <https://vocab.noeldemartin.com/crdt/value> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>, <#aaacb95f-dca8-4c28-81d8-6184e5f0a24f>.
+<#it-operation-2cebb551-1cfb-4ac1-b306-1b23474f0f8c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T16:23:10.684Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
+    <https://vocab.noeldemartin.com/crdt/value> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>, <#aaacb95f-dca8-4c28-81d8-6184e5f0a24f>, <#de0050b4-b7da-4536-95a4-6fe2147cf76e>.

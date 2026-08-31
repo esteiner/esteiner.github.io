@@ -3,10 +3,9 @@ import type {Seller} from "../../../domain/Order/Seller.ts";
 
 
 export class SoukaiSeller extends Model implements Seller {
-    static timestamps = false;
 
     getId(): string {
-        return super.getIdAttribute();
+        return this.url as string;
     }
     getName(): string {
         return this.orUndefined(this.name);

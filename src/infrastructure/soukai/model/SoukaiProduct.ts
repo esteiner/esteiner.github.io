@@ -1,5 +1,4 @@
-import type {Relation} from "soukai";
-import {type SolidBelongsToManyRelation, type SolidBelongsToOneRelation} from "soukai-solid";
+import type {BelongsToManyRelation, BelongsToOneRelation} from "soukai-bis";
 import Model from "./SoukaiProduct.schema";
 import type { Product } from "../../../domain/Product/Product";
 import type {Rating} from "../../../domain/Product/Rating.ts";
@@ -8,27 +7,15 @@ import {SoukaiRating} from "./SoukaiRating.ts";
 
 export class SoukaiProduct extends Model implements Product {
 
+    // Relation wiring lives in SoukaiProduct.schema.ts.
     declare public orderItem: SoukaiOrderItem;
-    declare public relatedOrderItem: SolidBelongsToOneRelation<SoukaiProduct, SoukaiOrderItem, typeof SoukaiOrderItem>;
-    // Per-resource: the OrderItem lives embedded in its Order document, so from a
-    // Product it is a cross-document reference by URL.
-    public orderItemRelationship() : Relation {
-        return this
-            .belongsToOne(SoukaiOrderItem, 'orderItemUrl');
-    }
+    declare public relatedOrderItem: BelongsToOneRelation<this, SoukaiOrderItem, typeof SoukaiOrderItem>;
 
     declare public ratings: SoukaiRating[];
-    declare public relatedRatings: SolidBelongsToManyRelation<SoukaiProduct, SoukaiRating, typeof SoukaiRating>;
-    // Ratings are owned by exactly one Product and never referenced elsewhere, so
-    // they stay embedded in the Product's document.
-    public ratingsRelationship() : Relation {
-        return this
-            .belongsToMany(SoukaiRating, 'ratingUrls')
-            .usingSameDocument(true);
-    }
+    declare public relatedRatings: BelongsToManyRelation<this, SoukaiRating, typeof SoukaiRating>;
 
     getId(): string {
-        return this.id;
+        return this.url as string;
     }
     getName(): string {
         return this.orUndefined(this.name);
@@ -94,10 +81,9 @@ export class SoukaiProduct extends Model implements Product {
         const rating: SoukaiRating = new SoukaiRating();
         rating.value = value;
         rating.date = new Date();
-        if (!this.ratings) {
-            this.ratings = [];
-        }
-        this.ratings.push(rating);
+        // Attach through the relation so the rating is embedded in the product
+        // document on save (a plain array push does not register it with bis).
+        this.relatedRatings.addRelated(rating);
         return rating;
     }
 
@@ -105,6 +91,3 @@ export class SoukaiProduct extends Model implements Product {
         return value ? value : undefined;
     }
 }
-
-// Local-first: retain the operation log and propagate deletions across devices.
-SoukaiProduct.useSoftDeletes(true);

@@ -3,15 +3,12 @@
  * real wipe adapter against fake-indexeddb: data created under one identity must
  * not be readable under another, and the store must be usable afterwards.
  */
-import "fake-indexeddb/auto";
 import {describe, it, expect, beforeEach, afterEach} from "vitest";
-import {bootModels, closeEngineConnections, IndexedDBEngine, setEngine} from "soukai";
-import {bootSolidModels} from "soukai-solid";
+import {getEngine, IndexedDBEngine} from "soukai-bis";
 
-import {SoukaiCellar} from "./soukai/model/SoukaiCellar.ts";
+import {installIndexedDbEngine} from "../testing/soukai.ts";
 import {SoukaiBottle} from "./soukai/model/SoukaiBottle.ts";
 import {SoukaiProduct} from "./soukai/model/SoukaiProduct.ts";
-import {SoukaiRating} from "./soukai/model/SoukaiRating.ts";
 import {SoukaiCellarRepository} from "./soukai/SoukaiCellarRepository.ts";
 import {SoukaiProductRepository} from "./soukai/SoukaiProductRepository.ts";
 import {SoukaiBottleRepository} from "./soukai/SoukaiBottleRepository.ts";
@@ -19,9 +16,6 @@ import {IndexedDbLocalDataStore} from "./local/IndexedDbLocalDataStore.ts";
 import {APP_STATE_DB_NAME, IndexedDbAppStateStore} from "./local/IndexedDbAppStateStore.ts";
 import {PodContainerRegistry} from "./solid/PodContainerRegistry.ts";
 import {SwitchIdentity} from "../application/identity/SwitchIdentity.ts";
-
-bootSolidModels();
-bootModels({SoukaiCellar, SoukaiBottle, SoukaiProduct, SoukaiRating});
 
 const ALICE = "https://alice.pod/profile#me";
 const BOB = "https://bob.pod/profile#me";
@@ -55,14 +49,17 @@ function freshAppStateDb(): Promise<void> {
 beforeEach(async () => {
     stubLocalStorage();
     await freshAppStateDb();
-    setEngine(new IndexedDBEngine(`switch-${dbCounter++}`));
+    installIndexedDbEngine(`switch-${dbCounter++}`);
     registry = new PodContainerRegistry();
     appState = new IndexedDbAppStateStore();
     identity = new SwitchIdentity(appState, new IndexedDbLocalDataStore(registry));
 });
 
 afterEach(async () => {
-    await closeEngineConnections();
+    const engine = getEngine();
+    if (engine instanceof IndexedDBEngine) {
+        await engine.close();
+    }
 });
 
 describe("WebID switch", () => {

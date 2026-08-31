@@ -1,99 +1,44 @@
-import {FieldType} from "soukai";
-import {defineSolidModelSchema} from "soukai-solid";
+import "soukai-bis/patch-zod";
+import {belongsToOne, belongsToMany, defineSchema, requireBootedModel} from "soukai-bis";
+import {array, date, number, string, url} from "zod";
 
 // https://schema.org/Product
-export default defineSolidModelSchema({
+export default defineSchema({
     rdfContexts: {
-        schema: 'https://schema.org/',
-        km: 'https://vocab.kellermeister.ch/wine/'
+        schema: "https://schema.org/",
+        km: "https://vocab.kellermeister.ch/wine/",
     },
-    rdfsClasses: ['schema:Product'],
+    rdfClass: "schema:Product",
     timestamps: true,
     history: true,
 
     fields: {
         // schema.org
-        name: {
-            type: FieldType.String,
-            rdfProperty: 'schema:name'
-        },
-        productionDate: {
-            type: FieldType.Date,
-            rdfProperty: 'schema:productionDate'
-        },
-        price: {
-            type: FieldType.Number,
-            rdfProperty: 'schema:price'
-        },
-        priceCurrency: {
-            type: FieldType.String,
-            rdfProperty: 'schema:priceCurrency'
-        },
+        name: string().optional().rdfProperty("schema:name"),
+        productionDate: date().optional().rdfProperty("schema:productionDate"),
+        price: number().optional().rdfProperty("schema:price"),
+        priceCurrency: string().optional().rdfProperty("schema:priceCurrency"),
         // vocab.kellermeister.ch/wine/
-        weinname: {
-            type: FieldType.String,
-            rdfProperty: 'km:weinname'
-        },
-        hersteller: {
-            type: FieldType.String,
-            rdfProperty: 'km:hersteller'
-        },
-        weinart: {
-            type: FieldType.String,
-            rdfProperty: 'km:weinart'
-        },
-        weinfarbe: {
-            type: FieldType.String,
-            rdfProperty: 'km:weinfarbe'
-        },
-        milliliter: {
-            type: FieldType.Number,
-            rdfProperty: 'km:milliliter'
-        },
-        region: {
-            type: FieldType.String,
-            rdfProperty: 'km:region'
-        },
-        land: {
-            type: FieldType.String,
-            rdfProperty: 'km:land'
-        },
-        traubensorte: {
-            type: FieldType.String,
-            rdfProperty: 'km:traubensorte'
-        },
-        klassifikation: {
-            type: FieldType.String,
-            rdfProperty: 'km:klassifikation'
-        },
-        alkoholgehalt: {
-            type: FieldType.String,
-            rdfProperty: 'km:alkoholgehalt'
-        },
-        ausbau: {
-            type: FieldType.String,
-            rdfProperty: 'km:ausbau'
-        },
-        biologisch: {
-            type: FieldType.String,
-            rdfProperty: 'km:biologisch'
-        },
-        trinkfensterVon: {
-            type: FieldType.Date,
-            rdfProperty: 'km:trinkfensterVon'
-        },
-        trinkfensterBis: {
-            type: FieldType.Date,
-            rdfProperty: 'km:trinkfensterBis'
-        },
-        orderItemUrl: {
-            type: FieldType.Key,
-            rdfProperty: 'km:orderItem'
-        },
-        ratingUrls: {
-            type: FieldType.Array,
-            items: { type: FieldType.Key },
-            rdfProperty: 'km:hasRating'
-        }
-    }
+        weinname: string().optional().rdfProperty("km:weinname"),
+        hersteller: string().optional().rdfProperty("km:hersteller"),
+        weinart: string().optional().rdfProperty("km:weinart"),
+        weinfarbe: string().optional().rdfProperty("km:weinfarbe"),
+        milliliter: number().optional().rdfProperty("km:milliliter"),
+        region: string().optional().rdfProperty("km:region"),
+        land: string().optional().rdfProperty("km:land"),
+        traubensorte: string().optional().rdfProperty("km:traubensorte"),
+        klassifikation: string().optional().rdfProperty("km:klassifikation"),
+        alkoholgehalt: string().optional().rdfProperty("km:alkoholgehalt"),
+        ausbau: string().optional().rdfProperty("km:ausbau"),
+        biologisch: string().optional().rdfProperty("km:biologisch"),
+        trinkfensterVon: date().optional().rdfProperty("km:trinkfensterVon"),
+        trinkfensterBis: date().optional().rdfProperty("km:trinkfensterBis"),
+        orderItemUrl: url().optional().rdfProperty("km:orderItem"),
+        ratingUrls: array(url()).optional().rdfProperty("km:hasRating"),
+    },
+
+    relations: {
+        orderItem: belongsToOne(() => requireBootedModel("SoukaiOrderItem"), "orderItemUrl"),
+        ratings: belongsToMany(() => requireBootedModel("SoukaiRating"), "ratingUrls").usingSameDocument(),
+    },
 });

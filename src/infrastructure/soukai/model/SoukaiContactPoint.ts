@@ -1,7 +1,6 @@
 import Model from "./SoukaiContactPoint.schema";
 
 export class SoukaiContactPoint extends Model {
-    static timestamps = false;
 
     getName(): string | undefined {
         return this.orUndefined(this.name);

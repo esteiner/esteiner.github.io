@@ -1,25 +1,19 @@
-import type {Relation} from "soukai";
-import type {SolidBelongsToOneRelation} from "soukai-solid";
+import type {BelongsToOneRelation} from "soukai-bis";
 import Model from "./SoukaiCustomer.schema";
 import type {Customer} from "../../../domain/Order/Customer.ts";
 import {SoukaiContactPoint} from "./SoukaiContactPoint.ts";
 
 
 export class SoukaiCustomer extends Model implements Customer {
-    static timestamps = false;
 
+    // Relation wiring lives in SoukaiCustomer.schema.ts. The customer's name/email
+    // live on the nested schema:ContactPoint (same document), not directly on the
+    // Organization node — see getName/getEmail.
     declare public contactPoint: SoukaiContactPoint | undefined;
-    declare public relatedContactPoint: SolidBelongsToOneRelation<SoukaiCustomer, SoukaiContactPoint, typeof SoukaiContactPoint>;
-    // The customer's name/email live on the nested schema:ContactPoint (same
-    // document), not directly on the Organization node — see getName/getEmail.
-    public contactPointRelationship(): Relation {
-        return this
-            .belongsToOne(SoukaiContactPoint, "contactPointUrl")
-            .usingSameDocument(true);
-    }
+    declare public relatedContactPoint: BelongsToOneRelation<this, SoukaiContactPoint, typeof SoukaiContactPoint>;
 
     getId(): string {
-        return super.getIdAttribute();
+        return this.url as string;
     }
     getName(): string {
         // Prefer the contactPoint's name, falling back to the organization's own.

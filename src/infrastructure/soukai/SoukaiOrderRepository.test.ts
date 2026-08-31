@@ -1,15 +1,13 @@
 /**
  * Tests for inbox order ingestion in SoukaiOrderRepository.
  *
- * The Pod inbox is simulated with a second IndexedDBEngine injected via the
- * `inboxEngine` factory (mirroring how local-first.test.ts simulates the Pod).
- * `deleteSolidDataset` (the real Pod deletion) is mocked, since fake-indexeddb
- * has no Solid endpoint to delete against.
+ * The Pod inbox is simulated with a second (isolated) InMemoryEngine injected via
+ * the `inboxEngine` factory. `deleteSolidDataset` (the real Pod deletion) is
+ * mocked, since there is no Solid endpoint to delete against.
  */
-import "fake-indexeddb/auto";
 import {describe, it, expect, beforeEach, vi} from "vitest";
-import {bootModels, IndexedDBEngine, setEngine, withEngine} from "soukai";
-import {bootSolidModels} from "soukai-solid";
+import {InMemoryEngine, runWithEngine} from "soukai-bis";
+import {installMemoryEngine, createMemoryEngine} from "../../testing/soukai.ts";
 
 vi.mock("@inrupt/solid-client", async (importOriginal) => ({
     ...(await importOriginal<typeof import("@inrupt/solid-client")>()),
@@ -19,9 +17,6 @@ import {deleteSolidDataset} from "@inrupt/solid-client";
 
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
 import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
-import {SoukaiSeller} from "./model/SoukaiSeller.ts";
-import {SoukaiCustomer} from "./model/SoukaiCustomer.ts";
-import {SoukaiContactPoint} from "./model/SoukaiContactPoint.ts";
 import {SoukaiProduct} from "./model/SoukaiProduct.ts";
 import {SoukaiOrderFactory} from "./model/SoukaiOrderFactory.ts";
 import {SoukaiProductFactory} from "./model/SoukaiProductFactory.ts";
@@ -30,20 +25,13 @@ import type {AuthService, SolidSession} from "../../application/ports/AuthServic
 import type {Order} from "../../domain/Order/Order.ts";
 import type {OrderItem} from "../../domain/Order/OrderItem.ts";
 
-bootSolidModels();
-bootModels({SoukaiOrder, SoukaiOrderItem, SoukaiSeller, SoukaiCustomer, SoukaiContactPoint, SoukaiProduct});
-
 const INBOX = "https://alice.pod/inbox/kellermeister/";
 
-let dbCounter = 0;
-let localEngine: IndexedDBEngine;
-let inboxEngine: IndexedDBEngine;
+let inboxEngine: InMemoryEngine;
 
 beforeEach(() => {
-    localEngine = new IndexedDBEngine(`local-order-${dbCounter}`);
-    inboxEngine = new IndexedDBEngine(`inbox-order-${dbCounter}`);
-    dbCounter++;
-    setEngine(localEngine);
+    installMemoryEngine();
+    inboxEngine = createMemoryEngine();
     vi.mocked(deleteSolidDataset).mockClear();
 });
 
@@ -63,7 +51,7 @@ function makeRepo(loggedIn: boolean, inbox: string | null): SoukaiOrderRepositor
 }
 
 async function seedInbox(slug: string, orderNumber: string): Promise<void> {
-    await withEngine(inboxEngine, () => new SoukaiOrder({url: `${INBOX}${slug}#it`, orderNumber}).save());
+    await runWithEngine(inboxEngine, () => new SoukaiOrder({url: `${INBOX}${slug}#it`, orderNumber}).save());
 }
 
 /**
@@ -77,7 +65,7 @@ async function seedInbox(slug: string, orderNumber: string): Promise<void> {
 async function seedInboxWithParties(slug: string, orderNumber: string): Promise<void> {
     const doc = `${INBOX}${slug}`;
     const ctx = {"@vocab": "https://schema.org/"};
-    await inboxEngine.create(INBOX, {
+    await inboxEngine.createDocument(doc, {
         "@graph": [
             {
                 "@context": ctx,
@@ -92,7 +80,7 @@ async function seedInboxWithParties(slug: string, orderNumber: string): Promise<
             {"@context": ctx, "@id": `${doc}#customer`, "@type": "Organization", name: "Sonja Steiner", address: "Morgartenstrasse 9, 6003 Luzern, Schweiz", contactPoint: {"@id": `${doc}#contact`}},
             {"@context": ctx, "@id": `${doc}#contact`, "@type": "ContactPoint", name: "Sonja Steiner", email: "sonja.steiner@acons.ch"},
         ],
-    }, doc);
+    });
 }
 
 describe("SoukaiOrderRepository inbox ingestion", () => {

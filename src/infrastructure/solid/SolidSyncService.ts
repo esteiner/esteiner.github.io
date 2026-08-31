@@ -1,72 +1,61 @@
-import {type Engine} from "soukai";
-import {SolidEngine, type SolidModel} from "soukai-solid";
+import {getEngine, MigrateLocalUrls, SolidEngine, Sync, TypeIndex, TypeRegistration, type Engine, type ManagesContainers} from "soukai-bis";
+import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
 import type {SyncService, SyncOutcome} from "../../application/ports/SyncService.ts";
-import type {Collection} from "../shared/resource-identity.ts";
-import {LOCAL_BASE, rehomeUrl} from "../shared/resource-identity.ts";
-import {withLocalEngine, withRemoteEngine} from "../soukai/engineScope.ts";
+import {LOCAL_BASE} from "../shared/resource-identity.ts";
+import {withLocalEngine} from "../soukai/engineScope.ts";
+import {POD_CONTAINER_PATH} from "./podContainerPath.ts";
 import {SoukaiCellar} from "../soukai/model/SoukaiCellar.ts";
-import {SoukaiBottle} from "../soukai/model/SoukaiBottle.ts";
 import {SoukaiProduct} from "../soukai/model/SoukaiProduct.ts";
+import {SoukaiBottle} from "../soukai/model/SoukaiBottle.ts";
 import {SoukaiOrder} from "../soukai/model/SoukaiOrder.ts";
-import {SoukaiOrderItem} from "../soukai/model/SoukaiOrderItem.ts";
-import {SoukaiSeller} from "../soukai/model/SoukaiSeller.ts";
-import {SoukaiCustomer} from "../soukai/model/SoukaiCustomer.ts";
-import {SoukaiContactPoint} from "../soukai/model/SoukaiContactPoint.ts";
 
-/** A SolidModel class with the static members the sweep relies on. */
-type ModelClass = {
-    new (attributes?: object): SolidModel;
-    from(container: string): {all(): Promise<SolidModel[]>};
-    find(url: string): Promise<SolidModel | null>;
-    synchronize(a: SolidModel, b: SolidModel): Promise<void>;
-};
-
-interface CollectionSpec {
-    collection: Collection;
-    model: ModelClass;
-    /** Cross-resource reference fields whose `local://` values must be re-homed. */
-    refFields: string[];
-    /**
-     * The resource embeds same-document relations that must travel with it
-     * (orders embed their seller, customer, and order items). A `getAttributes()`
-     * reconstruction drops those related models, so such resources are rebuilt
-     * via `rebuildOrder` — loading the relations and re-creating them attached —
-     * whenever they are re-homed or created on either side.
-     */
-    embedded?: boolean;
-}
+/** The local engine must manage containers (for MigrateLocalUrls / Sync). */
+type LocalEngine = Engine & ManagesContainers;
 
 /**
- * Reconciles local (IndexedDB) state with the Pod via soukai-solid. This is the
+ * The four aggregate roots, each under its Pod subcontainer
+ * (`{storage}private/kellermeister/v1/<collection>/`). Same-document relations
+ * (an order's seller/customer/items, a product's ratings) travel inside their
+ * parent document, so only the roots are registered/synced.
+ */
+const APPLICATION_MODELS = [
+    {model: SoukaiCellar, collection: "cellars"},
+    {model: SoukaiProduct, collection: "products"},
+    {model: SoukaiBottle, collection: "bottles"},
+    {model: SoukaiOrder, collection: "orders"},
+] as const;
+
+/**
+ * Reconciles local (IndexedDB) state with the Pod using soukai-bis. This is the
  * ONLY component that reaches the Pod for domain data.
  *
- * Per collection:
- *   1. Re-home — migrate provisional (`local://…`) resources to deterministic
- *      Pod URLs locally (idempotent), rewriting their cross-resource references.
- *   2. Sweep   — union of local + remote by URL:
- *      - both present → `synchronize()` (LWW + soft-delete propagation), persist both
- *      - local-only, live → CREATE on the Pod
- *      - remote-only, live → CREATE locally
+ * Two phases:
+ *   1. Re-home — migrate provisional (`local://…`) resources to deterministic Pod
+ *      URLs in the local store, rewriting their cross-resource references, via
+ *      soukai-bis's `MigrateLocalUrls` (plus a fixup for the one reference it can
+ *      not touch — see `fixCellarReferences`).
+ *   2. Sync    — push/pull whole documents between the local and Pod engines with
+ *      soukai-bis's `Sync` job (operation-log + type-index driven). Last-write and
+ *      soft-delete (tombstone) propagation are handled by the job.
  */
 export class SolidSyncService implements SyncService {
 
-    private readonly specs: CollectionSpec[] = [
-        {collection: "cellars", model: SoukaiCellar as unknown as ModelClass, refFields: []},
-        {collection: "products", model: SoukaiProduct as unknown as ModelClass, refFields: ["orderItemUrl"]},
-        {collection: "bottles", model: SoukaiBottle as unknown as ModelClass, refFields: ["productUrl", "cellarUrl"]},
-        {collection: "orders", model: SoukaiOrder as unknown as ModelClass, refFields: [], embedded: true},
-    ];
-
     /**
-     * @param remoteEngine builds the engine used for Pod reads/writes. Defaults
-     *   to `SolidEngine` over the authenticated fetch; overridable in tests to
-     *   simulate the remote with a local engine.
+     * @param remoteEngine builds the engine used for Pod reads/writes. Defaults to
+     *   `SolidEngine` over the authenticated fetch; overridable in tests.
+     * @param fetchProfile loads the `SolidUserProfile` Sync needs (storage roots,
+     *   type-index location). Defaults to solid-utils; overridable in tests.
+     * @param localEngine the local (IndexedDB) engine. Defaults to the global
+     *   engine; overridable in tests.
      */
     constructor(
         private readonly auth: AuthService,
         private readonly podBase: () => string | null,
-        private readonly remoteEngine: (session: SolidSession) => Engine = (session) => new SolidEngine(session.fetch),
+        private readonly remoteEngine: (session: SolidSession) => SolidEngine = (session) => new SolidEngine({fetch: session.fetch}),
+        private readonly fetchProfile: (session: SolidSession) => Promise<SolidUserProfile | null> =
+            (session) => fetchLoginUserProfile(session.webId as string, {fetch: session.fetch}),
+        private readonly localEngine: () => LocalEngine = () => getEngine() as LocalEngine,
     ) {
     }
 
@@ -79,164 +68,82 @@ export class SolidSyncService implements SyncService {
         if (!base) {
             throw new Error("Cannot synchronize before the Pod container is resolved.");
         }
-        const solidEngine = this.remoteEngine(session);
-
-        let reconciled = 0;
-        for (const spec of this.specs) {
-            reconciled += await this.rehome(spec, base);
-            reconciled += await this.sweep(spec, base, solidEngine);
+        const profile = await this.fetchProfile(session);
+        if (!profile) {
+            throw new Error("Cannot synchronize: could not load the Solid user profile.");
         }
-        return {reconciled};
+
+        const localEngine = this.localEngine();
+
+        // 1. Re-home provisional resources to their Pod URLs (local, in place).
+        const rehomed = await this.rehome(localEngine, base);
+
+        // 2. Reconcile local and Pod documents. Pull reads the containers listed
+        // in the type index, so give Sync a type index that registers our four
+        // containers — the legacy Pod has none, and without it pull finds nothing.
+        let synced = 0;
+        await Sync.run({
+            userProfile: profile,
+            localEngine,
+            remoteEngine: this.remoteEngine(session),
+            typeIndexes: [this.buildTypeIndex(base)],
+            applicationModels: APPLICATION_MODELS.map(({model, collection}) => ({
+                model,
+                registration: {path: `${POD_CONTAINER_PATH}${collection}`},
+            })),
+            onFinished: ({syncedDocumentUrls}) => {
+                synced = syncedDocumentUrls.size;
+            },
+        });
+
+        return {reconciled: rehomed + synced};
     }
 
     /**
-     * Migrate provisional resources of a collection to their deterministic Pod
-     * URL locally (rewriting cross-references), then drop the provisional record.
-     * Provisional resources deleted before ever syncing are purged. Idempotent.
-     * Purely local work, so the whole migration runs in one gated scope.
+     * An in-memory private type index registering each aggregate's Pod container
+     * (`{base}<collection>/`). Sync's pull discovers documents to fetch from the
+     * containers listed here; the legacy Pod data was written under fixed paths
+     * with no type index, so we supply one rather than depend on the Pod's.
      */
-    private async rehome(spec: CollectionSpec, base: string): Promise<number> {
-        return await withLocalEngine(() => this.rehomeLocally(spec, base));
-    }
-
-    private async rehomeLocally(spec: CollectionSpec, base: string): Promise<number> {
-        const provisional = await spec.model.from(`${LOCAL_BASE}${spec.collection}/`).all();
-        let rehomed = 0;
-        for (const model of provisional) {
-            if (model.isSoftDeleted()) {
-                await model.forceDelete(); // never synced → just drop it locally
-                continue;
-            }
-            const podUrl = rehomeUrl(base, model.url);
-            const existing = await spec.model.find(podUrl);
-            if (!existing) {
-                if (spec.embedded) {
-                    // Carry the embedded seller/customer/items into the new document.
-                    await this.loadEmbedded(model);
-                    await this.rebuildOrder(model, podUrl, base).save();
-                } else {
-                    const attributes: Record<string, unknown> = {...model.getAttributes(), url: podUrl};
-                    for (const field of spec.refFields) {
-                        const value = attributes[field];
-                        if (typeof value === "string") {
-                            attributes[field] = rehomeUrl(base, value);
-                        }
-                    }
-                    await new spec.model(attributes).save();
-                }
-            }
-            await model.forceDelete(); // remove the provisional record
-            rehomed++;
-        }
-        return rehomed;
-    }
-
-    private async sweep(spec: CollectionSpec, base: string, solidEngine: Engine): Promise<number> {
-        const container = `${base}${spec.collection}/`;
-        // The embedded seller/customer/items must be loaded so they survive
-        // synchronize()/create — each side under the engine that read it.
-        const localModels = await withLocalEngine(async () => {
-            const models = await spec.model.from(container).all();
-            if (spec.embedded) {
-                for (const m of models) {
-                    await this.loadEmbedded(m);
-                }
-            }
-            return models;
-        });
-        const remoteModels = await withRemoteEngine(solidEngine, async () => {
-            const models = await spec.model.from(container).all();
-            if (spec.embedded) {
-                for (const m of models) {
-                    await this.loadEmbedded(m);
-                }
-            }
-            return models;
-        });
-
-        const localByUrl = new Map(localModels.map((m) => [m.url, m]));
-        const remoteByUrl = new Map(remoteModels.map((m) => [m.url, m]));
-        const urls = new Set<string>([...localByUrl.keys(), ...remoteByUrl.keys()]);
-
-        let reconciled = 0;
-        for (const url of urls) {
-            const local = localByUrl.get(url);
-            const remote = remoteByUrl.get(url);
-
-            if (local && remote) {
-                await withLocalEngine(async () => {
-                    await spec.model.synchronize(local, remote);
-                    await local.save();
-                });
-                await withRemoteEngine(solidEngine, () => remote.save());
-                reconciled++;
-            } else if (local && !remote && !local.isSoftDeleted()) {
-                await withRemoteEngine(solidEngine, () => spec.embedded
-                    ? this.rebuildOrder(local, local.url, base).save()
-                    : new spec.model(local.getAttributes()).save());
-                reconciled++;
-            } else if (!local && remote && !remote.isSoftDeleted()) {
-                await withLocalEngine(() => spec.embedded
-                    ? this.rebuildOrder(remote, remote.url, base).save()
-                    : new spec.model(remote.getAttributes()).save());
-                reconciled++;
-            }
-        }
-        return reconciled;
-    }
-
-    /** Load an order's same-document relations so they travel on re-home/create. */
-    private async loadEmbedded(order: SolidModel): Promise<void> {
-        const o = order as SoukaiOrder;
-        await o.loadRelationIfUnloaded("seller");
-        await o.loadRelationIfUnloaded("customer");
-        // The customer's contactPoint is nested one level deeper (also same-document).
-        await o.customer?.loadRelationIfUnloaded("contactPoint");
-        await o.loadRelationIfUnloaded("positions");
-    }
-
-    /**
-     * Rebuild an order as a fresh, unsaved model rooted at `targetUrl`, re-creating
-     * its embedded seller, customer, and order items so a subsequent `save()`
-     * writes them into the one document. Each item's cross-resource `productUrl`
-     * is re-homed to `base` (the product is its own resource, swept separately and
-     * re-homed first). Mirrors ingestion's factory build — the proven
-     * same-document embedding path — which a `getAttributes()`-only reconstruction
-     * cannot reproduce (it drops the related models entirely).
-     */
-    private rebuildOrder(source: SolidModel, targetUrl: string, base: string): SoukaiOrder {
-        const src = source as SoukaiOrder;
-        const order = new SoukaiOrder({
-            orderNumber: src.orderNumber,
-            orderDate: src.orderDate,
-        });
-        if (src.seller) {
-            order.seller = new SoukaiSeller({name: src.seller.name, email: src.seller.email, homepage: src.seller.homepage});
-        }
-        if (src.customer) {
-            const customer = new SoukaiCustomer({name: src.customer.name, email: src.customer.email, address: src.customer.address});
-            if (src.customer.contactPoint) {
-                // Rebuild the nested contactPoint so it re-homes within the document.
-                customer.contactPoint = new SoukaiContactPoint({
-                    name: src.customer.contactPoint.name,
-                    email: src.customer.contactPoint.email,
-                });
-            }
-            order.customer = customer;
-        }
-        for (const item of src.positions ?? []) {
-            const rebuiltItem = new SoukaiOrderItem({
-                orderQuantity: item.orderQuantity,
-                price: item.price,
-                priceCurrency: item.priceCurrency,
-                productUrl: item.productUrl ? rehomeUrl(base, item.productUrl) : item.productUrl,
+    private buildTypeIndex(base: string): TypeIndex {
+        const typeIndex = new TypeIndex({url: `${base}typeindex#it`});
+        for (const {model, collection} of APPLICATION_MODELS) {
+            const registration = new TypeRegistration({
+                forClass: model.schema.rdfClasses.map((rdfClass) => rdfClass.value),
+                instanceContainer: `${base}${collection}/`,
             });
-            rebuiltItem.relatedOrder.addRelated(order);
-            order.addOrderItem(rebuiltItem);
+            typeIndex.relatedRegistrations.addRelated(registration);
         }
-        const documentUrl = targetUrl.split("#")[0];
-        const resourceHash = targetUrl.split("#")[1] ?? "it";
-        order.mintUrl(documentUrl, false, resourceHash);
-        return order;
+        return typeIndex;
+    }
+
+    /**
+     * Migrate every provisional `local://…` resource to its deterministic Pod URL
+     * in the local store. `MigrateLocalUrls` rewrites container URLs, document
+     * URLs, and cross-references stored as IRIs (NamedNodes: productUrl, orderUrl,
+     * seller/customer/positions, ratings, …). It cannot touch a reference stored
+     * as a string literal, which `cellarUrl` is (kept a literal for on-Pod
+     * compatibility) — so those are fixed up separately. Idempotent.
+     */
+    async rehome(localEngine: LocalEngine, base: string): Promise<number> {
+        await MigrateLocalUrls.run({engine: localEngine, migrations: {[LOCAL_BASE]: base}});
+        return await withLocalEngine(() => this.fixCellarReferences(base));
+    }
+
+    /**
+     * Rewrite bottles' `cellarUrl` (a string literal, not an IRI) from the
+     * provisional `local://` scheme to the Pod base, so a re-homed bottle still
+     * points at its (also re-homed) cellar.
+     */
+    private async fixCellarReferences(base: string): Promise<number> {
+        let fixed = 0;
+        for (const bottle of await SoukaiBottle.all({from: `${base}bottles/`})) {
+            if (bottle.cellarUrl?.startsWith(LOCAL_BASE)) {
+                bottle.cellarUrl = `${base}${bottle.cellarUrl.substring(LOCAL_BASE.length)}`;
+                await bottle.save();
+                fixed++;
+            }
+        }
+        return fixed;
     }
 }

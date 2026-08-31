@@ -1,10 +1,11 @@
 // This is the entry file used in createHtmlPlugin of vite.config.ts.
 
+import "soukai-bis/patch-zod";
 import {getBuildVersion} from './utils.ts';
 // Routing
 import {initRouter} from './router.ts';
-import {IndexedDBEngine, setEngine} from "soukai";
-import {bootSolidModels} from "soukai-solid";
+import {IndexedDBEngine, setEngine, setNamespace} from "soukai-bis";
+import {bootSoukaiModels} from "../soukai/bootModels.ts";
 import {CDI} from "../cdi/CDI.ts";
 import {ConnectivityMonitor} from "../solid/ConnectivityMonitor.ts";
 
@@ -17,9 +18,12 @@ void (async () => {
 
     // Local-first: the global engine is IndexedDB, so all ordinary reads/writes
     // are local and offline-capable. The Pod is reached only by the sync layer
-    // via a scoped `withEngine(SolidEngine, …)`.
-    bootSolidModels();
-    setEngine(new IndexedDBEngine("kellermeister"));
+    // via a scoped `runWithEngine(SolidEngine, …)`.
+    // soukai-bis names the IndexedDB database after the global namespace (the
+    // constructor no longer takes a name), so set it before creating the engine.
+    setNamespace("kellermeister");
+    bootSoukaiModels();
+    setEngine(new IndexedDBEngine());
 
     try {
         // initialize router

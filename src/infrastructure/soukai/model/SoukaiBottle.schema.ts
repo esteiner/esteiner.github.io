@@ -1,36 +1,36 @@
-import {FieldType} from "soukai";
-import {defineSolidModelSchema} from "soukai-solid";
+import "soukai-bis/patch-zod";
+import {belongsToOne, defineSchema, requireBootedModel} from "soukai-bis";
+import {number, string, url} from "zod";
 
 // https://schema.org/ListItem
-export default defineSolidModelSchema({
+export default defineSchema({
     rdfContexts: {
-        schema: 'https://schema.org/'
+        schema: "https://schema.org/",
     },
-    rdfsClasses: ['schema:ListItem'],
+    rdfClass: "schema:ListItem",
     timestamps: true,
     history: true,
 
     fields: {
-        productUrl: {
-            type: FieldType.Key,
-            rdfProperty: 'schema:subjectOf'
-        },
-        cellarUrl: {
-            type: FieldType.String,
-            rdfProperty: "schema:cellar",
-            required: true,
-        },
-        orderItemId: FieldType.Key,
+        productUrl: url().optional().rdfProperty("schema:subjectOf"),
+        // `cellarUrl` is stored as a plain string literal (not an IRI), matching
+        // the legacy schema which typed it as String rather than Key.
+        cellarUrl: string().rdfProperty("schema:cellar"),
+        orderItemId: url().optional().rdfProperty("schema:orderItemId"),
 
         // Legacy: rating moved to Product (as schema:Rating instances). Kept here
         // only so old pods (where rating was a number on the ListItem) remain
         // readable. New bottles do not write this — see Product.getRatings().
-        rating: FieldType.Number,
+        rating: number().optional().rdfProperty("schema:rating"),
 
         // Legacy: price/priceCurrency moved to Product. Kept here only so old
         // pods (where these fields were written on the ListItem) remain readable.
         // New bottles do not write these — see Bottle.getPrice()/getPriceCurrency().
-        price: FieldType.Number,
-        priceCurrency: FieldType.String
-    }
+        price: number().optional().rdfProperty("schema:price"),
+        priceCurrency: string().optional().rdfProperty("schema:priceCurrency"),
+    },
+
+    relations: {
+        product: belongsToOne(() => requireBootedModel("SoukaiProduct"), "productUrl"),
+    },
 });

@@ -5,7 +5,7 @@ import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 export class SoukaiCellar extends Model implements Cellar {
 
     getId(): string {
-        return this.url;
+        return this.url as string;
     }
     getName(): string {
         return this.orUndefined(this.name);
@@ -18,6 +18,3 @@ export class SoukaiCellar extends Model implements Cellar {
         return value ? value : undefined;
     }
 }
-
-// Local-first: retain the operation log and propagate deletions across devices.
-SoukaiCellar.useSoftDeletes(true);

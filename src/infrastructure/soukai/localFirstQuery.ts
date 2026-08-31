@@ -1,4 +1,4 @@
-import type {SolidModel} from "soukai-solid";
+import type {Model} from "soukai-bis";
 import type {Collection} from "../shared/resource-identity.ts";
 import {LOCAL_BASE} from "../shared/resource-identity.ts";
 import {withLocalEngine} from "./engineScope.ts";
@@ -9,34 +9,36 @@ export function localContainer(collection: Collection): string {
 }
 
 interface QueryableModel<T> {
-    from(container: string): {all(): Promise<T[]>};
+    all(options?: {from?: string}): Promise<T[]>;
 }
 
 /**
  * Read all live resources of a collection from IndexedDB: the union of the
  * local scheme (`local://<collection>/`) and, if the Pod base is known, the
- * re-homed Pod subcontainer. Soft-deleted records are filtered out and results
- * are de-duplicated by URL.
+ * re-homed Pod subcontainer, de-duplicated by URL.
+ *
+ * Soft-deleted (tombstoned) records are excluded automatically — soukai-bis
+ * swaps a tombstoned document's type, so `all()` never returns it.
  *
  * Runs inside the engine gate, so it is never routed to the Pod engine while the
  * sync layer holds it.
  */
-export async function fetchLive<T extends SolidModel>(
+export async function fetchLive<T extends Model>(
     ModelClass: QueryableModel<T>,
     collection: Collection,
     podBase: string | null,
 ): Promise<T[]> {
     const byUrl = await withLocalEngine(async () => {
         const found = new Map<string, T>();
-        for (const model of await ModelClass.from(localContainer(collection)).all()) {
-            found.set(model.url, model);
+        for (const model of await ModelClass.all({from: localContainer(collection)})) {
+            found.set(model.url as string, model);
         }
         if (podBase) {
-            for (const model of await ModelClass.from(`${podBase}${collection}/`).all()) {
-                found.set(model.url, model);
+            for (const model of await ModelClass.all({from: `${podBase}${collection}/`})) {
+                found.set(model.url as string, model);
             }
         }
         return found;
     });
-    return [...byUrl.values()].filter((model) => !model.isSoftDeleted());
+    return [...byUrl.values()];
 }

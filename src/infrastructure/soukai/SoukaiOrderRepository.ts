@@ -1,14 +1,10 @@
 import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
 import type {Order} from "../../domain/Order/Order.ts";
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
-import {SoukaiOrderItem} from "./model/SoukaiOrderItem.ts";
-import {SoukaiSeller} from "./model/SoukaiSeller.ts";
-import {SoukaiCustomer} from "./model/SoukaiCustomer.ts";
-import {SoukaiContactPoint} from "./model/SoukaiContactPoint.ts";
-import {bootModels, type Engine} from "soukai";
-import {SolidEngine} from "soukai-solid";
+import {SolidEngine, type Engine} from "soukai-bis";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
+import {bootSoukaiModels} from "./bootModels.ts";
 import {fetchLive} from "./localFirstQuery.ts";
 import {withLocalEngine, withRemoteEngine} from "./engineScope.ts";
 
@@ -33,9 +29,9 @@ export class SoukaiOrderRepository implements OrderRepository {
         private readonly podBase: () => string | null,
         private readonly inboxContainer: () => string | null,
         private readonly auth: AuthService,
-        private readonly inboxEngine: (session: SolidSession) => Engine = (session) => new SolidEngine(session.fetch),
+        private readonly inboxEngine: (session: SolidSession) => Engine = (session) => new SolidEngine({fetch: session.fetch}),
     ) {
-        bootModels({SoukaiOrder, SoukaiOrderItem, SoukaiSeller, SoukaiCustomer, SoukaiContactPoint});
+        bootSoukaiModels();
     }
 
     async fetchOrders(): Promise<Order[]> {
@@ -66,7 +62,7 @@ export class SoukaiOrderRepository implements OrderRepository {
             return [];
         }
         return await withRemoteEngine(this.inboxEngine(session), async () => {
-            const orders = await SoukaiOrder.from(inbox).all();
+            const orders = await SoukaiOrder.all({from: inbox});
             for (const order of orders) {
                 await order.loadRelation("seller");
                 await order.loadRelation("customer");
@@ -80,14 +76,16 @@ export class SoukaiOrderRepository implements OrderRepository {
     }
 
     async fetchOrderById(orderId: string): Promise<Order | null> {
+        // A tombstoned (soft-deleted) order is no longer an Order document, so
+        // `find` returns null — no explicit soft-delete check needed.
         const order = await withLocalEngine(() => SoukaiOrder.find(orderId));
-        return order && !order.isSoftDeleted() ? order : null;
+        return order ?? null;
     }
 
     async saveProcessedOrder(order: Order): Promise<Order> {
         if (order instanceof SoukaiOrder) {
             const uuid = globalThis.crypto.randomUUID();
-            order.mintUrl(`local://orders/${uuid}`, false, "it");
+            order.mintUrl({documentUrl: `local://orders/${uuid}`, documentExists: false, resourceHash: "it"});
             return await withLocalEngine(() => order.save());
         }
         throw new Error("Order must be of type SoukaiOrder");
@@ -98,7 +96,7 @@ export class SoukaiOrderRepository implements OrderRepository {
         if (!session.isLoggedIn || !(order instanceof SoukaiOrder)) {
             return;
         }
-        const sourceUrl = order.getSourceDocumentUrl();
+        const sourceUrl = order.getDocumentUrl();
         if (sourceUrl) {
             await deleteSolidDataset(sourceUrl, {fetch: session.fetch});
         }

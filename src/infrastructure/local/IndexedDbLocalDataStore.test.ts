@@ -3,18 +3,14 @@
  * database go, the Pod container base goes (in localStorage AND in memory), and
  * the login WebID list survives.
  */
-import "fake-indexeddb/auto";
 import {describe, it, expect, beforeEach, afterEach} from "vitest";
-import {bootModels, closeEngineConnections, IndexedDBEngine, setEngine} from "soukai";
-import {bootSolidModels} from "soukai-solid";
+import {getEngine, IndexedDBEngine} from "soukai-bis";
 
+import {installIndexedDbEngine} from "../../testing/soukai.ts";
 import {IndexedDbLocalDataStore} from "./IndexedDbLocalDataStore.ts";
 import {IndexedDbAppStateStore} from "./IndexedDbAppStateStore.ts";
 import {PodContainerRegistry} from "../solid/PodContainerRegistry.ts";
 import {SoukaiCellar} from "../soukai/model/SoukaiCellar.ts";
-
-bootSolidModels();
-bootModels({SoukaiCellar});
 
 const BASE = "https://alice.pod/private/kellermeister/v1/";
 const WEBID_HISTORY_KEY = "kellermeister_webid_history";
@@ -39,9 +35,9 @@ let wipe: IndexedDbLocalDataStore;
 
 beforeEach(async () => {
     stubLocalStorage({[WEBID_HISTORY_KEY]: HISTORY});
-    // A database per test: `purgeDatabase()` is blocked by connections held by
-    // OTHER engine instances, and each test installs a fresh engine.
-    setEngine(new IndexedDBEngine(`wipe-${dbCounter++}`));
+    // A unique namespace per test => its own IndexedDB database (soukai-bis names
+    // the database after the global namespace, not a constructor argument).
+    installIndexedDbEngine(`wipe-${dbCounter++}`);
     registry = new PodContainerRegistry();
     registry.set(BASE);
     appState = new IndexedDbAppStateStore();
@@ -49,7 +45,10 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    await closeEngineConnections();
+    const engine = getEngine();
+    if (engine instanceof IndexedDBEngine) {
+        await engine.close();
+    }
 });
 
 describe("IndexedDbLocalDataStore", () => {
@@ -59,11 +58,11 @@ describe("IndexedDbLocalDataStore", () => {
         await appState.setWebId("https://alice.pod/profile#me");
         await appState.setLastSyncedAt(new Date("2026-08-20T10:00:00.000Z"));
         await appState.setSyncPending(true);
-        expect(await SoukaiCellar.from(`${BASE}cellars/`).all()).toHaveLength(1);
+        expect(await SoukaiCellar.all({from: `${BASE}cellars/`})).toHaveLength(1);
 
         await wipe.wipe();
 
-        expect(await SoukaiCellar.from(`${BASE}cellars/`).all()).toEqual([]);
+        expect(await SoukaiCellar.all({from: `${BASE}cellars/`})).toEqual([]);
         expect(await new IndexedDbAppStateStore().getWebId()).toBeNull();
         expect(await new IndexedDbAppStateStore().getLastSyncedAt()).toBeNull();
         expect(await new IndexedDbAppStateStore().isSyncPending()).toBe(false);
@@ -89,7 +88,7 @@ describe("IndexedDbLocalDataStore", () => {
         await wipe.wipe();
 
         await new SoukaiCellar({url: `${BASE}cellars/new#it`, name: "Neu"}).save();
-        const cellars = await SoukaiCellar.from(`${BASE}cellars/`).all();
+        const cellars = await SoukaiCellar.all({from: `${BASE}cellars/`});
         expect(cellars.map((c) => c.name)).toEqual(["Neu"]);
     });
 });

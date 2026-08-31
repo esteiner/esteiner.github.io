@@ -21,7 +21,7 @@ export class SoukaiOrderFactory implements OrderFactory {
             newSeller.name = order.getSeller()?.getName();
             newSeller.email = order.getSeller()?.getEmail();
             newSeller.homepage = order.getSeller()?.getUrl();
-            newOrder.seller = newSeller;
+            newOrder.relatedSeller.setRelated(newSeller);
         } else {
             console.log("createOrder: no seller found");
         }
@@ -38,11 +38,11 @@ export class SoukaiOrderFactory implements OrderFactory {
                 const newContactPoint = new SoukaiContactPoint();
                 newContactPoint.name = sourceCustomer.contactPoint.getName();
                 newContactPoint.email = sourceCustomer.contactPoint.getEmail();
-                newCustomer.contactPoint = newContactPoint;
+                newCustomer.relatedContactPoint.setRelated(newContactPoint);
             } else {
                 newCustomer.email = sourceCustomer.getEmail();
             }
-            newOrder.customer = newCustomer;
+            newOrder.relatedCustomer.setRelated(newCustomer);
         } else {
             console.log("createOrder: no customer found");
         }
@@ -55,14 +55,14 @@ export class SoukaiOrderFactory implements OrderFactory {
         newOrderItem.price = orderItem.getPrice();
         newOrderItem.priceCurrency = orderItem.getPriceCurrency();
         if (order instanceof SoukaiOrder) {
-            newOrderItem.relatedOrder.addRelated(order);
+            newOrderItem.relatedOrder.setRelated(order);
         }
         return newOrderItem;
     }
 
     linkProduct(orderItem: OrderItem, product: Product): void {
         if (orderItem instanceof SoukaiOrderItem && product instanceof SoukaiProduct) {
-            orderItem.relatedProduct.addRelated(product);
+            orderItem.relatedProduct.setRelated(product);
         }
     }
 

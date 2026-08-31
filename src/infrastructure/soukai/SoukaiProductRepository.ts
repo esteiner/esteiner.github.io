@@ -1,8 +1,7 @@
 import type {ProductRepository} from "../../domain/Product/ProductRepository.ts";
 import type {Product} from "../../domain/Product/Product.ts";
 import {SoukaiProduct} from "./model/SoukaiProduct.ts";
-import {SoukaiRating} from "./model/SoukaiRating.ts";
-import {bootModels} from "soukai";
+import {bootSoukaiModels} from "./bootModels.ts";
 import {fetchLive} from "./localFirstQuery.ts";
 import {mintProvisional} from "../shared/resource-identity.ts";
 import {withLocalEngine} from "./engineScope.ts";
@@ -14,7 +13,7 @@ import {withLocalEngine} from "./engineScope.ts";
 export class SoukaiProductRepository implements ProductRepository {
 
     constructor(private readonly podBase: () => string | null) {
-        bootModels({SoukaiProduct, SoukaiRating});
+        bootSoukaiModels();
     }
 
     async save(product: Product): Promise<Product> {
@@ -29,7 +28,9 @@ export class SoukaiProductRepository implements ProductRepository {
     async fetchById(productId: string): Promise<Product | null> {
         return await withLocalEngine(async () => {
             const model = await SoukaiProduct.find(productId);
-            if (!model || model.isSoftDeleted()) {
+            if (!model) {
+                // A tombstoned (soft-deleted) product is no longer a Product
+                // document, so `find` returns null — no explicit check needed.
                 return null;
             }
             await model.loadRelation("ratings");
