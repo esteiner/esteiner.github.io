@@ -21,6 +21,10 @@
 
 /.env.local
 
+# E2E test credentials and auth state
+/e2e/.env
+/e2e/.auth/
+
 # LLMs
 CLAUDE.local.md
 **/.claude/settings.local.json
