@@ -1,0 +1,33 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#e4b0808e-48ca-4b3c-b53a-dfb1b4c3594f>;
+    <https://schema.org/orderDate> "2022-01-10T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1000626";
+    <https://schema.org/orderedItem> <#b9d9eec5-eff5-4913-a786-f51f0720e51c>, <#d72886f3-1a30-4bef-b802-111b28628081>;
+    <https://schema.org/seller> <#a78dcd88-23ab-4824-a3c0-d54be59354f5>.
+<#e4b0808e-48ca-4b3c-b53a-dfb1b4c3594f> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Steiner Sonja";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#74a4b12b-dad3-4db0-92de-9d128df19bb4>.
+<#b9d9eec5-eff5-4913-a786-f51f0720e51c> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/2fe4d288-80e6-4b94-a1f6-ef73c8e76396#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#d72886f3-1a30-4bef-b802-111b28628081> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/86234b49-f677-46e3-88b5-268484fac7f4#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 55;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#a78dcd88-23ab-4824-a3c0-d54be59354f5> a <https://schema.org/Organization>;
+    <https://schema.org/email> "mail@studer-vinothek.ch";
+    <https://schema.org/name> "Carl Studer Vinothek AG";
+    <https://schema.org/url> <https://www.studer-vinothek.ch>.
+<#74a4b12b-dad3-4db0-92de-9d128df19bb4> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Steiner Sonja".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:37.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:37.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

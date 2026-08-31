@@ -1,0 +1,7 @@
+<#it> a <https://schema.org/Room>;
+    <https://schema.org/name> "Altglass";
+    <km:displayOrder> -1.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T13:55:50.880Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T13:55:50.880Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

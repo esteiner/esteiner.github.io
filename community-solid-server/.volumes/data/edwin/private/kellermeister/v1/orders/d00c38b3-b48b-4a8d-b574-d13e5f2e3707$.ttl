@@ -1,0 +1,33 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#514ce3d2-6dae-4832-96a4-6754d4b985f6>;
+    <https://schema.org/orderDate> "2022-04-27T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "949799";
+    <https://schema.org/orderedItem> <#f0372756-85ca-4d7d-8bf8-937501ece9a1>, <#2fd123db-d6a6-4b60-a5ca-14950917f928>;
+    <https://schema.org/seller> <#1d8b9487-ebb2-430b-b1be-21de6d1dab03>.
+<#514ce3d2-6dae-4832-96a4-6754d4b985f6> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#63b4df1a-637d-4038-8420-f0c1e5193efe>.
+<#f0372756-85ca-4d7d-8bf8-937501ece9a1> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/ab28c657-9e52-4bb2-8039-db31d662772a#it>;
+    <https://schema.org/orderQuantity> 3;
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#2fd123db-d6a6-4b60-a5ca-14950917f928> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/6f2a7994-88fc-4495-a2b0-2d7322518549#it>;
+    <https://schema.org/orderQuantity> 3;
+    <https://schema.org/price> 38;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#1d8b9487-ebb2-430b-b1be-21de6d1dab03> a <https://schema.org/Organization>;
+    <https://schema.org/email> "mail@flaschenpost.ch";
+    <https://schema.org/name> "Flaschenpost";
+    <https://schema.org/url> <https://www.flaschenpost.ch>.
+<#63b4df1a-637d-4038-8420-f0c1e5193efe> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Frau Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:38.824Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:38.824Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

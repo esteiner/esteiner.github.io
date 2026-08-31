@@ -1,0 +1,33 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#1927c26c-6bde-41c9-9582-09201debed76>;
+    <https://schema.org/orderDate> "2023-05-24T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "cart-23052407120151ak";
+    <https://schema.org/orderedItem> <#fa1129af-9c09-4bea-9d8c-471e72bc2228>, <#96ae875c-4c9e-47de-ae90-2a5de2444a41>;
+    <https://schema.org/seller> <#bfa7daf4-a2c0-4a2b-acae-d7d28e5d6cfd>.
+<#1927c26c-6bde-41c9-9582-09201debed76> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9 5., 6003 Luzern, CH";
+    <https://schema.org/contactPoint> <#66f32671-044d-4845-a1f4-631f0eaf280a>.
+<#fa1129af-9c09-4bea-9d8c-471e72bc2228> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/866b34a7-f0a0-4062-a58e-030081c6cdf0#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 56;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#96ae875c-4c9e-47de-ae90-2a5de2444a41> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/63acef15-1005-4a8b-8814-8ef21342fcc5#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 70;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#bfa7daf4-a2c0-4a2b-acae-d7d28e5d6cfd> a <https://schema.org/Organization>;
+    <https://schema.org/email> "kontakt@millesima.com";
+    <https://schema.org/name> "Millésima Schweiz";
+    <https://schema.org/url> <https://www.millesima.com>.
+<#66f32671-044d-4845-a1f4-631f0eaf280a> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:37.229Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:37.229Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

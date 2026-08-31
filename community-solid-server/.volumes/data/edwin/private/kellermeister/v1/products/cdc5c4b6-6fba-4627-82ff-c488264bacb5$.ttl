@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Louis Latour Montagny 1er Cru La Grande Roche 2023";
+    <https://schema.org/price> 30;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "8-10 Monate in Edelstahltanks und teilweise Eichenfässern";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Louis Latour";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "1er Cru AC";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Montagny, Côte Chalonnaise, Burgund";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay 100%";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Weisswein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Montagny 1er Cru La Grande Roche".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:57.290Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:57.290Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

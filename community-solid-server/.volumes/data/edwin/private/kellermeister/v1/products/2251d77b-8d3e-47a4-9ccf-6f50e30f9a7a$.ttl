@@ -1,0 +1,20 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Gosset Extra Brut";
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung ohne malolaktische Gärung";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Gosset";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Extra Brut";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Aÿ, Champagne";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2027-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2021-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Extra Brut".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:36.853Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:36.853Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

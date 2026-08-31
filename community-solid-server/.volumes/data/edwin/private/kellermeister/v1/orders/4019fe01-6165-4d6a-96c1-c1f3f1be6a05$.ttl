@@ -1,0 +1,27 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#e572829e-496c-4832-92cb-e0eeb429ac8c>;
+    <https://schema.org/orderDate> "2023-02-10T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "cart-230210075233233Lu";
+    <https://schema.org/orderedItem> <#24e3e199-981e-4f7d-a4ba-b1103fae8102>;
+    <https://schema.org/seller> <#90f8ae57-6bc3-488a-a949-b5cc2fd81cfa>.
+<#e572829e-496c-4832-92cb-e0eeb429ac8c> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, CH";
+    <https://schema.org/contactPoint> <#ab23e4d3-e252-400f-8774-e0679fc1498b>.
+<#24e3e199-981e-4f7d-a4ba-b1103fae8102> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/b1b573d9-ec97-46b1-8382-839e7068d20e#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 86;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#90f8ae57-6bc3-488a-a949-b5cc2fd81cfa> a <https://schema.org/Organization>;
+    <https://schema.org/email> "kontakt@millesima.com";
+    <https://schema.org/name> "Millesima Schweiz";
+    <https://schema.org/url> <https://www.millesima.com>.
+<#ab23e4d3-e252-400f-8774-e0679fc1498b> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:32.095Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:32.095Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

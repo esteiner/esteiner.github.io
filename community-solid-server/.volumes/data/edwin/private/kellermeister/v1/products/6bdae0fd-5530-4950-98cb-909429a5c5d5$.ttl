@@ -1,0 +1,20 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Monchiero Carbone Recit 2024";
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "13.5%";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Monchiero Carbone";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Roero Arneis DOCG";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Roero, Piemont";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Arneis";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2026-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Recit".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:44.732Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:44.732Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,27 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#b2d4073c-0aa9-4de5-ac21-c9f93f42fed5>;
+    <https://schema.org/orderDate> "2025-08-24T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "4798";
+    <https://schema.org/orderedItem> <#10a9d7ad-babe-4e6c-8d1c-2cf877ba7c4d>;
+    <https://schema.org/seller> <#531dc11a-1952-4196-bfc7-21b9c1164b42>.
+<#b2d4073c-0aa9-4de5-ac21-c9f93f42fed5> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#9ad53743-bd16-4e4a-bd80-bb2fa2a792d1>.
+<#10a9d7ad-babe-4e6c-8d1c-2cf877ba7c4d> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/93ab0a15-c5d3-4340-b41f-166d6a97fcf6#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 44;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#531dc11a-1952-4196-bfc7-21b9c1164b42> a <https://schema.org/Organization>;
+    <https://schema.org/email> "info@frote.ch";
+    <https://schema.org/name> "Domaine Frôté";
+    <https://schema.org/url> <https://frote.ch>.
+<#9ad53743-bd16-4e4a-bd80-bb2fa2a792d1> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:39.225Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:39.225Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

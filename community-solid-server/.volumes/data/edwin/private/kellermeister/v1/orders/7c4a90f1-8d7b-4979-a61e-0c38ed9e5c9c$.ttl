@@ -1,0 +1,45 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#dc01a63b-90a1-40c4-8ade-6d524e0387bb>;
+    <https://schema.org/orderDate> "2025-04-15T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1433678";
+    <https://schema.org/orderedItem> <#2eec8184-7cf3-4718-b04d-b311ec88d5ac>, <#bfe73202-13f4-482c-b58a-2c9de22da75e>, <#196fc313-029f-4d65-bd6d-0b81226f3466>, <#4cca50f8-f9c9-4d2a-bc8c-89f4a15ded6c>;
+    <https://schema.org/seller> <#0db8df79-fd75-49a3-a7de-fbd7ec28b464>.
+<#dc01a63b-90a1-40c4-8ade-6d524e0387bb> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#5b4084e0-4866-4a87-858c-584e0db668ad>.
+<#2eec8184-7cf3-4718-b04d-b311ec88d5ac> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/2d18666f-689b-46f8-add5-70d9bc96b6d9#it>;
+    <https://schema.org/orderQuantity> 4;
+    <https://schema.org/price> 59;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#bfe73202-13f4-482c-b58a-2c9de22da75e> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/123c1c7d-47a6-47fa-b942-261121d86a3c#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 51;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#196fc313-029f-4d65-bd6d-0b81226f3466> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/f637c136-a5a0-410d-9a08-452fa48769ad#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 56;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#4cca50f8-f9c9-4d2a-bc8c-89f4a15ded6c> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/31512f5b-98fd-44b6-965d-58545c652850#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 47;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#0db8df79-fd75-49a3-a7de-fbd7ec28b464> a <https://schema.org/Organization>;
+    <https://schema.org/email> "mail@flaschenpost.ch";
+    <https://schema.org/name> "Flaschenpost";
+    <https://schema.org/url> <https://www.flaschenpost.ch>.
+<#5b4084e0-4866-4a87-858c-584e0db668ad> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Frau Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:34.169Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:34.169Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

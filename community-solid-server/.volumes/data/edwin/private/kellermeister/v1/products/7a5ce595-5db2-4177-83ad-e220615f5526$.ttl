@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Louis Roederer Brut Premier 2012";
+    <https://schema.org/price> 42;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2012-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung, Hefelager";
+    <https://vocab.kellermeister.ch/wine/biologisch> "nein";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Louis Roederer";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Champagne AOC";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne, Reims";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Pinot Noir, Chardonnay, Pinot Meunier";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2027-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2012-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Brut Premier".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:47.069Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:47.069Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

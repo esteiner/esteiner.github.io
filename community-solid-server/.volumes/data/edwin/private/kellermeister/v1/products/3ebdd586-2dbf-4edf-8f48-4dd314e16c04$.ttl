@@ -1,0 +1,19 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Famille Delouvin Meunier perpetuel";
+    <https://schema.org/price> 40;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung, Solera-System";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Famille Delouvin";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Brut";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Pinot Meunier";
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Meunier perpetuel".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:00.978Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:00.978Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

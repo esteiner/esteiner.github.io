@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Château Pape Clément Pape Clément 2020";
+    <https://schema.org/price> 86;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2020-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "18 Monate in neuen französischen Eichenfässern";
+    <https://vocab.kellermeister.ch/wine/biologisch> "nein";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Château Pape Clément";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Grand Cru Classé de Graves";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Pessac-Léognan, Bordeaux";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Cabernet Sauvignon 55%, Merlot 45%";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2045-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2025-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Pape Clément".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:40.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:40.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

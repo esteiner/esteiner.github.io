@@ -1,0 +1,33 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#ffa5f406-2ed4-4c0a-971b-556b1799a4a1>;
+    <https://schema.org/orderDate> "2024-05-19T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1797385/3";
+    <https://schema.org/orderedItem> <#686bc9de-40d1-454a-bd7c-e97498c26044>, <#6fb67ee1-9b61-4146-8eb2-a0a8a0be50d4>;
+    <https://schema.org/seller> <#977a3a28-f806-480d-8627-e9ce92747123>.
+<#ffa5f406-2ed4-4c0a-971b-556b1799a4a1> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "ACONS IT Consulting GmbH, Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#197f3787-223f-4144-81f1-0bd6f824a5e4>.
+<#686bc9de-40d1-454a-bd7c-e97498c26044> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/b316662d-5678-4268-8f5e-83eb4780fc68#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 46;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#6fb67ee1-9b61-4146-8eb2-a0a8a0be50d4> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/b7216f02-a0d4-421a-acc3-7371e508d184#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 51;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#977a3a28-f806-480d-8627-e9ce92747123> a <https://schema.org/Organization>;
+    <https://schema.org/email> "contact@millesima.com";
+    <https://schema.org/name> "Millesima Suisse Sàrl";
+    <https://schema.org/url> <https://www.millesima.ch>.
+<#197f3787-223f-4144-81f1-0bd6f824a5e4> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Frau Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:34.461Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:34.461Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

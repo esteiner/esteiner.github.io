@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Maurice Grumier Instant Nature";
+    <https://schema.org/price> 49;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Maurice Grumier";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Brut Nature";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay, Pinot Noir, Pinot Meunier";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2031-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2026-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Instant Nature".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:57.903Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:57.903Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

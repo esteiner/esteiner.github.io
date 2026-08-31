@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Renato Corino Barolo Vecchie Vigne 2004 (1.5l)";
+    <https://schema.org/price> 130;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2004-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Barrique und große Holzfässer, 30 Monate";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Renato Corino";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "DOCG";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/milliliter> 1500;
+    <https://vocab.kellermeister.ch/wine/region> "Barolo, Piemont";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Nebbiolo";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2014-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Barolo Vecchie Vigne".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:53:59.591Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:53:59.591Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,19 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Laurent Perrier Cuvee rose";
+    <https://schema.org/price> 70;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung, 4-5 Jahre auf der Hefe";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Laurent Perrier";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Brut";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Pinot Noir";
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rose";
+    <https://vocab.kellermeister.ch/wine/weinname> "Cuvee rose".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:07.054Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:07.054Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,62 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#7a86e019-e6e8-4aae-adf4-ea54f44d1283>;
+    <https://schema.org/orderDate> "2026-05-17T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#dee3f67c-2d1c-482b-9926-cd79f6c8f4a5>, <#2752d355-6e0b-4301-b7d1-4f8910ff92dc>, <#4da866f6-cf10-4389-97ac-f16135d632bd>, <#2b68f4e6-da6d-4889-840f-d19c8b3353af>, <#a379d98a-7515-4bd4-8205-b13c4785c637>, <#332533ce-bca0-4541-a841-d63684795a7f>, <#6489573e-76cb-4af0-bdb5-fa7797076f24>;
+    <https://schema.org/seller> <#910289c0-b7ae-4e49-b3ae-41c55a782641>.
+<#7a86e019-e6e8-4aae-adf4-ea54f44d1283> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, CH-6003 Luzern";
+    <https://schema.org/contactPoint> <#3201eafc-deff-4cf2-a135-30ed7d1964ac>.
+<#dee3f67c-2d1c-482b-9926-cd79f6c8f4a5> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/95493e3e-bf0c-4e7e-9bb9-4f350d5fe985#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 45;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#2752d355-6e0b-4301-b7d1-4f8910ff92dc> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/7256c5ef-0888-4892-a1a2-6e9e3fb62305#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#4da866f6-cf10-4389-97ac-f16135d632bd> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/3118d117-9324-4b40-8dca-10b00b17bed7#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 44;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#2b68f4e6-da6d-4889-840f-d19c8b3353af> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/3f972b27-7d96-4cd2-ab69-dc9b9f8911cb#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 19;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#a379d98a-7515-4bd4-8205-b13c4785c637> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/4fba05e8-468b-44b1-bdb9-e40b8f716943#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 28;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#332533ce-bca0-4541-a841-d63684795a7f> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/fd42c089-157e-4698-a5d7-f9e48c16e0c4#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 37;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#6489573e-76cb-4af0-bdb5-fa7797076f24> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/417fde5a-e932-4d9e-a416-753295273774#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 38;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#910289c0-b7ae-4e49-b3ae-41c55a782641> a <https://schema.org/Organization>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/url> <https://www.acons.ch/it>.
+<#3201eafc-deff-4cf2-a135-30ed7d1964ac> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:23.927Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:23.927Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

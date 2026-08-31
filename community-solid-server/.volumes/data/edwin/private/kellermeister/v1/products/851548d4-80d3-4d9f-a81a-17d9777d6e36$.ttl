@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Delouvin Nowack Meunier Perpétuel Extra Brut 2022";
+    <https://schema.org/price> 40;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2022-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung, Perpetual-Methode";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Delouvin Nowack";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Extra Brut AC";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Pinot Meunier 100%";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2025-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Meunier Perpétuel Extra Brut".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:48.940Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:48.940Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Domaine de la Janasse Earl Aimé Sabon 2016";
+    <https://schema.org/price> 60;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2016-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Teilweise in Barriques";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Domaine de la Janasse";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Châteauneuf-du-Pape Blanc AOC";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Châteauneuf-du-Pape, Rhône";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Grenache Blanc, Clairette, Roussanne";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2028-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2020-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Weisswein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Earl Aimé Sabon".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:06.061Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:06.061Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

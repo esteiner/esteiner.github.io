@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Dom Pérignon Dom Pérignon Blanc 2012";
+    <https://schema.org/price> 199;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2012-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Mindestens 8 Jahre Hefelager, malolaktische Gärung";
+    <https://vocab.kellermeister.ch/wine/biologisch> "nein";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Dom Pérignon";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Champagne AOC, Vintage";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne, Épernay";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay 50%, Pinot Noir 50%";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2035-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2022-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Dom Pérignon Blanc".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:46.153Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:46.153Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

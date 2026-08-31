@@ -1,0 +1,28 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#88a538fc-2861-42b1-874a-86d90afd7333>;
+    <https://schema.org/orderDate> "2026-04-26T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#5b7158f8-33de-4883-a940-30f43b73dda8>, <#f92a462f-a482-4a6b-820c-b42dc10840ae>;
+    <https://schema.org/seller> <#1926fe70-f257-44ec-8b11-23546bc02e49>.
+<#88a538fc-2861-42b1-874a-86d90afd7333> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, CH-6003 Luzern";
+    <https://schema.org/contactPoint> <#c904ee16-1415-4069-a91e-63678bcfe7cb>.
+<#5b7158f8-33de-4883-a940-30f43b73dda8> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/52881685-9025-4c7d-aa81-5e22ccf10373#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#f92a462f-a482-4a6b-820c-b42dc10840ae> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/67f46429-86ea-433c-a691-83183ff9559c#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#1926fe70-f257-44ec-8b11-23546bc02e49> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Luzern".
+<#c904ee16-1415-4069-a91e-63678bcfe7cb> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:36.659Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:36.659Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

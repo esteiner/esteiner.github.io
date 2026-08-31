@@ -1,0 +1,20 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#94626e78-7d8a-45a6-a6e2-2fd98b2b5506>;
+    <https://schema.org/orderDate> "2026-05-17T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#ba129fef-14cf-46f5-aad0-8b447c37648d>;
+    <https://schema.org/seller> <#3a92ed79-56f8-42b4-a082-f4504d69b5db>.
+<#94626e78-7d8a-45a6-a6e2-2fd98b2b5506> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner <sonja.steiner@acons.ch>";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#ba129fef-14cf-46f5-aad0-8b447c37648d> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/9dab3774-f599-4aba-b8ba-4eeefb8702f4#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 90;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#3a92ed79-56f8-42b4-a082-f4504d69b5db> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Zürich Dolder".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:38.104Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:38.104Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

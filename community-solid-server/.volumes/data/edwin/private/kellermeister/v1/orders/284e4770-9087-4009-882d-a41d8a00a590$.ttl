@@ -1,0 +1,30 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#61d41159-9331-4c90-a193-7434ecdf2cd5>;
+    <https://schema.org/orderDate> "2022-04-12T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#4f67c0a5-99a6-4e03-b2ff-013647a0cc55>, <#95bf2d45-257d-49a3-b13b-8dd80861569a>;
+    <https://schema.org/seller> <#056df8ea-7fae-472c-8aae-0b5eff4c396f>.
+<#61d41159-9331-4c90-a193-7434ecdf2cd5> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 LUZERN, SCHWEIZ";
+    <https://schema.org/contactPoint> <#af008587-e752-4fe6-96d6-e595183caf25>.
+<#4f67c0a5-99a6-4e03-b2ff-013647a0cc55> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/bc9ac314-8d4b-49e3-bbab-025475503759#it>;
+    <https://schema.org/orderQuantity> 3;
+    <https://schema.org/price> 71;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#95bf2d45-257d-49a3-b13b-8dd80861569a> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/649daf31-3624-4b10-befc-d8c4c93c1a3f#it>;
+    <https://schema.org/orderQuantity> 3;
+    <https://schema.org/price> 71;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#056df8ea-7fae-472c-8aae-0b5eff4c396f> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Karl Kerler Weinimport GmbH".
+<#af008587-e752-4fe6-96d6-e595183caf25> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:31.759Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:31.759Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

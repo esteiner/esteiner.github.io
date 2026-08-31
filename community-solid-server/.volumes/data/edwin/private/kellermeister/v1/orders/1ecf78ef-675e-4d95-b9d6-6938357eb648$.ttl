@@ -1,0 +1,39 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#d7e829c3-cf3c-43ab-bb8a-297bedd96024>;
+    <https://schema.org/orderDate> "2018-12-02T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "300000547";
+    <https://schema.org/orderedItem> <#52bd2475-9fc4-448f-b297-8b8109096509>, <#ab94c5a5-ca05-4302-9386-50e8c908e855>, <#f2500c81-f0ef-4fe0-87c5-294ea1b87d79>;
+    <https://schema.org/seller> <#33bddc7d-eb81-454f-8172-603254bd40f9>.
+<#d7e829c3-cf3c-43ab-bb8a-297bedd96024> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#7a02629e-5f74-4de3-a417-c555be9413ee>.
+<#52bd2475-9fc4-448f-b297-8b8109096509> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/0f43c20d-4619-4fec-9e65-f8fabdb65b05#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 53;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#ab94c5a5-ca05-4302-9386-50e8c908e855> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/04eaa40d-e145-4f12-ae68-22ac1a88d108#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 54;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#f2500c81-f0ef-4fe0-87c5-294ea1b87d79> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/9318239c-bb75-420a-a6dc-afe5f1bcaceb#it>;
+    <https://schema.org/orderQuantity> 8;
+    <https://schema.org/price> 45;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#33bddc7d-eb81-454f-8172-603254bd40f9> a <https://schema.org/Organization>;
+    <https://schema.org/email> "info@granchateaux.ch";
+    <https://schema.org/name> "Granchâteaux SA";
+    <https://schema.org/url> <https://www.granchateaux.ch>.
+<#7a02629e-5f74-4de3-a417-c555be9413ee> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:30.920Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:30.920Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

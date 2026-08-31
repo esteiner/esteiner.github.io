@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Tom Litwan, Oberhof Blanc de Noir 2020";
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2020-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Tom Litwan, Oberhof";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Blanc de Noir";
+    <https://vocab.kellermeister.ch/wine/land> "Schweiz";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Oberhof, Bündner Herrschaft";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Pinot Noir";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2028-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2021-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Blanc de Noir".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:52.221Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:52.221Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,39 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#cedb3844-6d22-43bb-9f79-730bbb73f94e>;
+    <https://schema.org/orderDate> "2020-11-03T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "571319";
+    <https://schema.org/orderedItem> <#5bdf094d-1aec-4a4a-a20e-7ad0814e02ed>, <#cbf10c06-55b9-452b-ae84-4bac79b3b95d>, <#d439e292-f604-4a58-9800-5bbe0945924f>;
+    <https://schema.org/seller> <#186f4e00-aad7-4c00-9d38-9eea96ffb6fc>.
+<#cedb3844-6d22-43bb-9f79-730bbb73f94e> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#0f2ad6aa-d30a-4b82-9685-2b290b277c69>.
+<#5bdf094d-1aec-4a4a-a20e-7ad0814e02ed> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/247806b2-d57f-43c5-95a4-a315977fea34#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 37;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#cbf10c06-55b9-452b-ae84-4bac79b3b95d> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/ad2e6d08-641c-4821-8602-2a9662e4133c#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 37;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#d439e292-f604-4a58-9800-5bbe0945924f> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/9fe147e4-5bf3-449b-bde1-94ed2a8c64cc#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 37;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#186f4e00-aad7-4c00-9d38-9eea96ffb6fc> a <https://schema.org/Organization>;
+    <https://schema.org/email> "mail@flaschenpost.ch";
+    <https://schema.org/name> "Flaschenpost";
+    <https://schema.org/url> <https://www.flaschenpost.ch>.
+<#0f2ad6aa-d30a-4b82-9685-2b290b277c69> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Frau Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:31.421Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:31.421Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

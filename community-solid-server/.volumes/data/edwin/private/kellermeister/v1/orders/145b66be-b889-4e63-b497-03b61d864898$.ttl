@@ -1,0 +1,27 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#e5c51187-4776-425e-b97f-77d67e94804b>;
+    <https://schema.org/orderDate> "2017-11-26T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "B1x7330x0599";
+    <https://schema.org/orderedItem> <#231d0de2-e556-4300-bd6e-806fabe8d7d1>;
+    <https://schema.org/seller> <#902eeb7e-833b-49c8-b77f-ab6bb8474cda>.
+<#e5c51187-4776-425e-b97f-77d67e94804b> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 5. Stock, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#924c5c10-77c5-4e4c-9dd1-0f5c4bc85ce3>.
+<#231d0de2-e556-4300-bd6e-806fabe8d7d1> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/5186e0ff-3b99-4509-9919-143eecc2b1c7#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 29;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#902eeb7e-833b-49c8-b77f-ab6bb8474cda> a <https://schema.org/Organization>;
+    <https://schema.org/email> "kundenservice@vicampo.ch";
+    <https://schema.org/name> "Vicampo";
+    <https://schema.org/url> <https://www.vicampo.ch>.
+<#924c5c10-77c5-4e4c-9dd1-0f5c4bc85ce3> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:30.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:30.504Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

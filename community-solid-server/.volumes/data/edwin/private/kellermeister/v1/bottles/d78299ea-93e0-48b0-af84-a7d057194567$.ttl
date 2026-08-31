@@ -1,0 +1,7 @@
+<#it> a <https://schema.org/ListItem>;
+    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/0fe9d702-4722-4aa0-bee7-f3d2f2236e81#it";
+    <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/2fe4d288-80e6-4b94-a1f6-ef73c8e76396#it>.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:04.043Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:04.043Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

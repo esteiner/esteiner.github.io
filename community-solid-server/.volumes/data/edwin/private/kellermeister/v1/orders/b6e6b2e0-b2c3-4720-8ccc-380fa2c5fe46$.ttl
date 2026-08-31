@@ -1,0 +1,39 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#7fe825d6-2f04-4c9c-91c2-1da297a17b13>;
+    <https://schema.org/orderDate> "2024-11-18T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "cart-2411180324131113DL";
+    <https://schema.org/orderedItem> <#18ae4603-3626-417c-bb2b-a2fcef3b6aea>, <#b9b7da36-b9e5-400a-a010-f46cff886f65>, <#1cb3f65b-c67d-42cc-984e-2383183100da>;
+    <https://schema.org/seller> <#d88d8764-643c-48f1-98e8-28fc07978769>.
+<#7fe825d6-2f04-4c9c-91c2-1da297a17b13> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, CH";
+    <https://schema.org/contactPoint> <#bc22c4d7-85b0-4352-90e0-b8fd4e72688c>.
+<#18ae4603-3626-417c-bb2b-a2fcef3b6aea> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/7666a584-22ac-4a6b-a398-b089b0f61aab#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 53;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#b9b7da36-b9e5-400a-a010-f46cff886f65> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/67a9cdfc-87d8-4be4-963a-06a272e1f5b1#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 49;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#1cb3f65b-c67d-42cc-984e-2383183100da> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/be5ee408-7327-4f81-8084-b2542c47eb26#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 57;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#d88d8764-643c-48f1-98e8-28fc07978769> a <https://schema.org/Organization>;
+    <https://schema.org/email> "millesima@millesima.com";
+    <https://schema.org/name> "Millesima Schweiz";
+    <https://schema.org/url> <https://de.millesima.ch/>.
+<#bc22c4d7-85b0-4352-90e0-b8fd4e72688c> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:37.363Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:37.363Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

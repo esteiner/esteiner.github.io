@@ -1,0 +1,39 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#41e9f233-b3d2-4b11-b843-15e7e544ce5b>;
+    <https://schema.org/orderDate> "2026-01-25T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "109288";
+    <https://schema.org/orderedItem> <#b012143b-2df4-401c-90f4-bc1e480ac978>, <#6e098a63-4ca4-42ee-a15a-31007a859eb8>, <#04e3ffce-3b45-49b0-9fae-b961677f7045>;
+    <https://schema.org/seller> <#c3edbca8-4cca-4bed-8e02-2721181fa0cb>.
+<#41e9f233-b3d2-4b11-b843-15e7e544ce5b> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#e5e3266c-17cf-4cea-9438-af5bb7c1d407>.
+<#b012143b-2df4-401c-90f4-bc1e480ac978> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/956a0c84-a03b-4839-8a56-9564b1320e0f#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 39;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#6e098a63-4ca4-42ee-a15a-31007a859eb8> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/9eca9d40-6b85-40a7-8b38-df4eabd3dcf0#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 33;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#04e3ffce-3b45-49b0-9fae-b961677f7045> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/8ded5e7e-ca64-4093-b9b7-1146d0cc8d68#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 32;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#c3edbca8-4cca-4bed-8e02-2721181fa0cb> a <https://schema.org/Organization>;
+    <https://schema.org/email> "office@vinothek-brancaia.ch";
+    <https://schema.org/name> "Vinothek Brancaia";
+    <https://schema.org/url> <https://vinothek-brancaia.ch>.
+<#e5e3266c-17cf-4cea-9438-af5bb7c1d407> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:39.515Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:39.515Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Delas Frères Haut Pierre Rouge 2016";
+    <https://schema.org/price> 34;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://schema.org/productionDate> "2016-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Ausbau in Eichenfässern für 12-18 Monate";
+    <https://vocab.kellermeister.ch/wine/biologisch> "nein";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Delas Frères";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "AOC Châteauneuf-du-Pape";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Châteauneuf-du-Pape, Rhône";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Grenache, Syrah, Mourvèdre";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2020-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Haut Pierre Rouge".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:54.821Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:54.821Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

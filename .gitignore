@@ -32,3 +32,15 @@ CLAUDE.local.md
 
 # MacOS
 .DS_Store
+
+/community-solid-server/.volumes/data/.internal/accounts/cookies/
+/community-solid-server/.volumes/data/.internal/locks/
+/community-solid-server/.volumes/data/.internal/idp/adapter/AuthorizationCode/
+/community-solid-server/.volumes/data/.internal/idp/adapter/Client/
+/community-solid-server/.volumes/data/.internal/idp/adapter/Grant/
+/community-solid-server/.volumes/data/.internal/idp/adapter/grants/
+/community-solid-server/.volumes/data/.internal/idp/adapter/RefreshToken/
+/community-solid-server/.volumes/data/.internal/idp/adapter/RegistrationAccessToken/
+/community-solid-server/.volumes/data/.internal/idp/adapter/ReplayDetection/
+/community-solid-server/.volumes/data/.internal/idp/adapter/Session/
+/community-solid-server/.volumes/data/.internal/idp/adapter/uids/

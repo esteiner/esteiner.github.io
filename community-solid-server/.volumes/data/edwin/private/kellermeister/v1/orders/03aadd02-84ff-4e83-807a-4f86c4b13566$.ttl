@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#56f849ef-6089-4739-ac9f-4e6aff02866c>;
+    <https://schema.org/orderDate> "2023-04-06T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#cc579770-347a-460f-ad81-034ba4c2fcc7>;
+    <https://schema.org/seller> <#683cfef3-e929-42ef-90e7-2b84982faec7>.
+<#56f849ef-6089-4739-ac9f-4e6aff02866c> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#c7ec601e-68f2-438e-9c49-70c8513ceeca>.
+<#cc579770-347a-460f-ad81-034ba4c2fcc7> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/cefe0b9e-947f-46c4-8a46-efb1c9e34b5b#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 48;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#683cfef3-e929-42ef-90e7-2b84982faec7> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Weinvogel SA".
+<#c7ec601e-68f2-438e-9c49-70c8513ceeca> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:29.521Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:29.521Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

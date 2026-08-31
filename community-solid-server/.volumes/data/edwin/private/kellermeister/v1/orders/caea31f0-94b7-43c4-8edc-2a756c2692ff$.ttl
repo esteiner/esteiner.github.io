@@ -1,0 +1,24 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#7d330834-68a5-4407-a4e0-28570047c980>;
+    <https://schema.org/orderDate> "2022-04-08T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#e69406e3-7907-4ee5-b838-a46f05381c69>;
+    <https://schema.org/seller> <#350a5986-3cae-4b41-8cc0-c6801f5b6469>.
+<#7d330834-68a5-4407-a4e0-28570047c980> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstraase 9, 6003 LUZERN, SCHWEIZ";
+    <https://schema.org/contactPoint> <#71734553-a6a2-4500-933a-421635751e79>.
+<#e69406e3-7907-4ee5-b838-a46f05381c69> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/df9726c2-2db9-4c9e-b296-19f3b0489aa7#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 71;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#350a5986-3cae-4b41-8cc0-c6801f5b6469> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Karl Kerler Weinimport GmbH".
+<#71734553-a6a2-4500-933a-421635751e79> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:38.257Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:38.257Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

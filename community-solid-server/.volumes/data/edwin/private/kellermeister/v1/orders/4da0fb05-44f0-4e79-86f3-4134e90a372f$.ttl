@@ -1,0 +1,27 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#76145c39-140f-4e1f-ae08-1dfc28d1c769>;
+    <https://schema.org/orderDate> "2020-11-15T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1153499";
+    <https://schema.org/orderedItem> <#2c0c73ba-b048-4ec9-a2c8-c19e4e250ba6>;
+    <https://schema.org/seller> <#30925704-a441-48bb-9cc7-ab74a008e337>.
+<#76145c39-140f-4e1f-ae08-1dfc28d1c769> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#db14c6b8-4845-435e-a87f-eae8d6f7d177>.
+<#2c0c73ba-b048-4ec9-a2c8-c19e4e250ba6> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/55c12404-3067-475d-bdac-f70979e9556e#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 69;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#30925704-a441-48bb-9cc7-ab74a008e337> a <https://schema.org/Organization>;
+    <https://schema.org/email> "info@schubiweine.ch";
+    <https://schema.org/name> "Schubi Weine AG";
+    <https://schema.org/url> <https://www.schubiweine.ch>.
+<#db14c6b8-4845-435e-a87f-eae8d6f7d177> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:32.815Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:32.815Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

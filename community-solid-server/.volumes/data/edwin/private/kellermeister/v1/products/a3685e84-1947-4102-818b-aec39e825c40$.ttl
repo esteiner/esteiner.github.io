@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Kellerei Eisacktal Aristos Sauvignon 2023";
+    <https://schema.org/price> 18;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "13%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Im Stahltank";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Kellerei Eisacktal";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Alto Adige DOC";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Eisacktal, Südtirol";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Sauvignon Blanc";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2028-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Weisswein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Aristos Sauvignon".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:05.025Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:05.025Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,19 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Famille Perrin Château de Beaucastel";
+    <https://schema.org/price> 95;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditioneller Ausbau in Foudres";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Famille Perrin";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Châteauneuf-du-Pape AOC Appellation d'Origine Contrôlée";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Châteauneuf-du-Pape";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Grenache, Mourvèdre, Syrah, Counoise und weitere 9 Rebsorten";
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Château de Beaucastel".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:47.781Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:47.781Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

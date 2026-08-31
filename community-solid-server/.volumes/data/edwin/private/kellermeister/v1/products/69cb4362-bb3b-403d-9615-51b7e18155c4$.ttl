@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Lorenzo Accomasso Rocche dell'Annunziata Riserva 2015";
+    <https://schema.org/price> 279;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2015-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Lange Reifung in großen Holzfässern, traditioneller Ausbau";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Lorenzo Accomasso";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Barolo DOCG Riserva";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "La Morra, Barolo, Piemont";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Nebbiolo 100%";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2045-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Rocche dell'Annunziata Riserva".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:44.596Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:44.596Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

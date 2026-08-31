@@ -1,0 +1,19 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Ruinart Brut";
+    <https://schema.org/price> 56;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Traditionelle Flaschengärung, mindestens 3 Jahre auf der Hefe";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Ruinart";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Brut";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay 40%, Pinot Noir 40%, Pinot Meunier 20%";
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/weinname> "Brut".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:02.956Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:02.956Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

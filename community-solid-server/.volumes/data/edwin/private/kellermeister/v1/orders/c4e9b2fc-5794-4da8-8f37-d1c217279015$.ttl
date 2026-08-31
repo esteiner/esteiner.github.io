@@ -1,0 +1,57 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#3daa291a-9683-40ba-973a-cfd293fd74e4>;
+    <https://schema.org/orderDate> "2025-07-10T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1456873";
+    <https://schema.org/orderedItem> <#8029d4ec-d5bf-4e9d-8311-32979a5cd942>, <#45bfe47e-c3ec-43eb-a828-f8c6d2df5663>, <#74f3d718-17fc-495a-a9a2-00f0bb4606f9>, <#31853abe-a508-4eec-a75f-baf8673d26e9>, <#d73ea263-ec88-4062-bf28-743ef7b846db>, <#baef0e9a-6390-49c0-8610-1240276a7bbe>;
+    <https://schema.org/seller> <#b49aee3d-180b-4163-ab20-ad03c5cf7b09>.
+<#3daa291a-9683-40ba-973a-cfd293fd74e4> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#28225460-914a-4816-816c-b771f90392f1>.
+<#8029d4ec-d5bf-4e9d-8311-32979a5cd942> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/f3eeb8d0-b5f0-408d-9154-0cf5eaba020d#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 52;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#45bfe47e-c3ec-43eb-a828-f8c6d2df5663> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/f3665f9f-0c61-46c8-9b42-af6e9b6d651e#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 68;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#74f3d718-17fc-495a-a9a2-00f0bb4606f9> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/851548d4-80d3-4d9f-a81a-17d9777d6e36#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 40;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#31853abe-a508-4eec-a75f-baf8673d26e9> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/ebbc5d00-6f24-4b61-88cd-296b52b57e12#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 47;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#d73ea263-ec88-4062-bf28-743ef7b846db> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/7eac97ed-9f4e-4d5e-bf39-325be6345740#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 48;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#baef0e9a-6390-49c0-8610-1240276a7bbe> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/1d209cc4-ee88-4509-bf58-099e4af126f1#it>;
+    <https://schema.org/orderQuantity> 2;
+    <https://schema.org/price> 51;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#b49aee3d-180b-4163-ab20-ad03c5cf7b09> a <https://schema.org/Organization>;
+    <https://schema.org/email> "mail@flaschenpost.ch";
+    <https://schema.org/name> "Flaschenpost";
+    <https://schema.org/url> <https://www.flaschenpost.ch>.
+<#28225460-914a-4816-816c-b771f90392f1> a <https://schema.org/ContactPoint>;
+    <https://schema.org/email> "sonja.steiner@acons.ch";
+    <https://schema.org/name> "Frau Sonja Steiner".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:37.641Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:37.641Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

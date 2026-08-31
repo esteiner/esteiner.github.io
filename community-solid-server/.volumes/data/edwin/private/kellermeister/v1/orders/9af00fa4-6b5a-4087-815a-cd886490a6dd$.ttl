@@ -1,0 +1,37 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#9337b71d-c9c9-4272-bad2-3e1b84ab1e39>;
+    <https://schema.org/orderDate> "2025-11-23T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1027594";
+    <https://schema.org/orderedItem> <#1b97cb93-669d-42a6-9a11-09991c402614>, <#fb26ce21-60cc-4e2e-ad93-0c23fb9e3f0a>, <#306975a0-3290-49cd-afc8-d53cf2b79392>;
+    <https://schema.org/seller> <#a642cb59-59e6-4c6c-bda1-da53a54fd247>.
+<#9337b71d-c9c9-4272-bad2-3e1b84ab1e39> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#1eb9d432-55c9-4a4b-8671-89929fb3b9ff>.
+<#1b97cb93-669d-42a6-9a11-09991c402614> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/5ff195b1-8f02-4428-85a3-47278b18c5c2#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> 89;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#fb26ce21-60cc-4e2e-ad93-0c23fb9e3f0a> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/127c45e3-5f5b-4099-bf5d-c1804c42b481#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 92;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#306975a0-3290-49cd-afc8-d53cf2b79392> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/6c4c2fb0-8d34-4355-8b7a-0649ad3e4428#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 30;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#a642cb59-59e6-4c6c-bda1-da53a54fd247> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Casa del Vino SA".
+<#1eb9d432-55c9-4a4b-8671-89929fb3b9ff> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:36.249Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:36.249Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

@@ -1,0 +1,7 @@
+<#it> a <https://schema.org/Room>;
+    <https://schema.org/name> "Luzern";
+    <km:displayOrder> 10.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:29.786Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:56:29.786Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

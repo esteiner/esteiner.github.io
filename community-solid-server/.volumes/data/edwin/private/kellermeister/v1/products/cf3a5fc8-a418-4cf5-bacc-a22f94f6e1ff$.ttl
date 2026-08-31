@@ -1,0 +1,23 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Manincor Mason 2019 (1.5l)";
+    <https://schema.org/price> 38;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://schema.org/productionDate> "2019-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "18 Monate in Barriques";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Manincor";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "IGT Vigneti delle Dolomiti";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/milliliter> 1500;
+    <https://vocab.kellermeister.ch/wine/region> "Kaltern, Alto Adige, Südtirol";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Cabernet Sauvignon, Merlot, Cabernet Franc";
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2035-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2022-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/weinname> "Mason".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:06.336Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:06.336Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.

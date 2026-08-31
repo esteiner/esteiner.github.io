@@ -1,0 +1,20 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/customer> <#15cec6a8-70c6-423f-88df-61526f92ad83>;
+    <https://schema.org/orderDate> "2026-05-17T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderedItem> <#b327c9db-e098-4354-a2ed-cc8ff55a416e>;
+    <https://schema.org/seller> <#0ef58df7-7d3b-43ad-97f0-bb7bb828712c>.
+<#15cec6a8-70c6-423f-88df-61526f92ad83> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner <sonja.steiner@acons.ch>";
+    <https://schema.org/email> "sonja.steiner@acons.ch".
+<#b327c9db-e098-4354-a2ed-cc8ff55a416e> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/0f847346-f013-4b51-a988-8ec17e6412a4#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 109;
+    <https://schema.org/priceCurrency> "EUR";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#0ef58df7-7d3b-43ad-97f0-bb7bb828712c> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Luzern".
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:59:33.757Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:59:33.757Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
