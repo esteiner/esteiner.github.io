@@ -1,8 +1,8 @@
-import {getEngine, MigrateLocalUrls, SolidEngine, Sync, TypeIndex, TypeRegistration, type Engine, type ManagesContainers} from "soukai-bis";
+import {Container, getEngine, MigrateLocalUrls, SolidEngine, Sync, TypeIndex, TypeRegistration, type Engine, type ManagesContainers} from "soukai-bis";
 import {fetchLoginUserProfile, type SolidUserProfile} from "@noeldemartin/solid-utils";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
 import type {SyncService, SyncOutcome} from "../../application/ports/SyncService.ts";
-import {LOCAL_BASE} from "../shared/resource-identity.ts";
+import {LOCAL_BASE, WELL_KNOWN_CELLAR} from "../shared/resource-identity.ts";
 import {withLocalEngine} from "../soukai/engineScope.ts";
 import {POD_CONTAINER_PATH} from "./podContainerPath.ts";
 import {SoukaiCellar} from "../soukai/model/SoukaiCellar.ts";
@@ -42,6 +42,13 @@ const APPLICATION_MODELS = [
 export class SolidSyncService implements SyncService {
 
     /**
+     * Guards the one-time well-known-cellar baseline reconciliation (see
+     * {@link reconcileWellKnownCellarBaselines}). Scoped to this instance, i.e.
+     * once per app session.
+     */
+    private wellKnownReconciled = false;
+
+    /**
      * @param remoteEngine builds the engine used for Pod reads/writes. Defaults to
      *   `SolidEngine` over the authenticated fetch; overridable in tests.
      * @param fetchProfile loads the `SolidUserProfile` Sync needs (storage roots,
@@ -74,6 +81,7 @@ export class SolidSyncService implements SyncService {
         }
 
         const localEngine = this.localEngine();
+        const remoteEngine = this.remoteEngine(session);
 
         // 1. Re-home provisional resources to their Pod URLs (local, in place).
         const rehomed = await this.rehome(localEngine, base);
@@ -85,7 +93,7 @@ export class SolidSyncService implements SyncService {
         await Sync.run({
             userProfile: profile,
             localEngine,
-            remoteEngine: this.remoteEngine(session),
+            remoteEngine,
             typeIndexes: [this.buildTypeIndex(base)],
             applicationModels: APPLICATION_MODELS.map(({model, collection}) => ({
                 model,
@@ -96,7 +104,60 @@ export class SolidSyncService implements SyncService {
             },
         });
 
+        // 3. Stop the well-known cellars from being re-pulled on every sync.
+        await this.reconcileWellKnownCellarBaselines(localEngine, remoteEngine, base);
+
         return {reconciled: rehomed + synced};
+    }
+
+    /**
+     * The two well-known cellars (`cellarwork`, `altglass`) are created locally on
+     * every device (for offline-first use) *and* already exist on the Pod, so
+     * soukai-bis's `Sync` takes its document-merge path for them instead of a
+     * clean pull. That path pushes nothing but writes the local `lastModifiedAt`
+     * back as an estimate (~sync time) that never equals the Pod's `dc:modified`,
+     * so `Sync.skipDocumentPull` can never skip them and they are re-fetched on
+     * EVERY subsequent sync (verified: the only per-document GETs a no-op sync
+     * makes). Regular resources avoid this because they are pulled remote-only and
+     * inherit the Pod's real last-modified.
+     *
+     * Fix: once per session, align each well-known cellar's local `lastModifiedAt`
+     * to the Pod's actual `dc:modified` (read from the cellars container listing,
+     * the same millisecond-precision value `Sync` compares against), so the next
+     * sync skips them. Idempotent and best-effort — any failure simply leaves the
+     * prior (correct but chatty) behaviour in place.
+     */
+    private async reconcileWellKnownCellarBaselines(
+        localEngine: LocalEngine,
+        remoteEngine: SolidEngine,
+        base: string,
+    ): Promise<void> {
+        if (this.wellKnownReconciled) {
+            return;
+        }
+        const containerUrl = `${base}cellars/`;
+        const remoteContainer = await remoteEngine.readDocumentIfExists(containerUrl);
+        if (!remoteContainer) {
+            return; // no cellars container yet — retry on a later sync
+        }
+        const container = await Container.createFromDocument(remoteContainer, {url: containerUrl});
+        const resources = container?.resources ? [container.resources].flat() : [];
+        const modifiedByUrl = new Map<string, Date | undefined>(
+            resources.map((resource) => [resource.url as string, resource.updatedAt as Date | undefined]),
+        );
+        for (const slug of Object.values(WELL_KNOWN_CELLAR)) {
+            const documentUrl = `${base}cellars/${slug}`;
+            const podModified = modifiedByUrl.get(documentUrl);
+            if (!podModified) {
+                continue;
+            }
+            try {
+                await localEngine.updateDocument(documentUrl, [], {lastModifiedAt: podModified});
+            } catch {
+                // The cellar isn't present locally (never synced) — nothing to align.
+            }
+        }
+        this.wellKnownReconciled = true;
     }
 
     /**
