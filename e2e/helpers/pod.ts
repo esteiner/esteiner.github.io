@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { cpSync, rmSync, readFileSync, writeFileSync, renameSync, readdirSync, statSync } from 'node:fs';
+import { cpSync, rmSync, mkdirSync, copyFileSync, existsSync, readFileSync, writeFileSync, renameSync, readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join, basename } from 'node:path';
 
@@ -17,6 +17,14 @@ const IMAGE = 'solidproject/community-server:7.2.0';
 const dataSrc = join(repoRoot, 'community-solid-server', '.volumes', 'data');
 const configDir = join(repoRoot, 'community-solid-server', 'config');
 const podData = join(repoRoot, 'e2e', '.pod-data');
+
+// Inbox order fixtures: kept out of the committed Pod seed and copied into the
+// throwaway Pod inbox container before each run, so the seed stays free of
+// test-only data. Each `<name>.ttl` becomes the Pod resource `<name>` (CSS's
+// suffix identifier strategy stores it on disk as `<name>$.ttl`, matching the
+// rest of the seed).
+const inboxFixturesDir = join(repoRoot, 'e2e', 'fixtures', 'inbox');
+const inboxContainerDir = join(podData, 'edwin', 'inbox', 'kellermeister');
 
 // The committed seed is served on localhost:3000; we rewrite a copy to POD_ORIGIN's host:port.
 const SRC_HOSTPORT = 'localhost:3000';
@@ -47,6 +55,27 @@ function walkFiles(dir: string): string[] {
 // (idp/keys) — which login needs — are kept.
 const EXCLUDE_FRAGMENTS = ['/.internal/idp/adapter', '/.internal/accounts/cookies', '/.internal/locks'];
 
+/**
+ * Copy every `e2e/fixtures/inbox/*.ttl` into the throwaway Pod's inbox container
+ * as a CSS resource (`<name>$.ttl`). Runs after the seed copy and before the
+ * host-rewrite pass; fixtures carry only synthetic foreign identifiers (no
+ * localhost host), so the rewrite leaves them untouched. Creates the container
+ * directory if the seed did not ship it (git does not track empty directories).
+ */
+function seedInboxFixtures(): void {
+  if (!existsSync(inboxFixturesDir)) {
+    return;
+  }
+  mkdirSync(inboxContainerDir, { recursive: true });
+  for (const fixture of readdirSync(inboxFixturesDir)) {
+    if (!fixture.endsWith('.ttl')) {
+      continue;
+    }
+    const resourceFile = `${basename(fixture, '.ttl')}$.ttl`;
+    copyFileSync(join(inboxFixturesDir, fixture), join(inboxContainerDir, resourceFile));
+  }
+}
+
 export function prepareData(): void {
   rmSync(podData, { recursive: true, force: true });
   cpSync(dataSrc, podData, {
@@ -56,6 +85,8 @@ export function prepareData(): void {
       return !EXCLUDE_FRAGMENTS.some((frag) => rel.includes(frag));
     },
   });
+
+  seedInboxFixtures();
 
   // 1. Rewrite file contents (both plain and URL-encoded host:port forms).
   for (const file of walkFiles(podData)) {

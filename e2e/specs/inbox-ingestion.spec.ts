@@ -8,10 +8,11 @@ import { test, expect } from '../fixtures/auth';
  * cellarwork cellar tried to fetch https://kellermeister.ch/orders/1004727/1 and
  * failed with a CORS error, so nothing was ingested.
  *
- * The seeded inbox (community-solid-server/.volumes/data/edwin/inbox/kellermeister/
- * dhondt-grellet-les-terres-fines-2021.ttl) holds one order for 6 units of the
- * Dhondt-Grellet product. The cellarwork ("Kellerarbeit") cellar starts empty, so
- * after ingestion it must list exactly those 6 bottles.
+ * The inbox order fixture (e2e/fixtures/inbox/dhondt-grellet-les-terres-fines-2021.ttl,
+ * copied into the throwaway Pod's inbox by e2e/helpers/pod.ts `prepareData`) holds
+ * one order for 6 units of the Dhondt-Grellet product. The cellarwork
+ * ("Kellerarbeit") cellar starts empty, so after ingestion it must list exactly
+ * those 6 bottles.
  */
 const PRODUCT = 'Dhondt-Grellet Les Terres Fines 2021';
 

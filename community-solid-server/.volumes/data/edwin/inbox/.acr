@@ -34,6 +34,6 @@
         acp:allow acl:Read, acl:Write, acl:Control;
         acp:anyOf [
             a acp:Matcher;
-            acp:agent <https://kellermeister-pod.fly.dev/edwin/profile/card#me>
+            acp:agent <http://localhost:3000/edwin/profile/card#me>
         ]
     ].
