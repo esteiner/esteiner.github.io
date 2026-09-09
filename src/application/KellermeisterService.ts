@@ -263,6 +263,31 @@ export class KellermeisterService implements ReadModelCache {
         }
     }
 
+    /**
+     * Ingest an order delivered as Turtle (e.g. from the photo conversion
+     * service) DIRECTLY into the cellarwork cellar, without going through the Pod
+     * inbox. The Turtle is materialized into order(s) — each with its embedded
+     * seller, customer, and order items resolved from the RDF graph — and each is
+     * ingested like an inbox order: its products are saved and one bottle per
+     * ordered unit is created in cellarwork, then the freshly-built order is
+     * stored locally (to be re-homed on the next sync). `ingestOrder`'s inbox
+     * deletion is a no-op for these orders (they carry no inbox source document).
+     *
+     * Rejects when the Turtle yields no order, so the caller surfaces a failure
+     * rather than presenting an empty add as success.
+     */
+    async ingestOrderFromTurtle(turtle: string): Promise<Cellar> {
+        const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
+        const orders: Order[] = await this.orderRespository.parseOrders(turtle);
+        if (orders.length === 0) {
+            throw new Error("Konvertierung ergab keine Bestellung.");
+        }
+        for (const order of orders) {
+            await this.ingestOrder(order, cellarForCellarwork.getId());
+        }
+        return cellarForCellarwork;
+    }
+
     private async runInboxIngestion(): Promise<Cellar> {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
         const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();

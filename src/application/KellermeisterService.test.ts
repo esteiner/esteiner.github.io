@@ -96,6 +96,7 @@ function makeService() {
     const orderRepo: OrderRepository = {
         fetchOrders: vi.fn(),
         fetchUnprocessedOrders: vi.fn(),
+        parseOrders: vi.fn(),
         fetchOrderById: vi.fn(),
         saveProcessedOrder: vi.fn(),
         deleteFromInbox: vi.fn(),
@@ -619,6 +620,58 @@ describe('KellermeisterService', () => {
             wireBatch(deps, [orders[1], orders[2]]);
             await deps.service.ingestOrdersFromInbox();
             expect(deps.orderRepo.fetchUnprocessedOrders).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // ingestOrderFromTurtle — direct ingestion of a converted order
+    // -----------------------------------------------------------------------
+
+    describe('ingestOrderFromTurtle', () => {
+
+        it('creates a product and one bottle per ordered unit in cellarwork and saves the order locally', async () => {
+            const deps = makeService();
+            const { service, cellarRepo, orderRepo, orderFactory, productFactory, bottleFactory, productRepo, bottleRepo } = deps;
+
+            vi.mocked(cellarRepo.fetchCellarForCellarwork).mockResolvedValue(makeCellar('cellarwork-id'));
+            const product = makeProduct('p1', 'Barolo');
+            const orderItem = { getOrderQuantity: () => 3, getProduct: () => product } as unknown as Order;
+            const parsedOrder = { getOrderItems: () => [orderItem] } as unknown as Order;
+            vi.mocked(orderRepo.parseOrders).mockResolvedValue([parsedOrder]);
+
+            const newOrder = { addOrderItem: vi.fn(), getId: () => 'built-order' } as unknown as Order;
+            vi.mocked(orderFactory.createOrder).mockReturnValue(newOrder);
+            vi.mocked(orderFactory.createOrderItem).mockReturnValue({ id: 'oi1' } as never);
+            vi.mocked(productFactory.createProduct).mockReturnValue(product);
+            vi.mocked(productRepo.save).mockResolvedValue(product);
+            const placedCellars: string[] = [];
+            vi.mocked(bottleFactory.createFromProduct).mockImplementation(
+                () => ({ setCellar: (c: string) => placedCellars.push(c) } as unknown as Bottle),
+            );
+            vi.mocked(orderRepo.saveProcessedOrder).mockImplementation(async (o: Order) => o);
+
+            const cellar = await service.ingestOrderFromTurtle('@prefix schema: <https://schema.org/> . # ...');
+
+            expect(cellar.getId()).toBe(u('cellarwork-id'));
+            expect(productRepo.save).toHaveBeenCalledWith(product);
+            expect(bottleFactory.createFromProduct).toHaveBeenCalledTimes(3);
+            const savedBottles = vi.mocked(bottleRepo.saveAll).mock.calls[0][0];
+            expect(savedBottles).toHaveLength(3);
+            expect(placedCellars).toEqual([u('cellarwork-id'), u('cellarwork-id'), u('cellarwork-id')]);
+            // The freshly-built order is stored locally (re-homed on the next sync).
+            expect(orderRepo.saveProcessedOrder).toHaveBeenCalledWith(newOrder);
+        });
+
+        it('rejects and creates no bottles when the Turtle yields no order', async () => {
+            const deps = makeService();
+            const { service, cellarRepo, orderRepo, bottleRepo } = deps;
+            vi.mocked(cellarRepo.fetchCellarForCellarwork).mockResolvedValue(makeCellar('cellarwork-id'));
+            vi.mocked(orderRepo.parseOrders).mockResolvedValue([]);
+
+            await expect(service.ingestOrderFromTurtle('nonsense')).rejects.toThrow();
+
+            expect(bottleRepo.saveAll).not.toHaveBeenCalled();
+            expect(orderRepo.saveProcessedOrder).not.toHaveBeenCalled();
         });
     });
 });

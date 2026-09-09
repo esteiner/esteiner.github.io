@@ -10,6 +10,9 @@ import {IndexedDbLocalDataStore} from "../local/IndexedDbLocalDataStore.ts";
 import {SwitchIdentity} from "../../application/identity/SwitchIdentity.ts";
 import {SolidInboxUploader} from "../solid/SolidInboxUploader.ts";
 import type {InboxUploader} from "../../application/ports/InboxUploader.ts";
+import {HttpOrderConversionService} from "../http/HttpOrderConversionService.ts";
+import {MockOrderConversionService, MOCKED_CONVERSION_ENDPOINT} from "../http/MockOrderConversionService.ts";
+import type {OrderConversionService} from "../../application/ports/OrderConversionService.ts";
 import type {CellarRepository} from "../../domain/Cellar/CellarRepository.ts";
 import {KellermeisterService} from "../../application/KellermeisterService.ts";
 import {SynchronizeWithPod} from "../../application/sync/SynchronizeWithPod.ts";
@@ -50,6 +53,7 @@ export class CDI {
     private readonly pendingSync: PendingSync;
     private readonly switchIdentity: SwitchIdentity;
     private readonly inboxUploader: InboxUploader;
+    private readonly orderConversionService: OrderConversionService;
 
     private constructor() {
         this.containers = new PodContainerRegistry();
@@ -86,6 +90,14 @@ export class CDI {
 
         // Debug affordance: drop a file into the Pod inbox that ingestion reads.
         this.inboxUploader = new SolidInboxUploader(this.authService, () => this.containers.inboxContainer());
+
+        // Turns bottle photos into an order (Turtle) for direct ingestion. The
+        // sentinel endpoint `MOCKED` swaps in a fixed built-in order and makes
+        // no network request (demo/offline affordance).
+        const conversionEndpoint = import.meta.env.VITE_ORDER_CONVERSION_URL;
+        this.orderConversionService = conversionEndpoint === MOCKED_CONVERSION_ENDPOINT
+            ? new MockOrderConversionService()
+            : new HttpOrderConversionService(conversionEndpoint);
     }
 
     public static getInstance(): CDI {
@@ -129,6 +141,10 @@ export class CDI {
 
     public getInboxUploader(): InboxUploader {
         return this.inboxUploader;
+    }
+
+    public getOrderConversionService(): OrderConversionService {
+        return this.orderConversionService;
     }
 
     public getPodContainerRegistry(): PodContainerRegistry {

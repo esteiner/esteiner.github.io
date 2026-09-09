@@ -1,0 +1,89 @@
+## ADDED Requirements
+
+### Requirement: Capture front and back photos from the footer's Add button
+
+When the user activates the **Hinzufügen** button in the `kellermeister-footer`, the system SHALL guide the user to capture or choose **two** images of the wine bottle — first the **front**, then the **back** — before a conversion is attempted. Each capture SHALL be restricted to image content, and on a camera-capable device SHALL prefer the environment-facing camera; where no camera is available the user SHALL be able to pick existing image files. The two images SHALL be clearly attributed as front and back so they can be sent as distinct fields.
+
+The system MUST NOT start a conversion until both the front and the back image are available, and MUST NOT navigate away or start a conversion when the user cancels before both are captured.
+
+#### Scenario: Add captures front then back
+- **WHEN** the user activates the Hinzufügen button
+- **THEN** the user is guided to capture the front image and then the back image
+- **AND** each capture is restricted to image content and, on a camera-capable device, prefers the environment-facing camera
+
+#### Scenario: Conversion waits for both images
+- **WHEN** only the front image has been captured
+- **THEN** no conversion request is made until the back image is also captured
+
+#### Scenario: Cancelled capture does nothing
+- **WHEN** the capture is dismissed before both images are captured
+- **THEN** no conversion request is made and the user stays on the current page
+
+### Requirement: Convert the photos to an order via the REST conversion service
+
+The system SHALL send both captured images (front and back) together to an external conversion service over HTTP and receive an order as Turtle. The request SHALL be a POST with a JSON body carrying the two images encoded as base64 under distinct fields (front and back); the successful response body SHALL be treated as `text/turtle`. The conversion service endpoint SHALL be read from build-time configuration (`VITE_ORDER_CONVERSION_URL`), and the UI SHALL reach the service only through an application-layer port — never by calling HTTP directly.
+
+When the endpoint is not configured, or the service responds with a non-success status or an unreachable network, the system SHALL surface a failure to the user and MUST NOT proceed to ingestion.
+
+When the endpoint is configured with the reserved sentinel value `MOCKED`, the system SHALL return a fixed built-in order Turtle directly and MUST NOT make any network request. This is a demo/offline affordance; the mocked service is always available.
+
+#### Scenario: Mocked conversion returns a fixed order without any network request
+- **WHEN** the conversion endpoint is configured as `MOCKED` and both images have been captured
+- **THEN** a fixed built-in order Turtle is returned and ingested
+- **AND** no network request is made to any conversion endpoint
+
+#### Scenario: Both photos are posted as base64 JSON and Turtle is returned
+- **WHEN** the front and back images have been captured and the conversion endpoint is configured
+- **THEN** the system POSTs a JSON body containing both images as base64 under distinct front and back fields to the configured endpoint
+- **AND** the response body is taken as the order Turtle to ingest
+
+#### Scenario: Conversion service is not configured
+- **WHEN** the Hinzufügen flow runs and no conversion endpoint is configured
+- **THEN** the user is shown a failure and no ingestion occurs
+
+#### Scenario: Conversion service fails
+- **WHEN** the conversion service returns a non-success status or is unreachable
+- **THEN** the user is shown a failure and no ingestion occurs
+
+### Requirement: Ingest the converted order directly into the cellarwork cellar
+
+The system SHALL ingest the order Turtle returned by the conversion service directly into the `cellarwork` cellar, without writing it to the Pod inbox. The Turtle SHALL be materialized into order model(s) — with each order's embedded seller, customer, and order items resolved from the document's RDF graph, correlated by subject identifier and without dereferencing those identifiers over the network — using the same embedded-graph materialization the inbox read path uses. For each ordered item with a quantity, the item's product SHALL be persisted and one bottle SHALL be created per ordered unit in the `cellarwork` cellar, and the freshly-built order SHALL be stored locally (to be re-homed to the Pod on the next sync).
+
+Because a converted order has no Pod inbox source document, the ingestion MUST NOT attempt to delete any inbox document for it.
+
+#### Scenario: Converted order becomes products and bottles in cellarwork
+- **WHEN** the conversion returns an order with an item of quantity 3
+- **THEN** the item's product is saved
+- **AND** 3 bottles referencing that product are created in the cellarwork cellar
+- **AND** the freshly-built order is stored locally
+
+#### Scenario: No inbox document is deleted for a converted order
+- **WHEN** a converted order (which has no inbox source document) is ingested
+- **THEN** no Pod inbox deletion request is made for it
+
+#### Scenario: Empty or unparseable Turtle yields no bottles
+- **WHEN** the conversion response contains no recognizable order (empty or unparseable Turtle)
+- **THEN** no products or bottles are created
+- **AND** the user is shown a failure rather than an apparently successful result
+
+### Requirement: The user sees the new bottles after ingestion
+
+After a converted order has been ingested, the system SHALL present the `cellarwork` cellar contents so the newly-created bottles are visible, and any cached read models affected by ingestion (bottles, orders) SHALL be refreshed so the new bottles are not hidden by stale data.
+
+#### Scenario: Cellarwork is shown with the new bottles
+- **WHEN** ingestion of a converted order completes successfully
+- **THEN** the cellarwork view is presented
+- **AND** it reflects the bottles produced by the converted order
+
+### Requirement: The Add flow reports progress and failure without losing state
+
+While a photo is being converted and ingested, the system SHALL indicate that work is in progress and SHALL prevent a second concurrent capture-and-convert from the same button. On failure at any step (conversion or ingestion), the system SHALL report the failure to the user and leave the app usable; a partial failure MUST NOT be presented as a completed add.
+
+#### Scenario: In-progress indication and no double submit
+- **WHEN** a conversion/ingestion is already in progress
+- **THEN** activating the Add button again does not start a second concurrent conversion
+
+#### Scenario: Failure is reported and the app stays usable
+- **WHEN** conversion or ingestion fails
+- **THEN** the user is shown the failure
+- **AND** the app remains usable (no navigation presenting a partial result as complete)

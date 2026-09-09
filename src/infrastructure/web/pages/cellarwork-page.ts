@@ -13,6 +13,7 @@ import type {RouterLocation} from "@vaadin/router";
 import {ProductFilter} from "../../../domain/Product/ProductFilter";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import {CELLAR_UPDATED_EVENT} from "../events.ts";
 
 @customElement('cellarwork-page')
 class CellarWorkPage extends BasePage {
@@ -220,7 +221,20 @@ class CellarWorkPage extends BasePage {
         super.connectedCallback();
         this.loadBottles();
         this.fetchCellars();
+        // A photo-captured order is ingested into this cellar from the footer
+        // while this page may already be mounted; navigating here again is a
+        // no-op, so reload the bottles when told the cellar changed.
+        window.addEventListener(CELLAR_UPDATED_EVENT, this.handleCellarUpdated);
     }
+
+    disconnectedCallback() {
+        window.removeEventListener(CELLAR_UPDATED_EVENT, this.handleCellarUpdated);
+        super.disconnectedCallback();
+    }
+
+    private handleCellarUpdated = () => {
+        this.loadBottles();
+    };
 
     async onBeforeEnter(location: RouterLocation) {
         const { cellarId } = location.params;

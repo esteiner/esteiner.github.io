@@ -333,3 +333,89 @@ describe("SoukaiOrderRepository same-document embedding", () => {
         expect((order.getOrderItems()[0] as SoukaiOrderItem).getProduct()?.getName()).toBe("Barolo");
     });
 });
+
+describe("SoukaiOrderRepository parseOrders (direct ingestion from Turtle)", () => {
+
+    // Shaped like the conversion service's output / the real inbox pipeline:
+    // every part is embedded in the one document, each identified by a foreign,
+    // non-dereferenceable ABSOLUTE URL — exercising the no-fetch path.
+    const ORDER_TTL = `
+@prefix schema: <https://schema.org/> .
+@prefix km: <https://vocab.kellermeister.ch/wine/> .
+
+<https://kellermeister.ch/orders/ttl-1> a schema:Order ;
+    schema:orderNumber "A-42" ;
+    schema:seller <https://www.boucherville.ch/ttl-1> ;
+    schema:customer <https://schema.org/organization/ttl-1> ;
+    schema:orderedItem <https://kellermeister.ch/orders/ttl-1/1> .
+
+<https://kellermeister.ch/orders/ttl-1/1> a schema:OrderItem ;
+    schema:orderQuantity 2 ;
+    schema:price 90 ;
+    schema:priceCurrency "CHF" ;
+    schema:orderedItem <https://kellermeister.ch/products/ttl-1> .
+
+<https://kellermeister.ch/products/ttl-1> a schema:Product ;
+    schema:name "Dhondt-Grellet Les Terres Fines 2021" ;
+    km:weinname "Les Terres Fines" .
+
+<https://www.boucherville.ch/ttl-1> a schema:Organization ;
+    schema:name "Boucherville AG" ;
+    schema:email "info@boucherville.ch" ;
+    schema:url <https://www.boucherville.ch> .
+
+<https://schema.org/organization/ttl-1> a schema:Organization ;
+    schema:name "Sonja Steiner" ;
+    schema:address "Morgartenstrasse 9, 6003 Luzern, Schweiz" ;
+    schema:contactPoint <https://schema.org/organization/ttl-1/contact> .
+
+<https://schema.org/organization/ttl-1/contact> a schema:ContactPoint ;
+    schema:name "Sonja Steiner" ;
+    schema:email "sonja.steiner@acons.ch" .
+`;
+
+    it("materializes an order with its embedded parts from Turtle", async () => {
+        const repo = makeRepo(true, INBOX);
+
+        const orders = await repo.parseOrders(ORDER_TTL);
+
+        expect(orders).toHaveLength(1);
+        const [order] = orders;
+        expect(order.getOrderNumber()).toBe("A-42");
+        const items = order.getOrderItems();
+        expect(items).toHaveLength(1);
+        expect(items[0].getOrderQuantity()).toBe(2);
+        // The product (referenced by the item via a foreign URL) resolves from the
+        // same document, so getProduct() returns it.
+        expect(items[0].getProduct()?.getName()).toBe("Dhondt-Grellet Les Terres Fines 2021");
+        expect(items[0].getProduct()?.getWineName()).toBe("Les Terres Fines");
+        expect(order.getSeller()?.getName()).toBe("Boucherville AG");
+        expect(order.getCustomer()?.getEmail()).toBe("sonja.steiner@acons.ch");
+    });
+
+    it("does not dereference embedded identifiers over the network", async () => {
+        const repo = makeRepo(true, INBOX);
+        const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+        await repo.parseOrders(ORDER_TTL);
+
+        expect(fetchSpy).not.toHaveBeenCalled();
+        fetchSpy.mockRestore();
+    });
+
+    it("returns no orders when the Turtle has no order", async () => {
+        const repo = makeRepo(true, INBOX);
+        expect(await repo.parseOrders("@prefix schema: <https://schema.org/> .\n")).toEqual([]);
+    });
+
+    it("a parsed order has no inbox source, so deleteFromInbox issues no request", async () => {
+        // A converted order never transited the inbox: it carries no source URL,
+        // so deleting it must not hit the Pod (no deleteSolidDataset call).
+        const repo = makeRepo(true, INBOX);
+        const [order] = await repo.parseOrders(ORDER_TTL);
+
+        await repo.deleteFromInbox(order);
+
+        expect(deleteSolidDataset).not.toHaveBeenCalled();
+    });
+});

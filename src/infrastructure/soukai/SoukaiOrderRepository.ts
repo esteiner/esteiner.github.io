@@ -2,6 +2,7 @@ import type {OrderRepository} from "../../domain/Order/OrderRepository.ts";
 import type {Order} from "../../domain/Order/Order.ts";
 import {SoukaiOrder} from "./model/SoukaiOrder.ts";
 import {SolidEngine, type Engine} from "soukai-bis";
+import {turtleToQuads} from "@noeldemartin/solid-utils";
 import {deleteSolidDataset} from "@inrupt/solid-client";
 import type {AuthService, SolidSession} from "../../application/ports/AuthService.ts";
 import {bootSoukaiModels} from "./bootModels.ts";
@@ -18,6 +19,9 @@ import {withLocalEngine, withRemoteEngine} from "./engineScope.ts";
  * the authenticated Solid engine — the same access path the sync layer uses.
  * Offline / logged out, there are no unprocessed orders.
  */
+/** Base IRI for parsing a converted order's Turtle (resolves any relative IRIs). */
+const CONVERTED_ORDER_BASE = "local://conversion/order";
+
 export class SoukaiOrderRepository implements OrderRepository {
 
     /**
@@ -89,6 +93,21 @@ export class SoukaiOrderRepository implements OrderRepository {
             }
             return orders;
         });
+    }
+
+    async parseOrders(turtle: string): Promise<Order[]> {
+        // Same materialization as the inbox path — createManyFromRDF reads the
+        // whole embedded graph from the quads (order items, product, seller,
+        // customer), resolving same-document relations WITHOUT dereferencing
+        // their identifiers over the network (createManyFromDocument itself just
+        // hands its document's quads to createManyFromRDF). No engine scope is
+        // needed: it only reads quads and builds models (no fetch).
+        //
+        // A synthetic base URL resolves any relative IRIs; the conversion
+        // service's own absolute identifiers are used as-is. We do NOT set an
+        // inbox source URL — a converted order has no inbox document to delete.
+        const quads = await turtleToQuads(turtle, {baseIRI: CONVERTED_ORDER_BASE});
+        return await SoukaiOrder.createManyFromRDF(quads);
     }
 
     async fetchOrderById(orderId: string): Promise<Order | null> {

@@ -1,0 +1,115 @@
+openapi: 3.1.0
+info:
+  title: Kellermeister Order Conversion Service
+  version: 1.0.0
+  description: >
+    Converts photos of a wine bottle (front and back labels) into a structured
+    order expressed as RDF Turtle. Kellermeister's "Hinzufügen" flow captures
+    the two photos, POSTs them here, and ingests the returned order directly
+    into the cellarwork cellar.
+
+
+    The client is `HttpOrderConversionService`
+    (`src/infrastructure/http/HttpOrderConversionService.ts`). It sends both
+    images base64-encoded in a JSON body and treats the response body as the
+    order Turtle. Any non-2xx response is treated as a failure and the order is
+    not ingested.
+
+
+    Note: the client also recognises the reserved configuration value `MOCKED`
+    for its endpoint, which bypasses this service entirely and returns a fixed
+    built-in order. That is a client-side concern and not part of this API.
+servers:
+  - url: https://convert.example/
+    description: Placeholder — configured via the `VITE_ORDER_CONVERSION_URL` build-time variable.
+paths:
+  /convert:
+    post:
+      operationId: convertPhotosToOrder
+      summary: Convert front and back bottle photos into an order.
+      description: >
+        Accepts the front and back photos of a wine bottle and returns the
+        recognised order as RDF Turtle. The path shown here is illustrative;
+        the actual path is whatever `VITE_ORDER_CONVERSION_URL` points at.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversionRequest'
+            example:
+              front: "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQ..."
+              back: "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBwgHBgk..."
+      responses:
+        '200':
+          description: The recognised order as RDF Turtle.
+          content:
+            text/turtle:
+              schema:
+                type: string
+                description: An RDF Turtle document containing exactly one schema:Order with its embedded order items, product, seller, and customer.
+              example: |
+                PREFIX km:     <https://vocab.kellermeister.ch/wine/>
+                PREFIX schema: <https://schema.org/>
+                PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+                <https://kellermeister.ch/orders/1004727/1>
+                        a                     schema:OrderItem ;
+                        schema:orderQuantity  6 ;
+                        schema:orderedItem    <https://kellermeister.ch/products/dhondt-grellet-les-terres-fines-2021> ;
+                        schema:price          90.00 ;
+                        schema:priceCurrency  "CHF" .
+
+                <https://kellermeister.ch/products/dhondt-grellet-les-terres-fines-2021>
+                        a             schema:Product ;
+                        schema:name   "Dhondt-Grellet Les Terres Fines 2021" ;
+                        km:weinname   "Les Terres Fines" .
+
+                <https://kellermeister.ch/orders/1004727>
+                        a                   schema:Order ;
+                        schema:orderNumber  "1004727" ;
+                        schema:orderDate    "2026-03-27"^^xsd:date ;
+                        schema:orderedItem  <https://kellermeister.ch/orders/1004727/1> .
+        '400':
+          description: The request body was missing an image or was otherwise malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: No order could be recognised from the supplied photos.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: The conversion failed unexpectedly.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ConversionRequest:
+      type: object
+      description: The two bottle photos to convert, base64-encoded.
+      required:
+        - front
+        - back
+      additionalProperties: false
+      properties:
+        front:
+          type: string
+          format: byte
+          description: The front-label photo, base64-encoded (no data-URL prefix).
+        back:
+          type: string
+          format: byte
+          description: The back-label photo, base64-encoded (no data-URL prefix).
+    Error:
+      type: object
+      description: A machine-agnostic error payload. The client does not parse it; it surfaces the HTTP status.
+      properties:
+        message:
+          type: string
+          description: Human-readable description of what went wrong.

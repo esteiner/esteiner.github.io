@@ -9,6 +9,16 @@ export interface OrderRepository {
 
     fetchUnprocessedOrders(): Promise<Order[]>;
 
+    /**
+     * Materialize order(s) from a Turtle document (e.g. produced by the photo
+     * conversion service) so they can be ingested directly, without going
+     * through the Pod inbox. Every part — order items, product, seller, customer
+     * — embedded in the Turtle is resolved from its RDF graph, correlated by
+     * subject identifier, WITHOUT dereferencing those identifiers over the
+     * network (they are typically synthetic, non-dereferenceable URLs).
+     */
+    parseOrders(turtle: string): Promise<Order[]>;
+
     fetchOrderById(orderId: string): Promise<Order | null>;
 
     saveProcessedOrder(order: Order): Promise<Order>;
