@@ -228,7 +228,7 @@ class ProfilePage extends BasePage {
               <div class="card">
                   <div class="group">
                       <label>Solid Filemanager</label>
-                      <div class="value"><a class="link" target="_blank" href="https://otto-aa.github.io/">https://otto-aa.github.io/</a></div>
+                      <div class="value"><a class="link" target="_blank" href="https://otto-aa.github.io/solid-filemanager/?url=${this.solidUserProfile?.storageUrls}">https://otto-aa.github.io/solid-filemanager/</a></div>
                   </div>
                   <div class="group">
                       <label>Solid File Manager</label>
