@@ -17,6 +17,8 @@ ToDo
 - [x] kein Sync bei Page Refresh
 - [x] Local-first mit IndexedDB
 - [x] Bei Login mit anderer WebID müssen die lokale gespeicherten Daten gelöscht werden
+- [ ] Migration auf Soukai-Bis
+- [ ] Inbox löscht bei Übernahme die ttl Files nicht
 
 ### Prio 1
 
