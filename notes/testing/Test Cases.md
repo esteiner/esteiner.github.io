@@ -28,7 +28,7 @@ Edge Test Case
 Testdaten
 ---
 
-- Bestellung Hütte
+- Bestellung Hütte: 63
     - 11: 20260517_190916745_wein.ttl
         - invoice/7
             - 2: manincor-mason-2018
@@ -47,5 +47,5 @@ Testdaten
     - : 20260517_191536310_wein.ttl
     - : 20260517_190557284_weine.ttl
     - :
-- Bestellung Luzern
-- Bestellung Brixen
+- Bestellung Luzern: 774
+- Bestellung Brixen: 183
