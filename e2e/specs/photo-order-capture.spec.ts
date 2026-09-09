@@ -1,21 +1,22 @@
 import { test, expect } from '../fixtures/auth';
 
 /**
- * End-to-end verification of the photo → order → cellarwork flow.
+ * End-to-end verification of the photo/file → order → cellarwork flow, including
+ * the per-add source choice (Kamera vs Datei).
  *
- * Run with the conversion service stubbed at a configured endpoint:
+ * Run with the built-in mock conversion service (no network needed):
  *
- *   VITE_ORDER_CONVERSION_URL=http://localhost:9977/convert \
+ *   VITE_ORDER_CONVERSION_URL=MOCKED \
  *     npx playwright test -c e2e/playwright.config.ts photo-order-capture
  *
- * The env var enables the "Hinzufügen" feature (availability() reads it at
- * build time); `page.route` below answers every request to that endpoint with a
- * fixed order Turtle, so no real conversion server is needed.
+ * The env var enables the "Hinzufügen" feature (availability() reads it at build
+ * time). With MOCKED, `convert()` returns a fixed order and no request is made;
+ * the `page.route` below only matters if a real HTTP endpoint is configured.
  *
- * The seeded inbox holds the SAME order (6 units of the Dhondt-Grellet product),
- * so the flow is: open cellarwork → inbox ingests 6 → photo capture converts and
- * DIRECTLY ingests the same order → 6 more → 12 bottles total. Seeing the count
- * go 6 → 12 proves the photo path added its bottles without the inbox.
+ * The test opens cellarwork (ingesting the seeded inbox order), then performs
+ * two adds — one via Datei (file picker) and one via Kamera — asserting the
+ * product count grows each time and that only the camera source forces the
+ * device camera (`capture="environment"`).
  */
 const PRODUCT = 'Dhondt-Grellet Les Terres Fines 2021';
 
@@ -83,43 +84,68 @@ PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
 const IMAGE = Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x10]);
 
 test.describe('Photo order capture', () => {
-  test('captures front+back, converts to an order, and ingests it directly into cellarwork', async ({
+  test('adds bottles from either a file or the camera, chosen per add', async ({
     authedPage: page,
   }) => {
-    // Stub the conversion service (endpoint set via VITE_ORDER_CONVERSION_URL).
+    // Stub the conversion service in case an HTTP endpoint is configured. With
+    // VITE_ORDER_CONVERSION_URL=MOCKED (how this spec is run) the mock returns a
+    // fixed order and this route is simply never hit.
     await page.route('**/convert*', async (route) => {
       await route.fulfill({ status: 200, contentType: 'text/turtle', body: ORDER_TTL });
     });
 
-    // Open cellarwork ("Kellerarbeit") FIRST — it ingests the seeded inbox order
-    // (6 bottles) and, importantly, leaves us ON the cellarwork page. Adding a
-    // photo order from here exercises the same-route refresh: the footer's
-    // navigation to the route we're already on is a no-op, so the page must
-    // reload via the cellar-updated event to reflect the new bottles.
-    await page.getByRole('button', { name: 'Kellerarbeit' }).click();
-    await page.waitForURL(/\/cellarwork\//);
-    await expect(page.getByText(PRODUCT, { exact: true })).toHaveCount(6, { timeout: 60_000 });
-
-    // Answer the two capture steps: the footer opens one hidden file input per
-    // step (front, then back). A queued filechooser handler feeds each in turn.
-    const files = [
-      { name: 'front.jpg', mimeType: 'image/jpeg', buffer: IMAGE },
-      { name: 'back.jpg', mimeType: 'image/jpeg', buffer: IMAGE },
-    ];
+    // Answer every file picker the file source opens, recording each input's
+    // `capture` attribute so we can assert file mode does NOT force the camera.
+    const fileCaptureAttrs: (string | null)[] = [];
     page.on('filechooser', async (chooser) => {
-      const next = files.shift();
-      if (next) {
-        await chooser.setFiles(next);
-      }
+      fileCaptureAttrs.push(await chooser.element().getAttribute('capture'));
+      await chooser.setFiles({ name: 'label.jpg', mimeType: 'image/jpeg', buffer: IMAGE });
     });
 
-    // Step 1: front photo.
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
-    // Step 2: back photo (a fresh user gesture, as on a real device).
-    await page.getByRole('button', { name: 'Rückseite' }).click();
+    const product = page.getByText(PRODUCT, { exact: true });
+    const video = page.locator('video.camera-video');
+    const sourceDialog = page.getByRole('dialog', { name: 'Quelle wählen' });
 
-    // Conversion → direct ingestion of the photo order (6 bottles). We stay on
-    // cellarwork, so the count goes 6 → 12 only if the same-route refresh works.
-    await expect(page.getByText(PRODUCT, { exact: true })).toHaveCount(12, { timeout: 60_000 });
+    // Open cellarwork ("Kellerarbeit") — ingests the seeded inbox order and
+    // leaves us on the page, so each add below exercises the same-route refresh.
+    await page.getByRole('button', { name: 'Kellerarbeit' }).click();
+    await page.waitForURL(/\/cellarwork\//);
+    await expect(product).not.toHaveCount(0, { timeout: 60_000 });
+
+    // --- The source chooser is a modal dialog with a working cancel. ---
+    const countBeforeCancel = await product.count();
+    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    await expect(sourceDialog).toBeVisible();
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
+    await expect(sourceDialog).toHaveCount(0);
+    expect(await product.count()).toBe(countBeforeCancel); // nothing ingested
+
+    // --- File source: pick front + back from the file picker, no camera. ---
+    let before = await product.count();
+    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    await expect(sourceDialog).toBeVisible();
+    await page.getByRole('button', { name: 'Datei' }).click(); // front (file picker)
+    await page.getByRole('button', { name: 'Rückseite' }).click(); // back (file picker)
+    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
+    expect(fileCaptureAttrs).toEqual([null, null]); // camera never forced
+
+    // --- Camera source: the app opens a live preview and captures real frames. ---
+    before = await product.count();
+    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    await page.getByRole('button', { name: 'Kamera' }).click();
+    // The in-app camera preview appears (getUserMedia), not a file dialog.
+    await expect(video).toBeVisible();
+    await expect
+      .poll(() => video.evaluate((v: HTMLVideoElement) => v.videoWidth), { timeout: 15_000 })
+      .toBeGreaterThan(0);
+    await page.getByRole('button', { name: 'Aufnehmen' }).click(); // front frame
+    // Wait until the overlay advances to the back step before the second shutter.
+    await expect(page.getByText('Rückseite fotografieren')).toBeVisible();
+    await page.getByRole('button', { name: 'Aufnehmen' }).click(); // back frame
+    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
+    // Camera mode used no file picker, so nothing new was recorded there.
+    expect(fileCaptureAttrs).toEqual([null, null]);
+    // The stream is released: the preview is gone once capture completes.
+    await expect(video).toHaveCount(0);
   });
 });

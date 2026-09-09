@@ -32,7 +32,15 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Let getUserMedia resolve headlessly with a synthetic camera (a test
+        // pattern) and auto-grant the permission, so the in-app camera capture
+        // in the photo-order flow is exercisable without a real device.
+        launchOptions: {
+          args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
+        },
+      },
     },
   ],
   // Playwright starts the Vite dev server itself and tears it down afterwards.
