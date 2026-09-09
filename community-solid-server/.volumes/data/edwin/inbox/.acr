@@ -12,7 +12,7 @@
     # The homepage is readable by the public
     acp:accessControl <#fullOwnerAccess>, <#publicAppendAccess>;
     # All resources will inherit this authorization
-    acp:memberAccessControl <#fullOwnerAccess>.
+    acp:memberAccessControl <#fullOwnerAccess>, <#publicAppendAccess>.
 
 # The public only has append access
 <#publicAppendAccess>
