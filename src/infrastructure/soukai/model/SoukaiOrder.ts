@@ -21,6 +21,31 @@ export class SoukaiOrder extends Model implements Order {
     declare public positions?: SoukaiOrderItem[];
     declare public relatedPositions: BelongsToManyRelation<this, SoukaiOrderItem, typeof SoukaiOrderItem>;
 
+    /**
+     * URL of the Pod inbox document this order was read from. Transient — set at
+     * inbox-read time and consumed by `deleteFromInbox`; NOT a persisted model
+     * attribute. Carried per-order (rather than in shared repository state) so
+     * deletion resolves the correct document even when another inbox read
+     * overlaps an in-flight ingestion.
+     *
+     * The `= undefined` initializer is REQUIRED: SoukaiOrder extends soukai-bis'
+     * MagicObject, whose proxy routes assignments to non-schema, non-reserved
+     * properties into `setAttribute` — which silently drops them. Only
+     * properties present as own-properties on a freshly-constructed instance are
+     * treated as reserved (plain) fields. With `useDefineForClassFields: false`,
+     * an initializer is what makes this field an own-property, so `= undefined`
+     * (not a bare declaration) is what lets the setter/getter actually persist.
+     */
+    private inboxSourceUrl?: string = undefined;
+
+    setInboxSourceUrl(url: string): void {
+        this.inboxSourceUrl = url;
+    }
+
+    getInboxSourceUrl(): string | undefined {
+        return this.inboxSourceUrl;
+    }
+
     getId(): string {
         return this.url as string;
     }

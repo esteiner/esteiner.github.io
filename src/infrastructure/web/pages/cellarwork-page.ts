@@ -47,15 +47,16 @@ class CellarWorkPage extends BasePage {
 
     private _bottlesTask = new Task(this, async () => {
         if (this.shouldIngestFromInbox() && this.session.info.isLoggedIn) {
-            // Inbox ingestion is online and may fail (network/Pod); never let it
-            // block rendering of the existing cellarwork contents.
-            try {
-                const ingested = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
-                if (ingested) {
-                    this.sourceCellar = ingested;
-                }
-            } catch (error) {
-                console.error("cellarwork-page: inbox ingestion failed:", error);
+            // Batch inbox ingestion is all-or-nothing: it resolves only after
+            // every inbox order is processed AND its source document deleted.
+            // If it fails part-way we deliberately do NOT fall through and render
+            // the partially-ingested cellar as though ingestion had completed —
+            // the error propagates so the task's `error` branch shows a retry
+            // affordance instead. Orders already saved stay saved; documents not
+            // yet processed remain in the inbox for the next attempt.
+            const ingested = await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
+            if (ingested) {
+                this.sourceCellar = ingested;
             }
         }
         if (this.sourceCellar) {
@@ -201,6 +202,16 @@ class CellarWorkPage extends BasePage {
                 @keyframes spin {
                     to { transform: rotate(360deg); }
                 }
+
+                .ingest-error {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 24px 16px;
+                    text-align: center;
+                    color: var(--km-text-muted, #8A8278);
+                }
             `
         ];
     }
@@ -272,6 +283,12 @@ class CellarWorkPage extends BasePage {
             <main>
                 ${this.busy ? html`<div class="spinner"></div>` : this._bottlesTask.render({
                     pending: () => html`<div class="spinner"></div>`,
+                    error: () => html`
+                        <div class="ingest-error">
+                            <p>Die Bestellungen im Posteingang konnten nicht vollständig verarbeitet werden.</p>
+                            <kellermeister-button text="Erneut versuchen" icon="umbuchen" size="small" @click="${this.handleRetryIngest}"></kellermeister-button>
+                        </div>
+                    `,
                     complete: (bottles) => html`
                         <form @submit="${this.handleIngestClick}">
                             <div class="table" style="--cellar-columns: ${this.cellars.length};">
@@ -311,6 +328,13 @@ class CellarWorkPage extends BasePage {
         } else {
             console.log("loadCellar: failed, because cellarId is undefined!");
         }
+    }
+
+    private handleRetryIngest(e: Event) {
+        e.preventDefault();
+        // Re-run the batch; single-flight ingestion means this reads the inbox
+        // afresh and retries the orders whose documents are still there.
+        this.loadBottles();
     }
 
     private async handleIngestClick(e: Event) {

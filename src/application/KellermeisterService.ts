@@ -22,6 +22,15 @@ export class KellermeisterService implements ReadModelCache {
     private cachedCellars: Cellar[] | null = null;
     private cachedOrders: Order[] | null = null;
 
+    /**
+     * In-flight inbox ingestion, if any. Ingestion is single-flight: overlapping
+     * triggers (a second cellarwork open, a filter re-run) await this promise
+     * instead of starting a concurrent batch. A concurrent inbox read would
+     * otherwise interleave with an in-flight batch's reads/deletes and could
+     * strand documents or duplicate bottles.
+     */
+    private ingestionInFlight: Promise<Cellar> | null = null;
+
     constructor(private cellarRepository: CellarRepository, private bottleRepository: BottleRepository, private productRepository: ProductRepository, private orderRespository: OrderRepository, private bottleFactory: BottleFactory, private orderFactory: OrderFactory, private productFactory: ProductFactory) {
     }
 
@@ -233,15 +242,39 @@ export class KellermeisterService implements ReadModelCache {
         return this.groupOrdersByMonth(orders);
     }
 
+    /**
+     * Ingest every unprocessed inbox order into the cellarwork cellar as one
+     * batch. Single-flight: a call made while a batch is already running awaits
+     * and returns the same batch rather than starting a concurrent one. The
+     * returned cellar is only resolved once the whole inbox has been processed
+     * and each order's source document deleted — the page shows the ingested
+     * contents all-or-nothing, never a partial batch.
+     */
     async ingestOrdersFromInbox(): Promise<Cellar> {
+        if (this.ingestionInFlight) {
+            return this.ingestionInFlight;
+        }
+        const run = this.runInboxIngestion();
+        this.ingestionInFlight = run;
+        try {
+            return await run;
+        } finally {
+            this.ingestionInFlight = null;
+        }
+    }
+
+    private async runInboxIngestion(): Promise<Cellar> {
         const cellarForCellarwork: Cellar = await this.cellarRepository.fetchCellarForCellarwork();
         const unprocessedOrders: Order[] = await this.orderRespository.fetchUnprocessedOrders();
 
         console.log("ingestOrdersFromInbox:", unprocessedOrders.length, "orders to", cellarForCellarwork.getId());
-        if (unprocessedOrders.length > 0) {
-            for (const order of unprocessedOrders) {
-                await this.ingestOrder(order, cellarForCellarwork.getId());
-            }
+        // Process the whole batch sequentially; each order is saved locally
+        // before its inbox document is deleted (save-before-delete), and a
+        // failure part-way propagates so the page renders an error rather than a
+        // partial cellar. Orders already processed stay saved; the documents for
+        // orders not yet reached remain in the inbox for the next attempt.
+        for (const order of unprocessedOrders) {
+            await this.ingestOrder(order, cellarForCellarwork.getId());
         }
         return cellarForCellarwork;
     }

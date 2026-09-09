@@ -186,6 +186,50 @@ describe("SoukaiOrderRepository inbox ingestion", () => {
         expect(url).not.toContain("kellermeister.ch");
     });
 
+    it("deletes every document when the inbox holds several files", async () => {
+        await seedInbox("order-a", "A-1");
+        await seedInbox("order-b", "A-2");
+        await seedInbox("order-c", "A-3");
+        const repo = makeRepo(true, INBOX);
+
+        const orders = await repo.fetchUnprocessedOrders();
+        expect(orders).toHaveLength(3);
+        for (const order of orders) {
+            await repo.deleteFromInbox(order);
+        }
+
+        const deletedUrls = vi.mocked(deleteSolidDataset).mock.calls.map(c => c[0]);
+        expect(deletedUrls).toContain(`${INBOX}order-a`);
+        expect(deletedUrls).toContain(`${INBOX}order-b`);
+        expect(deletedUrls).toContain(`${INBOX}order-c`);
+    });
+
+    it("resolves each order's delete target independently of a later inbox read", async () => {
+        // Each order carries its own source-document URL, so a subsequent inbox
+        // read (a second navigation / filter re-run overlapping an in-flight
+        // batch) cannot strand the first read's deletions. The previous
+        // shared-map-cleared-on-every-read approach lost these targets here.
+        await seedInbox("order-a", "A-1");
+        await seedInbox("order-b", "A-2");
+        const repo = makeRepo(true, INBOX);
+        const firstRead = await repo.fetchUnprocessedOrders();
+        expect(firstRead).toHaveLength(2);
+
+        // Overlapping read sees a DIFFERENT inbox state.
+        inboxEngine = createMemoryEngine();
+        await seedInbox("order-c", "A-3");
+        const secondRead = await repo.fetchUnprocessedOrders();
+        expect(secondRead).toHaveLength(1);
+
+        // The first read's orders still delete their own source documents.
+        for (const order of firstRead) {
+            await repo.deleteFromInbox(order);
+        }
+        const deletedUrls = vi.mocked(deleteSolidDataset).mock.calls.map(c => c[0]);
+        expect(deletedUrls).toContain(`${INBOX}order-a`);
+        expect(deletedUrls).toContain(`${INBOX}order-b`);
+    });
+
     it("deleteFromInbox is a no-op when logged out", async () => {
         await seedInbox("order-3", "A-3");
         const [order] = await makeRepo(true, INBOX).fetchUnprocessedOrders();

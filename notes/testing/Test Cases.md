@@ -4,7 +4,7 @@ Test Cases
 Normal Test Case
 ---
 
-- #1
+- #1 ✔
     - offline: neuen Keller estellen
     - offline: sync zu Solid Pod
     - online: Seite Kellerarbeit mit Inbox 63 Flaschen aufrufen
@@ -21,7 +21,9 @@ Normal Test Case
 Edge Test Case
 ---
 
-- online: Seite Kellerarbeit mit Inbox 774 Flaschen
+- #1
+  - online: Seite Kellerarbeit mit Inbox 774 Flaschen
+  - online: sync (= 3 Minuten)
 
 Testdaten
 ---

@@ -21,15 +21,6 @@ import {withLocalEngine, withRemoteEngine} from "./engineScope.ts";
 export class SoukaiOrderRepository implements OrderRepository {
 
     /**
-     * Maps an unprocessed order's id (its synthetic inbox identifier, e.g.
-     * `https://kellermeister.ch/orders/1004727`) to the URL of the inbox document
-     * it was read from. Populated by `fetchUnprocessedOrders`, consumed by
-     * `deleteFromInbox`: an inbox order's own url is NOT the inbox file, so the
-     * source document must be tracked rather than derived from the model.
-     */
-    private readonly inboxDocumentByOrderId = new Map<string, string>();
-
-    /**
      * @param inboxEngine builds the engine used to read the Pod inbox. Defaults
      *   to `SolidEngine` over the authenticated fetch; overridable in tests to
      *   simulate the inbox with a local engine.
@@ -85,13 +76,14 @@ export class SoukaiOrderRepository implements OrderRepository {
             // We read the container's documents ourselves (rather than
             // `SoukaiOrder.all`) so we can remember each order's SOURCE document
             // URL for deleteFromInbox — the order's own url is a synthetic
-            // identifier, not the inbox file.
+            // identifier, not the inbox file. The source URL is carried on the
+            // order itself (not in shared repository state) so an overlapping
+            // read cannot strand an in-flight ingestion's deletions.
             const documents = await engine.readDocuments({containerUrl: inbox});
-            this.inboxDocumentByOrderId.clear();
             const orders: SoukaiOrder[] = [];
             for (const document of Object.values(documents)) {
                 for (const order of await SoukaiOrder.createManyFromDocument(document)) {
-                    this.inboxDocumentByOrderId.set(order.getId(), document.url);
+                    order.setInboxSourceUrl(document.url);
                     orders.push(order);
                 }
             }
@@ -124,7 +116,8 @@ export class SoukaiOrderRepository implements OrderRepository {
         // `order.getDocumentUrl()`, which for an inbox order derives from its
         // synthetic identifier (e.g. https://kellermeister.ch/orders/1004727) and
         // would issue a cross-origin, CORS-blocked request to a non-existent URL.
-        const sourceUrl = this.inboxDocumentByOrderId.get(order.getId());
+        // The source URL was stamped on the order at inbox-read time.
+        const sourceUrl = order.getInboxSourceUrl();
         if (sourceUrl) {
             await deleteSolidDataset(sourceUrl, {fetch: session.fetch});
         }

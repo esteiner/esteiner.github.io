@@ -523,4 +523,102 @@ describe('KellermeisterService', () => {
             expect(placedCellars).toEqual(['cellarwork-id', 'cellarwork-id', 'cellarwork-id']);
         });
     });
+
+    // -----------------------------------------------------------------------
+    // ingestOrdersFromInbox — batch, single-flight, atomic failure
+    // -----------------------------------------------------------------------
+
+    describe('ingestOrdersFromInbox', () => {
+        // Wire the factory/repos so each order ingests as a no-position order:
+        // createOrder echoes a distinct built order, save/delete are recorded.
+        function wireBatch(deps: ReturnType<typeof makeService>, orders: Order[]) {
+            const { cellarRepo, orderRepo, orderFactory } = deps;
+            const cellarwork = makeCellar('cellarwork-id');
+            vi.mocked(cellarRepo.fetchCellarForCellarwork).mockResolvedValue(cellarwork);
+            vi.mocked(orderRepo.fetchUnprocessedOrders).mockResolvedValue(orders);
+            // Each order has no positions, so addBottles just returns the built order.
+            const built = new Map<Order, Order>();
+            vi.mocked(orderFactory.createOrder).mockImplementation((source: Order) => {
+                const b = { getId: () => `built-${source.getId?.() ?? ''}`, getOrderItems: () => [] } as unknown as Order;
+                built.set(source, b);
+                return b;
+            });
+            vi.mocked(orderRepo.saveProcessedOrder).mockImplementation(async (o: Order) => o);
+            return { cellarwork, built };
+        }
+
+        function makeInboxOrder(id: string): Order {
+            return { getId: () => id, getOrderItems: () => [] } as unknown as Order;
+        }
+
+        it('processes the whole batch and deletes every order document from the inbox', async () => {
+            const deps = makeService();
+            const orders = [makeInboxOrder('o1'), makeInboxOrder('o2'), makeInboxOrder('o3')];
+            wireBatch(deps, orders);
+
+            const cellar = await deps.service.ingestOrdersFromInbox();
+
+            expect(cellar.getId()).toBe(u('cellarwork-id'));
+            expect(deps.orderRepo.saveProcessedOrder).toHaveBeenCalledTimes(3);
+            expect(deps.orderRepo.deleteFromInbox).toHaveBeenCalledTimes(3);
+            // Each source order (not the built order) is the delete target.
+            const deleted = vi.mocked(deps.orderRepo.deleteFromInbox).mock.calls.map(c => c[0]);
+            expect(deleted).toEqual(orders);
+        });
+
+        it('is single-flight: overlapping calls coalesce into one batch', async () => {
+            const deps = makeService();
+            const orders = [makeInboxOrder('o1'), makeInboxOrder('o2')];
+            wireBatch(deps, orders);
+
+            // Fire two calls before the first settles; they must share one run.
+            const [c1, c2] = await Promise.all([
+                deps.service.ingestOrdersFromInbox(),
+                deps.service.ingestOrdersFromInbox(),
+            ]);
+
+            expect(c1).toBe(c2);
+            expect(deps.cellarRepo.fetchCellarForCellarwork).toHaveBeenCalledOnce();
+            expect(deps.orderRepo.fetchUnprocessedOrders).toHaveBeenCalledOnce();
+            // Each order processed and deleted exactly once (no doubling).
+            expect(deps.orderRepo.deleteFromInbox).toHaveBeenCalledTimes(2);
+        });
+
+        it('clears the in-flight guard so a later call re-reads the inbox', async () => {
+            const deps = makeService();
+            wireBatch(deps, [makeInboxOrder('o1')]);
+
+            await deps.service.ingestOrdersFromInbox();
+            await deps.service.ingestOrdersFromInbox();
+
+            expect(deps.orderRepo.fetchUnprocessedOrders).toHaveBeenCalledTimes(2);
+        });
+
+        it('on a mid-batch failure: keeps processed orders saved, leaves later documents in the inbox, and rejects', async () => {
+            const deps = makeService();
+            const orders = [makeInboxOrder('o1'), makeInboxOrder('o2'), makeInboxOrder('o3')];
+            wireBatch(deps, orders);
+            // The second order fails to persist; the loop must not continue.
+            vi.mocked(deps.orderRepo.saveProcessedOrder).mockImplementation(async (o: Order) => {
+                if (o.getId() === 'built-o2') {
+                    throw new Error('save failed');
+                }
+                return o;
+            });
+
+            await expect(deps.service.ingestOrdersFromInbox()).rejects.toThrow('save failed');
+
+            // o1 fully processed (saved + inbox document deleted).
+            expect(deps.orderRepo.deleteFromInbox).toHaveBeenCalledTimes(1);
+            expect(vi.mocked(deps.orderRepo.deleteFromInbox).mock.calls[0][0]).toBe(orders[0]);
+            // o2's document is NOT deleted (save failed before delete); o3 untouched.
+            const deletedIds = vi.mocked(deps.orderRepo.deleteFromInbox).mock.calls.map(c => c[0].getId());
+            expect(deletedIds).not.toContain('o2');
+            expect(deletedIds).not.toContain('o3');
+            // The guard is cleared, so a retry re-reads the (still-populated) inbox.
+            wireBatch(deps, [orders[1], orders[2]]);
+            await deps.service.ingestOrdersFromInbox();
+            expect(deps.orderRepo.fetchUnprocessedOrders).toHaveBeenCalledTimes(2);
+        });
+    });
 });
