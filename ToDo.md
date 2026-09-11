@@ -12,7 +12,9 @@ ToDo
 - [ ] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY)
 - [ ] S&E: Preis lookup review
 - [ ] E: API Key für REST API
-
+- [ ] S: dezimalstellen (number) bei Fotoeingabe statt Integer
+- [ ] E: Menge muss auf ttl Menge gemappt werden 
+- [ ] E: Quelle muss angezeigt werden
 
 ### Prio 2
 
