@@ -3,20 +3,20 @@ ToDo
 
 ### Prio 1
 
-- [x] Upload Foto
-- [ ] Profil umbennen und überarbeiten (Kellerinfo)
-- [ ] In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
-- [-] Icons für Suchen differenzieren
-- [ ] Suche nach Bewertung ("top")
-- [ ] Rating auf bottle anstatt Product
-- [ ] Änderungen zu Produkt machen
-- [ ] Filter nach Weinfarbe und Weinart überdenken 
-- [ ] Filter nach muss ausgetrunken werden --> via Suche "bis 2026" (oder fest auf icon drücken)
-- [ ] Preis lookup review
-- [ ] Verwendung von WebMCP
+- [ ] S: Profil umbennen und überarbeiten (Kellerinfo)
+- [ ] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
+- [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
+- [ ] E: Rating auf bottle anstatt Product
+- [ ] E: Änderungen zu Produkt machen (im Keller, auf Flasche neues Icon "ändern", wenn icon Stift gedrückt, dann alle Felder auf Input und 2 neue Icons, accept und cancel)
+- [ ] S: Filter nach Weinfarbe und Weinart überdenken 
+- [ ] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY)
+- [ ] S&E: Preis lookup review
+- [ ] E: API Key für REST API
+
 
 ### Prio 2
 
+- [ ] Verwendung von WebMCP
 - [ ] Dezimalstellen des Preises werden nicht angezeigt (Soukai Bug?)
 - [ ] neue Seite Statistik:
   - Anzahl Rotweine, Weissweine, Roseweine, Sprudel (weiss, rot, rose), Gesamt und pro Keller
@@ -26,11 +26,13 @@ ToDo
 - [ ] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
 - [ ] Refresh Button
 - [ ] Monate im Einkauf zu/aufklappbar machen
+- [ ] E: Filter nach muss ausgetrunken werden --> lange (1sec) auf filter toggle drücken
 
 ### Prio 3
 
 - [ ] Preis mit Komma oder Punkt als Dezimalzeichen aktzeptieren
 - [ ] Funktion für Keller umbennen
+- [ ] check for updates in Kellerinfo bei der Version
 - [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
 
 ### Prio 4
@@ -44,6 +46,8 @@ ToDo
 Done
 ---
 
+- [-] Icons für Suchen differenzieren
+- [x] Upload Foto
 - [x] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen
 - [x] Filter für Text auf Einkäufe Seite
 - [x] Profil Seite ist Text zu nahe am Rand
