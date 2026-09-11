@@ -338,7 +338,7 @@ class KellermeisterFooter extends BaseComponent {
                             </label>
                             <label class="dialog-field details-currency-field">
                                 <span>Währung</span>
-                                <input class="dialog-input details-price-currency" type="text" />
+                                <input class="dialog-input details-price-currency" type="text" placeholder="CHF" />
                             </label>
                         </div>
                         <div class="dialog-field-inline">
@@ -417,16 +417,20 @@ class KellermeisterFooter extends BaseComponent {
                     min-width: 0;
                 }
                 /* Price + currency share one row (each its own labelled column):
-                   price grows, currency is narrower. */
+                   price grows, currency is narrower but can still shrink so the
+                   row never overflows the dialog on narrow mobile viewports. */
                 .km-source-dialog .dialog-field-inline {
                     display: flex;
                     gap: 10px;
+                    min-width: 0;
                 }
                 .km-source-dialog .dialog-field-inline .details-price-field {
                     flex: 1 1 auto;
+                    min-width: 0;
                 }
                 .km-source-dialog .dialog-field-inline .details-currency-field {
-                    flex: 0 0 110px;
+                    flex: 0 1 72px;
+                    min-width: 48px;
                 }
                 .km-source-dialog .dialog-actions {
                     display: flex;
