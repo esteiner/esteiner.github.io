@@ -1,6 +1,7 @@
 import type {
     OrderConversionService,
     OrderConversionAvailability,
+    OrderConversionDetails,
 } from "../../application/ports/OrderConversionService.ts";
 
 /**
@@ -20,7 +21,7 @@ export class MockOrderConversionService implements OrderConversionService {
         return {available: true};
     }
 
-    async convert(_front: Blob, _back: Blob): Promise<string> {
+    async convert(_front: Blob, _back: Blob, _details?: OrderConversionDetails): Promise<string> {
         return MOCK_ORDER_TTL;
     }
 }

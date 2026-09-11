@@ -5,6 +5,7 @@ import {Router} from "@vaadin/router";
 import {router} from "../router.ts";
 import {CDI} from "../../cdi/CDI.ts";
 import {CELLAR_UPDATED_EVENT} from "../events.ts";
+import type {OrderConversionDetails} from "../../../application/ports/OrderConversionService.ts";
 
 @customElement('kellermeister-footer')
 class KellermeisterFooter extends BaseComponent {
@@ -37,7 +38,15 @@ class KellermeisterFooter extends BaseComponent {
     @state()
     private cameraActive: boolean = false;
 
+    /** True while the details dialog (Ort/Preis) is shown, after both photos. */
+    @state()
+    private detailsOpen: boolean = false;
+
     private frontImage: Blob | null = null;
+
+    /** Both captured photos, held while the details dialog is open. */
+    private pendingFront: Blob | null = null;
+    private pendingBack: Blob | null = null;
 
     /** Live camera stream, held while `cameraActive`; released by stopCamera(). */
     private stream: MediaStream | null = null;
@@ -119,7 +128,7 @@ class KellermeisterFooter extends BaseComponent {
             return;
         }
         if (this.capturing === 'back' && this.frontImage) {
-            await this.convertAndIngest(this.frontImage, file);
+            this.openDetails(this.frontImage, file);
         }
     }
 
@@ -148,17 +157,23 @@ class KellermeisterFooter extends BaseComponent {
         this.updatePortal();
     }
 
-    /** Show/hide the source-chooser modal by rendering it into a <body> portal. */
+    /** Show/hide the portaled modals (source chooser, then details) in <body>. */
     private updatePortal() {
         const showChooser = this.capturing === 'front' && this.source === null && !this.busy && !this.error;
-        if (showChooser) {
+        const showDetails = this.detailsOpen && !this.busy && !this.error;
+        const dialog = showChooser
+            ? this.renderSourceDialog()
+            : showDetails
+                ? this.renderDetailsDialog()
+                : null;
+        if (dialog) {
             if (!this.dialogPortal) {
                 this.dialogPortal = document.createElement('div');
                 document.body.appendChild(this.dialogPortal);
             }
             // `host: this` binds event listeners' `this` to the component (the
             // standalone render() sets no host by default).
-            render(this.renderSourceDialog(), this.dialogPortal, {host: this});
+            render(dialog, this.dialogPortal, {host: this});
         } else {
             this.removePortal();
         }
@@ -186,7 +201,7 @@ class KellermeisterFooter extends BaseComponent {
         }
         if (this.capturing === 'back' && this.frontImage) {
             this.stopCamera();
-            await this.convertAndIngest(this.frontImage, blob);
+            this.openDetails(this.frontImage, blob);
         }
     }
 
@@ -224,6 +239,49 @@ class KellermeisterFooter extends BaseComponent {
         this.capturing = 'idle';
         this.source = null;
         this.frontImage = null;
+        this.detailsOpen = false;
+        this.pendingFront = null;
+        this.pendingBack = null;
+    }
+
+    // --- Details step: collect optional Ort/Preis before sending to the API ---
+
+    /** Both photos are captured; hold them and ask for optional details. */
+    private openDetails(front: Blob, back: Blob) {
+        this.pendingFront = front;
+        this.pendingBack = back;
+        this.capturing = 'idle';
+        this.detailsOpen = true;
+    }
+
+    private async handleDetailsSend() {
+        const front = this.pendingFront;
+        const back = this.pendingBack;
+        if (!front || !back) {
+            return;
+        }
+        const read = (selector: string) =>
+            this.dialogPortal?.querySelector<HTMLInputElement>(selector)?.value.trim() || undefined;
+        const readInteger = (selector: string) => {
+            const value = this.dialogPortal?.querySelector<HTMLInputElement>(selector)?.valueAsNumber;
+            return value !== undefined && Number.isInteger(value) ? value : undefined;
+        };
+        const details = {
+            place: read('.details-place'),
+            price: readInteger('.details-price'),
+            priceCurrency: read('.details-price-currency'),
+            quantity: readInteger('.details-quantity'),
+        };
+        // Close the dialog and clear the stash before converting.
+        this.detailsOpen = false;
+        this.pendingFront = null;
+        this.pendingBack = null;
+        await this.convertAndIngest(front, back, details);
+    }
+
+    private handleDetailsCancel() {
+        // Abort the add without sending anything.
+        this.resetCapture();
     }
 
     disconnectedCallback() {
@@ -238,6 +296,70 @@ class KellermeisterFooter extends BaseComponent {
      * styles are inlined and scoped under `.km-source-dialog` to avoid leaking.
      */
     private renderSourceDialog(): TemplateResult {
+        return html`
+            ${this.dialogStyles()}
+            <div class="km-source-dialog">
+                <div class="dialog-overlay" @click="${this.handleAddCancel}">
+                    <div class="dialog" role="dialog" aria-modal="true" aria-label="Quelle wählen" @click="${(e: Event) => e.stopPropagation()}">
+                        <h2>Quelle wählen</h2>
+                        <p>Wie möchtest du das Foto der Flasche hinzufügen?</p>
+                        <div class="dialog-actions">
+                            <button class="dialog-btn dialog-btn-cancel" @click="${this.handleAddCancel}">Abbrechen</button>
+                            <button class="dialog-btn dialog-btn-ok" @click="${() => this.handleSourceClick('file')}">Datei</button>
+                            <button class="dialog-btn dialog-btn-ok" @click="${() => this.handleSourceClick('camera')}">Kamera</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * The details dialog (optional Ort/Preis), shown after both photos and before
+     * the conversion request. Same look as the source dialog; inputs are read
+     * from the DOM on Senden (no value binding), so re-renders never clobber them.
+     */
+    private renderDetailsDialog(): TemplateResult {
+        return html`
+            ${this.dialogStyles()}
+            <div class="km-source-dialog">
+                <div class="dialog-overlay" @click="${this.handleDetailsCancel}">
+                    <div class="dialog" role="dialog" aria-modal="true" aria-label="Angaben" @click="${(e: Event) => e.stopPropagation()}">
+                        <h2>Flasche hinzufügen</h2>
+                        <p>Optionale Angaben zur Flasche.</p>
+                        <label class="dialog-field">
+                            <span>Ort (gekauft/getrunken)</span>
+                            <input class="dialog-input details-place" type="text" />
+                        </label>
+                        <div class="dialog-field-inline">
+                            <label class="dialog-field details-price-field">
+                                <span>Preis</span>
+                                <input class="dialog-input details-price" type="number" inputmode="numeric" min="0" step="1" />
+                            </label>
+                            <label class="dialog-field details-currency-field">
+                                <span>Währung</span>
+                                <input class="dialog-input details-price-currency" type="text" />
+                            </label>
+                        </div>
+                        <div class="dialog-field-inline">
+                            <label class="dialog-field details-price-field">
+                                <span>Anzahl</span>
+                                <input class="dialog-input details-quantity" type="number" inputmode="numeric" min="0" step="1" value="1" />
+                            </label>
+                            <span class="details-currency-field" aria-hidden="true"></span>
+                        </div>
+                        <div class="dialog-actions">
+                            <button class="dialog-btn dialog-btn-cancel" @click="${this.handleDetailsCancel}">Abbrechen</button>
+                            <button class="dialog-btn dialog-btn-ok" @click="${this.handleDetailsSend}">Senden</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    /** Shared styles for the portaled dialogs (source chooser and details). */
+    private dialogStyles(): TemplateResult {
         return html`
             <style>
                 .km-source-dialog .dialog-overlay {
@@ -277,6 +399,35 @@ class KellermeisterFooter extends BaseComponent {
                     color: var(--km-text-muted, #8A8278);
                     line-height: 1.6;
                 }
+                .km-source-dialog .dialog-field {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    font-size: 13px;
+                    color: var(--km-text-muted, #8A8278);
+                }
+                .km-source-dialog .dialog-input {
+                    padding: 10px 12px;
+                    border-radius: 8px;
+                    border: 1px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    color: var(--km-text, #1A1917);
+                    min-width: 0;
+                }
+                /* Price + currency share one row (each its own labelled column):
+                   price grows, currency is narrower. */
+                .km-source-dialog .dialog-field-inline {
+                    display: flex;
+                    gap: 10px;
+                }
+                .km-source-dialog .dialog-field-inline .details-price-field {
+                    flex: 1 1 auto;
+                }
+                .km-source-dialog .dialog-field-inline .details-currency-field {
+                    flex: 0 0 110px;
+                }
                 .km-source-dialog .dialog-actions {
                     display: flex;
                     justify-content: flex-end;
@@ -310,29 +461,16 @@ class KellermeisterFooter extends BaseComponent {
                     opacity: 0.85;
                 }
             </style>
-            <div class="km-source-dialog">
-                <div class="dialog-overlay" @click="${this.handleAddCancel}">
-                    <div class="dialog" role="dialog" aria-modal="true" aria-label="Quelle wählen" @click="${(e: Event) => e.stopPropagation()}">
-                        <h2>Quelle wählen</h2>
-                        <p>Wie möchtest du das Foto der Flasche hinzufügen?</p>
-                        <div class="dialog-actions">
-                            <button class="dialog-btn dialog-btn-cancel" @click="${this.handleAddCancel}">Abbrechen</button>
-                            <button class="dialog-btn dialog-btn-ok" @click="${() => this.handleSourceClick('file')}">Datei</button>
-                            <button class="dialog-btn dialog-btn-ok" @click="${() => this.handleSourceClick('camera')}">Kamera</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         `;
     }
 
-    private async convertAndIngest(front: Blob, back: Blob) {
+    private async convertAndIngest(front: Blob, back: Blob, details?: OrderConversionDetails) {
         this.busy = true;
         this.capturing = 'idle';
         this.source = null;
         this.error = null;
         try {
-            const turtle = await this.cdi.getOrderConversionService().convert(front, back);
+            const turtle = await this.cdi.getOrderConversionService().convert(front, back, details);
             await this.cdi.getKellermeisterService().ingestOrderFromTurtle(turtle);
             // Reset before navigating so a later add starts clean.
             this.frontImage = null;
@@ -440,6 +578,54 @@ class KellermeisterFooter extends BaseComponent {
                 .camera-controls {
                     display: flex;
                     gap: 16px;
+                    width: 100%;
+                    justify-content: center;
+                    padding-bottom: 4px;
+                }
+
+                .camera-btn {
+                    flex: 1 1 0;
+                    max-width: 220px;
+                    min-height: 48px;
+                    padding: 14px 24px;
+                    border-radius: 10px;
+                    border: none;
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: opacity 0.2s ease, transform 0.1s ease;
+                    letter-spacing: 0.02em;
+                }
+
+                .camera-btn:active {
+                    transform: scale(0.97);
+                }
+
+                .camera-btn-primary {
+                    background: var(--app-color-primary, #3A6B28);
+                    color: #fff;
+                }
+
+                .camera-btn-primary:hover {
+                    opacity: 0.85;
+                }
+
+                /* Pale tint for the front photo (the back uses the standard green).
+                   Text colour matches the secondary/Abbrechen button. */
+                .camera-btn-primary-light {
+                    background: #f9f9e8;
+                    color: var(--km-text, #1A1917);
+                }
+
+                .camera-btn-primary-light:hover {
+                    opacity: 0.85;
+                }
+
+                .camera-btn-secondary {
+                    background: var(--km-surface, #fff);
+                    color: var(--km-text, #1A1917);
+                    border: 1px solid var(--km-border, #E4DFD7);
                 }
             `
         ];
@@ -469,14 +655,18 @@ class KellermeisterFooter extends BaseComponent {
         if (!this.cameraActive) {
             return '';
         }
-        const label = this.capturing === 'back' ? 'Rückseite fotografieren' : 'Vorderseite fotografieren';
+        const label = this.capturing === 'back' ? 'Rückseite' : 'Vorderseite';
+        // The shutter names the step it captures and is lighter green for the
+        // front photo, then the standard green for the back photo.
+        const shutterLabel = this.capturing === 'back' ? 'Rückseite aufnehmen' : 'Vorderseite aufnehmen';
+        const shutterClass = this.capturing === 'back' ? 'camera-btn-primary' : 'camera-btn-primary-light';
         return html`
             <div class="camera-overlay">
                 <span class="camera-label">${label}</span>
                 <video class="camera-video" autoplay playsinline muted></video>
                 <div class="camera-controls">
-                    <kellermeister-button text="Aufnehmen" @click="${this.handleShutter}" icon="umbuchen" size="small"></kellermeister-button>
-                    <kellermeister-button text="Abbrechen" @click="${this.handleCameraCancel}" icon="umbuchen" size="small"></kellermeister-button>
+                    <button class="camera-btn camera-btn-secondary" @click="${this.handleCameraCancel}">Abbrechen</button>
+                    <button class="camera-btn ${shutterClass}" @click="${this.handleShutter}">${shutterLabel}</button>
                 </div>
             </div>
         `;

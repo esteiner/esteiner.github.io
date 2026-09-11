@@ -105,6 +105,7 @@ test.describe('Photo order capture', () => {
     const product = page.getByText(PRODUCT, { exact: true });
     const video = page.locator('video.camera-video');
     const sourceDialog = page.getByRole('dialog', { name: 'Quelle wählen' });
+    const detailsDialog = page.getByRole('dialog', { name: 'Angaben' });
 
     // Open cellarwork ("Kellerarbeit") — ingests the seeded inbox order and
     // leaves us on the page, so each add below exercises the same-route refresh.
@@ -120,32 +121,57 @@ test.describe('Photo order capture', () => {
     await expect(sourceDialog).toHaveCount(0);
     expect(await product.count()).toBe(countBeforeCancel); // nothing ingested
 
-    // --- File source: pick front + back from the file picker, no camera. ---
+    // --- Camera source: live preview → capture front+back → details → Senden. ---
     let before = await product.count();
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
-    await expect(sourceDialog).toBeVisible();
-    await page.getByRole('button', { name: 'Datei' }).click(); // front (file picker)
-    await page.getByRole('button', { name: 'Rückseite' }).click(); // back (file picker)
-    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
-    expect(fileCaptureAttrs).toEqual([null, null]); // camera never forced
-
-    // --- Camera source: the app opens a live preview and captures real frames. ---
-    before = await product.count();
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     await page.getByRole('button', { name: 'Kamera' }).click();
     // The in-app camera preview appears (getUserMedia), not a file dialog.
     await expect(video).toBeVisible();
+    await expect(page.getByText('Vorderseite', { exact: true })).toBeVisible(); // title
     await expect
       .poll(() => video.evaluate((v: HTMLVideoElement) => v.videoWidth), { timeout: 15_000 })
       .toBeGreaterThan(0);
-    await page.getByRole('button', { name: 'Aufnehmen' }).click(); // front frame
-    // Wait until the overlay advances to the back step before the second shutter.
-    await expect(page.getByText('Rückseite fotografieren')).toBeVisible();
-    await page.getByRole('button', { name: 'Aufnehmen' }).click(); // back frame
-    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
-    // Camera mode used no file picker, so nothing new was recorded there.
-    expect(fileCaptureAttrs).toEqual([null, null]);
-    // The stream is released: the preview is gone once capture completes.
+    // Front shutter (lighter tint); remember its colour to compare with the back.
+    const frontShutter = page.getByRole('button', { name: 'Vorderseite aufnehmen' });
+    const frontColor = await frontShutter.evaluate((el) => getComputedStyle(el).backgroundColor);
+    await frontShutter.click(); // front frame
+    // Overlay advances to the back step: title "Rückseite" and the back shutter.
+    await expect(page.getByText('Rückseite', { exact: true })).toBeVisible();
+    const backShutter = page.getByRole('button', { name: 'Rückseite aufnehmen' });
+    await expect(backShutter).toBeVisible();
+    const backColor = await backShutter.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(frontColor).not.toBe(backColor); // shutter colour differs front vs back
+    await backShutter.click(); // back frame
+    // The stream is released and the details dialog is shown before sending.
     await expect(video).toHaveCount(0);
+    await expect(detailsDialog).toBeVisible();
+    // The price line has an integer price input and a currency input, each labelled.
+    await expect(detailsDialog.locator('input.details-price')).toHaveAttribute('type', 'number');
+    await expect(detailsDialog.locator('input.details-price-currency')).toBeVisible();
+    await expect(detailsDialog.getByText('Währung', { exact: true })).toBeVisible();
+    // A third row holds an integer "Anzahl" (quantity) input defaulting to 1.
+    await expect(detailsDialog.getByText('Anzahl', { exact: true })).toBeVisible();
+    await expect(detailsDialog.locator('input.details-quantity')).toHaveAttribute('type', 'number');
+    await expect(detailsDialog.locator('input.details-quantity')).toHaveValue('1');
+    // Enter an integer price + currency + quantity, then send.
+    await detailsDialog.locator('input.details-price').fill('42');
+    await detailsDialog.locator('input.details-price-currency').fill('CHF');
+    await detailsDialog.locator('input.details-quantity').fill('6');
+    await page.getByRole('button', { name: 'Senden' }).click();
+    await expect(detailsDialog).toHaveCount(0);
+    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
+
+    // --- File source: capture front+back, reach the details dialog, then cancel. ---
+    before = await product.count();
+    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+    await expect(sourceDialog).toBeVisible();
+    await page.getByRole('button', { name: 'Datei' }).click(); // front (file picker)
+    await page.getByRole('button', { name: 'Rückseite' }).click(); // back (file picker)
+    await expect(detailsDialog).toBeVisible();
+    expect(fileCaptureAttrs).toEqual([null, null]); // camera never forced
+    // Abbrechen aborts the add: nothing is sent or ingested.
+    await page.getByRole('button', { name: 'Abbrechen' }).click();
+    await expect(detailsDialog).toHaveCount(0);
+    expect(await product.count()).toBe(before);
   });
 });

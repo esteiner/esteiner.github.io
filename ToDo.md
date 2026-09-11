@@ -3,23 +3,33 @@ ToDo
 
 ### Prio 1
 
-- [ ] Upload Foto
-- [ ] Profil umbennen und überarbeiten
-- [ ] In Kellerseite immer Anzahl Flaschen anzeigen
-- [ ] Icons für Suchen differenzieren
-- [ ] Suche nach Bewertung
+- [x] Upload Foto
+- [ ] Profil umbennen und überarbeiten (Kellerinfo)
+- [ ] In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
+- [-] Icons für Suchen differenzieren
+- [ ] Suche nach Bewertung ("top")
+- [ ] Rating auf bottle anstatt Product
 - [ ] Änderungen zu Produkt machen
-- [ ] Filter nach Weinfarbe und Weinart überdenken
+- [ ] Filter nach Weinfarbe und Weinart überdenken 
+- [ ] Filter nach muss ausgetrunken werden --> via Suche "bis 2026" (oder fest auf icon drücken)
+- [ ] Preis lookup review
+- [ ] Verwendung von WebMCP
 
 ### Prio 2
 
 - [ ] Dezimalstellen des Preises werden nicht angezeigt (Soukai Bug?)
-- [ ] neue Seite Statistik
+- [ ] neue Seite Statistik:
+  - Anzahl Rotweine, Weissweine, Roseweine, Sprudel (weiss, rot, rose), Gesamt und pro Keller
+  - Weine trinkreif von - bis
+  - Weinpreise pro Keller und Gesamt und von - bis
+  - Weinbewertungen Top (3), (2), (1) 
 - [ ] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
 - [ ] Refresh Button
+- [ ] Monate im Einkauf zu/aufklappbar machen
 
 ### Prio 3
 
+- [ ] Preis mit Komma oder Punkt als Dezimalzeichen aktzeptieren
 - [ ] Funktion für Keller umbennen
 - [ ] Mobile Safari fehlt x in Search Input ([siehe Blog](https://www.w3tutorials.net/blog/input-type-search-no-longer-shows-cancel-button-x-under-ios/))
 
@@ -28,7 +38,7 @@ ToDo
 - [ ] E2E Tests
 - [ ] Code Quality
 - [ ] Automated Testing
-- [ ]  Finder Extension/WebDAV to Solid Pod Bridge
+- [ ] Finder Extension/WebDAV to Solid Pod Bridge
 - [ ] Solid Bootstrapping via WebID -> oidcIssuer(s) / storage(s) -> Type Indices
 
 Done

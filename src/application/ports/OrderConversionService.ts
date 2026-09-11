@@ -13,13 +13,26 @@ export interface OrderConversionService {
     availability(): OrderConversionAvailability;
 
     /**
-     * Convert the front and back photos of a bottle into an order as Turtle.
-     * Resolves with the `text/turtle` body the service returned. Rejects when the
-     * precondition is unmet (no endpoint) or the request fails (transport error
-     * or non-success status).
+     * Convert the front and back photos of a bottle into an order as Turtle,
+     * optionally with user-entered details (place bought/drunk, price) that the
+     * service may fold into the order. Resolves with the `text/turtle` body the
+     * service returned. Rejects when the precondition is unmet (no endpoint) or
+     * the request fails (transport error or non-success status).
      */
-    convert(front: Blob, back: Blob): Promise<string>;
+    convert(front: Blob, back: Blob, details?: OrderConversionDetails): Promise<string>;
 }
+
+/** Optional, user-entered context for a converted order; blank fields are omitted. */
+export type OrderConversionDetails = {
+    /** Where the bottle was bought or drunk (sent as `place`). */
+    place?: string;
+    /** Integer price (sent as `price`, a JSON number). */
+    price?: number;
+    /** Free-text price unit, e.g. "CHF" (sent as `priceCurrency`). */
+    priceCurrency?: string;
+    /** Integer quantity of bottles (sent as `quantity`, a JSON number). */
+    quantity?: number;
+};
 
 export type OrderConversionAvailability =
     | {available: true}

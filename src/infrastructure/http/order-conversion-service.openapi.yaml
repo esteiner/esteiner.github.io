@@ -106,6 +106,18 @@ components:
           type: string
           format: byte
           description: The back-label photo, base64-encoded (no data-URL prefix).
+        place:
+          type: string
+          description: Optional user-entered place the bottle was bought or drunk. Omitted when blank.
+        price:
+          type: integer
+          description: Optional user-entered price as a whole number. Omitted when not entered.
+        priceCurrency:
+          type: string
+          description: Optional user-entered price unit (free text, e.g. "CHF"). Omitted when blank.
+        quantity:
+          type: integer
+          description: Optional user-entered number of bottles. Omitted when not entered.
     Error:
       type: object
       description: A machine-agnostic error payload. The client does not parse it; it surfaces the HTTP status.

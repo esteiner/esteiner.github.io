@@ -44,6 +44,34 @@ describe("HttpOrderConversionService", () => {
         expect(body).toEqual({front: "AQID", back: "BAUG"});
     });
 
+    it("includes place/price/priceCurrency/quantity in the body when given, and omits blanks", async () => {
+        const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("ttl", {status: 200}));
+        const service = new HttpOrderConversionService(ENDPOINT);
+
+        await service.convert(
+            new Blob([new Uint8Array([1, 2, 3])]),
+            new Blob([new Uint8Array([4, 5, 6])]),
+            {place: "Vinothek Luzern", price: 42, priceCurrency: "CHF", quantity: 6},
+        );
+
+        const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+        expect(body).toEqual({front: "AQID", back: "BAUG", place: "Vinothek Luzern", price: 42, priceCurrency: "CHF", quantity: 6});
+    });
+
+    it("omits details that are absent (price undefined, blank unit)", async () => {
+        const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("ttl", {status: 200}));
+        const service = new HttpOrderConversionService(ENDPOINT);
+
+        await service.convert(
+            new Blob([new Uint8Array([1, 2, 3])]),
+            new Blob([new Uint8Array([4, 5, 6])]),
+            {place: "Vinothek Luzern", priceCurrency: ""},
+        );
+
+        const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string);
+        expect(body).toEqual({front: "AQID", back: "BAUG", place: "Vinothek Luzern"}); // no price / priceCurrency
+    });
+
     it("rejects with the status when the service responds non-2xx", async () => {
         vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("nope", {status: 502, statusText: "Bad Gateway"}));
         const service = new HttpOrderConversionService(ENDPOINT);

@@ -1,15 +1,18 @@
 import type {
     OrderConversionService,
     OrderConversionAvailability,
+    OrderConversionDetails,
 } from "../../application/ports/OrderConversionService.ts";
 
 /**
  * HTTP implementation of {@link OrderConversionService}.
  *
- * POSTs both bottle photos, base64-encoded, as JSON `{front, back}` to the
+ * POSTs both bottle photos, base64-encoded, as JSON `{front, back}` (plus the
+ * optional `place`/`price`/`priceCurrency`/`quantity` details when given) to the
  * configured endpoint and returns the response body as Turtle. The endpoint is
- * build-time configuration (`VITE_ORDER_CONVERSION_URL`); when it is absent the
- * feature reports itself unavailable rather than attempting a request.
+ * build-time configuration
+ * (`VITE_ORDER_CONVERSION_URL`); when it is absent the feature reports itself
+ * unavailable rather than attempting a request.
  */
 export class HttpOrderConversionService implements OrderConversionService {
 
@@ -23,16 +26,31 @@ export class HttpOrderConversionService implements OrderConversionService {
         return {available: true};
     }
 
-    async convert(front: Blob, back: Blob): Promise<string> {
+    async convert(front: Blob, back: Blob, details?: OrderConversionDetails): Promise<string> {
         const availability = this.availability();
         if (!availability.available) {
             throw new Error(availability.reason);
         }
         const [frontBase64, backBase64] = await Promise.all([toBase64(front), toBase64(back)]);
+        // Only include details when provided, so the body stays {front, back}
+        // when nothing was entered.
+        const body: Record<string, string | number> = {front: frontBase64, back: backBase64};
+        if (details?.place) {
+            body.place = details.place;
+        }
+        if (typeof details?.price === "number") {
+            body.price = details.price;
+        }
+        if (details?.priceCurrency) {
+            body.priceCurrency = details.priceCurrency;
+        }
+        if (typeof details?.quantity === "number") {
+            body.quantity = details.quantity;
+        }
         const response = await fetch(this.endpoint as string, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({front: frontBase64, back: backBase64}),
+            body: JSON.stringify(body),
         });
         if (!response.ok) {
             throw new Error(`Konvertierung fehlgeschlagen: ${response.status} ${response.statusText}`.trim());
