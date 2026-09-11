@@ -70,6 +70,11 @@ paths:
                         schema:orderNumber  "1004727" ;
                         schema:orderDate    "2026-03-27"^^xsd:date ;
                         schema:orderedItem  <https://kellermeister.ch/orders/1004727/1> .
+        '204':
+          description: >
+            The request specified a quantity of 0, so there is nothing to
+            convert. The service performs no recognition and returns an empty
+            body.
         '400':
           description: The request body was missing an image or was otherwise malformed.
           content:
