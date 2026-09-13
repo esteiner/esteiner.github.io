@@ -102,27 +102,36 @@ test.describe('Photo order capture', () => {
       await chooser.setFiles({ name: 'label.jpg', mimeType: 'image/jpeg', buffer: IMAGE });
     });
 
-    const product = page.getByText(PRODUCT, { exact: true });
+    const productPresent = page.getByText(PRODUCT, { exact: true });
     const video = page.locator('video.camera-video');
     const sourceDialog = page.getByRole('dialog', { name: 'Quelle wählen' });
     const detailsDialog = page.getByRole('dialog', { name: 'Angaben' });
+    // On the normal cellar view bottles are grouped per product with a count badge;
+    // this scenario has a single product (Dhondt-Grellet), so at most one badge.
+    // Tolerate an empty cellar (0 badges) — depending on suite order the seeded
+    // inbox order may already have been consumed by another spec.
+    const countBadge = page.locator('button.bottle-button');
+    const readCount = async () =>
+      (await countBadge.count()) === 0 ? 0 : Number((await countBadge.innerText()).trim());
 
-    // Open cellarwork ("Kellerarbeit") — ingests the seeded inbox order and
-    // leaves us on the page, so each add below exercises the same-route refresh.
+    // The cellarwork cellar ("Kellerarbeit") now opens to its NORMAL bottle view
+    // (like any cellar); that view also ingests any pending inbox order on open.
     await page.getByRole('button', { name: 'Kellerarbeit' }).click();
-    await page.waitForURL(/\/cellarwork\//);
-    await expect(product).not.toHaveCount(0, { timeout: 60_000 });
+    await page.waitForURL(/\/cellar\//);
+    expect(page.url()).not.toMatch(/\/cellarwork\//);
+    // Let the view settle (footer present) — the cellar may be empty or hold bottles.
+    await expect(page.getByRole('button', { name: 'Hinzufügen' })).toBeVisible({ timeout: 60_000 });
 
     // --- The source chooser is a modal dialog with a working cancel. ---
-    const countBeforeCancel = await product.count();
+    const countBeforeCancel = await readCount();
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     await expect(sourceDialog).toBeVisible();
     await page.getByRole('button', { name: 'Abbrechen' }).click();
     await expect(sourceDialog).toHaveCount(0);
-    expect(await product.count()).toBe(countBeforeCancel); // nothing ingested
+    expect(await readCount()).toBe(countBeforeCancel); // nothing ingested
 
     // --- Camera source: live preview → capture front+back → details → Senden. ---
-    let before = await product.count();
+    const before = await readCount();
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     await page.getByRole('button', { name: 'Kamera' }).click();
     // The in-app camera preview appears (getUserMedia), not a file dialog.
@@ -159,10 +168,14 @@ test.describe('Photo order capture', () => {
     await detailsDialog.locator('input.details-quantity').fill('6');
     await page.getByRole('button', { name: 'Senden' }).click();
     await expect(detailsDialog).toHaveCount(0);
-    await expect.poll(() => product.count(), { timeout: 60_000 }).toBeGreaterThan(before);
+    // We stay on the normal cellar view; the same-route refresh grows the count
+    // and the added product is now listed.
+    await page.waitForURL(/\/cellar\//);
+    await expect(productPresent).toBeVisible({ timeout: 60_000 });
+    await expect.poll(readCount, { timeout: 60_000 }).toBeGreaterThan(before);
 
     // --- File source: capture front+back, reach the details dialog, then cancel. ---
-    before = await product.count();
+    const beforeFile = await readCount();
     await page.getByRole('button', { name: 'Hinzufügen' }).click();
     await expect(sourceDialog).toBeVisible();
     await page.getByRole('button', { name: 'Datei' }).click(); // front (file picker)
@@ -172,6 +185,10 @@ test.describe('Photo order capture', () => {
     // Abbrechen aborts the add: nothing is sent or ingested.
     await page.getByRole('button', { name: 'Abbrechen' }).click();
     await expect(detailsDialog).toHaveCount(0);
-    expect(await product.count()).toBe(before);
+    expect(await readCount()).toBe(beforeFile);
+
+    // --- The "Kellerarbeit" header action drills into the work display. ---
+    await page.getByRole('button', { name: 'Kellerarbeit' }).click();
+    await page.waitForURL(/\/cellarwork\//);
   });
 });

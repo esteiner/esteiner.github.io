@@ -438,7 +438,7 @@ class LandingPage extends BasePage {
 
     private cellarName(cellar: Cellar): string {
         if (cellar.getId() === this.cdi?.getKellermeisterService().getCellarWorkId()) {
-            return "Kellerarbeit";
+            return "Eingang";
         } else {
             return cellar.getName() as string;
         }
@@ -451,13 +451,10 @@ class LandingPage extends BasePage {
     }
 
     private async handleCellarClick(cellarId: string) {
-        if (cellarId.endsWith("cellarwork#it")) {
-            console.log("handleCellarClick go to cellarwork:", cellarId);
-            Router.go(router.urlForName('cellarwork-page', {cellarId: `${this.cdi?.getKellermeisterService().getCellarWorkId()}`}));
-        } else {
-            console.log("handleCellarClick go to cellar:", cellarId);
-            Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
-        }
+        // Every cellar — including the well-known cellarwork cellar — opens to its
+        // normal bottle view. The cellarwork cellar's work display is a drill-in
+        // from the "Kellerarbeit" action in the cellar view's header.
+        Router.go(router.urlForName('cellar-page', {cellarId: cellarId}));
     }
 
     private async handleSyncClick(): Promise<void> {

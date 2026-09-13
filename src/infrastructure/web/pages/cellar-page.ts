@@ -11,8 +11,10 @@ import '../components/kellermeister-footer.ts';
 import '../components/kellermeister-wine-filter.ts';
 import '../components/bottle-component.ts';
 import {router} from "../router.ts";
+import {getDefaultSession} from "@inrupt/solid-client-authn-browser";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
+import {CELLAR_UPDATED_EVENT} from "../events.ts";
 
 @customElement('cellar-page')
 class CellarPage extends BasePage {
@@ -58,6 +60,23 @@ class CellarPage extends BasePage {
         }
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+        // The footer can ingest into this cellar (e.g. a photo add into cellarwork)
+        // while this page is already mounted; navigating to the route it is already
+        // on is a router no-op, so reload the bottles when told the cellar changed.
+        window.addEventListener(CELLAR_UPDATED_EVENT, this.handleCellarUpdated);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener(CELLAR_UPDATED_EVENT, this.handleCellarUpdated);
+        super.disconnectedCallback();
+    }
+
+    private handleCellarUpdated = () => {
+        this.loadBottles();
+    };
+
     async onBeforeEnter(location: RouterLocation) {
         const { cellarId } = location.params;
         this.filter = ProductFilter.fromSearchParams(new URLSearchParams(location.search));
@@ -65,7 +84,26 @@ class CellarPage extends BasePage {
             this.searchText = this.filter.textFilter;
         }
         await this.loadCellar(cellarId as string);
+        await this.ingestInboxIfCellarwork();
         this.loadBottles();
+    }
+
+    /**
+     * The cellarwork cellar behaves like any cellar (opens to its bottle list),
+     * but must still turn Pod-inbox orders into bottles on open — so when this
+     * page is showing the cellarwork cellar, run the (single-flight, idempotent)
+     * inbox ingestion before listing. Best-effort: a failure still shows the
+     * existing bottles.
+     */
+    private async ingestInboxIfCellarwork(): Promise<void> {
+        const isCellarwork = this.cellar?.getId() === this.cdi.getKellermeisterService().getCellarWorkId();
+        if (isCellarwork && getDefaultSession().info.isLoggedIn) {
+            try {
+                await this.cdi.getKellermeisterService().ingestOrdersFromInbox();
+            } catch (error) {
+                console.error("cellar-page: inbox ingestion failed", error);
+            }
+        }
     }
 
     render() {

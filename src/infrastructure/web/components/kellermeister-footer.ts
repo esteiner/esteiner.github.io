@@ -479,13 +479,14 @@ class KellermeisterFooter extends BaseComponent {
             // Reset before navigating so a later add starts clean.
             this.frontImage = null;
             this.busy = false;
-            // Tell an already-mounted cellarwork page to reload its bottles:
-            // navigating to the route it is already on is a no-op in the router,
-            // so it would otherwise show stale contents. When we navigate to it
-            // fresh (from another page) this event is simply unheard.
+            // Land on the cellarwork cellar's NORMAL bottle view (like any cellar),
+            // showing the newly added bottles. Tell an already-mounted cellar page
+            // to reload — navigating to the route it is already on is a router no-op,
+            // so it would otherwise show stale contents; navigating fresh from
+            // another page simply doesn't hear this event.
             window.dispatchEvent(new CustomEvent(CELLAR_UPDATED_EVENT));
             const cellarworkId = this.cdi.getKellermeisterService().getCellarWorkId();
-            Router.go(router.urlForName('cellarwork-page', {cellarId: `${cellarworkId}`}));
+            Router.go(router.urlForName('cellar-page', {cellarId: `${cellarworkId}`}));
         } catch (error) {
             console.error("kellermeister-footer: photo order failed", error);
             this.error = error instanceof Error ? error.message : String(error);
