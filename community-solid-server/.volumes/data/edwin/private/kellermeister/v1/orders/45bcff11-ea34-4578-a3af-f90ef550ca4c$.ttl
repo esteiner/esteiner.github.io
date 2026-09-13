@@ -1,0 +1,17 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/orderDate> "2026-09-10T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/seller> <#7572f929-f24f-4c78-b752-1797bea556f3>;
+    <https://schema.org/customer> <#0de7745f-fc74-4ab0-b02d-2134c10f7159>;
+    <https://schema.org/orderedItem> <#1d51e4f8-5c6e-455e-baf6-a38d64e6d6a7>.
+<#7572f929-f24f-4c78-b752-1797bea556f3> a <https://schema.org/Organization>.
+<#0de7745f-fc74-4ab0-b02d-2134c10f7159> a <https://schema.org/Organization>.
+<#1d51e4f8-5c6e-455e-baf6-a38d64e6d6a7> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/7c6fea11-d6d8-4a8b-b5e7-d70217027649#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> "89.99"^^<http://www.w3.org/2001/XMLSchema#integer>;
+    <https://schema.org/priceCurrency> "USD";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-10T12:10:01.238Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-10T12:10:01.238Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.

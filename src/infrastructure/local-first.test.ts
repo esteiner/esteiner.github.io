@@ -24,6 +24,12 @@ import {SoukaiBottle} from "./soukai/model/SoukaiBottle.ts";
 import {SoukaiCellarRepository} from "./soukai/SoukaiCellarRepository.ts";
 import {SoukaiProductRepository} from "./soukai/SoukaiProductRepository.ts";
 import {SoukaiBottleRepository} from "./soukai/SoukaiBottleRepository.ts";
+import {SoukaiOrderRepository} from "./soukai/SoukaiOrderRepository.ts";
+import {SoukaiBottleFactory} from "./soukai/model/SoukaiBottleFactory.ts";
+import {SoukaiOrderFactory} from "./soukai/model/SoukaiOrderFactory.ts";
+import {SoukaiProductFactory} from "./soukai/model/SoukaiProductFactory.ts";
+import {KellermeisterService} from "../application/KellermeisterService.ts";
+import type {AuthService, SolidSession} from "../application/ports/AuthService.ts";
 import {isProvisional} from "./shared/resource-identity.ts";
 
 beforeEach(() => {
@@ -79,5 +85,61 @@ describe("local-first acceptance", () => {
         expect(workCellars).toHaveLength(1);
         expect(altglassCellars).toHaveLength(1);
         expect(workCellars[0].getName()).toBe("Mein Eingang");
+    });
+
+    it("a read-back product resolves its order's seller (product → orderItem → order → seller)", async () => {
+        // Regression for the empty "Quelle" in product-component: a product must
+        // keep a resolvable back-link to the order it came from, so the seller name
+        // is available on read (previously the link was never persisted or loaded).
+        const loggedOut: AuthService = {
+            isLoggedIn: () => false,
+            getSession: () => ({isLoggedIn: false, webId: null, fetch}) as SolidSession,
+        };
+        const cellars = new SoukaiCellarRepository(() => null);
+        const products = new SoukaiProductRepository(() => null);
+        const bottles = new SoukaiBottleRepository(() => null, products);
+        const orders = new SoukaiOrderRepository(() => null, () => null, loggedOut);
+        const service = new KellermeisterService(
+            cellars, bottles, products, orders,
+            new SoukaiBottleFactory(), new SoukaiOrderFactory(), new SoukaiProductFactory(),
+        );
+
+        // A source order with a seller, materialized from Turtle like the real
+        // conversion/inbox path produces.
+        const ttl = `
+@prefix schema: <https://schema.org/> .
+@prefix km: <https://vocab.kellermeister.ch/wine/> .
+<https://kellermeister.ch/orders/t/1> a schema:OrderItem ;
+    schema:orderQuantity 2 ;
+    schema:orderedItem <https://kellermeister.ch/products/t> .
+<https://kellermeister.ch/products/t> a schema:Product ;
+    schema:name "Barolo" ; km:weinname "Nebbiolo" .
+<https://www.seller.ch/t> a schema:Organization ;
+    schema:name "Weinhaus Test" ; schema:email "info@seller.ch" .
+<https://kellermeister.ch/orders/t> a schema:Order ;
+    schema:orderNumber "T-1" ;
+    schema:seller <https://www.seller.ch/t> ;
+    schema:orderedItem <https://kellermeister.ch/orders/t/1> .
+`;
+        const [sourceOrder] = await orders.parseOrders(ttl);
+        expect(sourceOrder.getSeller()?.getName()).toBe("Weinhaus Test");
+
+        await service.ingestOrder(sourceOrder, cellars.getCellarWorkId());
+
+        // Read products back the way the cellar view does, and walk the chain.
+        const readBack = await products.fetchAll();
+        const barolo = readBack.find((p) => p.getName() === "Barolo") as SoukaiProduct;
+        expect(barolo).toBeDefined();
+        // The back-link is persisted to the order item's document (the order).
+        expect(barolo.orderItemUrl).toBeTruthy();
+        expect(barolo.orderItemUrl?.startsWith("local://orders/")).toBe(true);
+        // And the whole chain resolves to the seller's name.
+        expect(barolo.getOrderItem()?.getOrder()?.getSeller()?.getName()).toBe("Weinhaus Test");
+
+        // The order view reads via fetchOrders; its item's product must resolve the
+        // same chain (product-component walks product → orderItem → order → seller).
+        const [readOrder] = await orders.fetchOrders();
+        const item = readOrder.getOrderItems()[0];
+        expect(item.getProduct().getOrderItem()?.getOrder()?.getSeller()?.getName()).toBe("Weinhaus Test");
     });
 });

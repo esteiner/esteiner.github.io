@@ -1,0 +1,21 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Decugnano dei Barbi Dosaggio Zero 2021";
+    <https://vocab.kellermeister.ch/wine/weinname> "Dosaggio Zero";
+    <https://schema.org/productionDate> "2021-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/hersteller> "Decugnano dei Barbi";
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Orvieto, Umbrien";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Nicht spezifiziert auf dem Etikett";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Vino Spumante di Qualità - Metodo Classico";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Metodo Classico (traditionelle Flaschengärung), Dosaggio Zero (keine Dosage)";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2021-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2028-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/priceCurrency> "CHF".
+<#234e4193-6ead-4745-8e84-e310fa266b78> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-10T11:36:42.789Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-10T11:36:42.789Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.

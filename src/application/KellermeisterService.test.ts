@@ -91,6 +91,7 @@ function makeService() {
     };
     const productRepo: ProductRepository = {
         save: vi.fn(),
+        linkOrderItem: vi.fn(),
         fetchById: vi.fn(),
     };
     const orderRepo: OrderRepository = {
@@ -639,9 +640,15 @@ describe('KellermeisterService', () => {
             const parsedOrder = { getOrderItems: () => [orderItem] } as unknown as Order;
             vi.mocked(orderRepo.parseOrders).mockResolvedValue([parsedOrder]);
 
-            const newOrder = { addOrderItem: vi.fn(), getId: () => 'built-order' } as unknown as Order;
+            const builtItems: Array<{ getProduct: () => Product }> = [];
+            const newOrder = {
+                addOrderItem: (it: { getProduct: () => Product }) => builtItems.push(it),
+                getId: () => 'built-order',
+                getOrderItems: () => builtItems,
+            } as unknown as Order;
+            const newOrderItem = { getProduct: () => product } as unknown as Order;
             vi.mocked(orderFactory.createOrder).mockReturnValue(newOrder);
-            vi.mocked(orderFactory.createOrderItem).mockReturnValue({ id: 'oi1' } as never);
+            vi.mocked(orderFactory.createOrderItem).mockReturnValue(newOrderItem as never);
             vi.mocked(productFactory.createProduct).mockReturnValue(product);
             vi.mocked(productRepo.save).mockResolvedValue(product);
             const placedCellars: string[] = [];
@@ -654,6 +661,8 @@ describe('KellermeisterService', () => {
 
             expect(cellar.getId()).toBe(u('cellarwork-id'));
             expect(productRepo.save).toHaveBeenCalledWith(product);
+            // The product is back-linked to its order item after the order is saved.
+            expect(productRepo.linkOrderItem).toHaveBeenCalledWith(product, newOrderItem);
             expect(bottleFactory.createFromProduct).toHaveBeenCalledTimes(3);
             const savedBottles = vi.mocked(bottleRepo.saveAll).mock.calls[0][0];
             expect(savedBottles).toHaveLength(3);

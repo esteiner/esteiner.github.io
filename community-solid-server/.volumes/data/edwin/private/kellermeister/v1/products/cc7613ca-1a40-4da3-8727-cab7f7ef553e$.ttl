@@ -1,0 +1,22 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Cantina Valle Isarco - Kellerei Eisacktal Aristos Sauvignon 2023";
+    <https://vocab.kellermeister.ch/wine/weinname> "Aristos Sauvignon";
+    <https://schema.org/productionDate> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/hersteller> "Cantina Valle Isarco - Kellerei Eisacktal";
+    <https://vocab.kellermeister.ch/wine/weinart> "Weisswein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Alto Adige/Südtirol";
+    <https://vocab.kellermeister.ch/wine/land> "Italien";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Sauvignon Blanc 100%";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Südtirol/Alto Adige DOC";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "13.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Edelstahl, temperaturkontrolliert";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2027-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/price> "19.9"^^<http://www.w3.org/2001/XMLSchema#integer>;
+    <https://schema.org/priceCurrency> "EUR".
+<#c31187c9-3a9a-40fd-b4a4-20089b9481cf> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-10T11:41:47.961Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-10T11:41:47.961Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.

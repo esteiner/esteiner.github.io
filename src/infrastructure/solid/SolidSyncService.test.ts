@@ -32,7 +32,11 @@ describe("SolidSyncService.rehome", () => {
 
     it("migrates provisional local:// resources to their Pod URLs, rewriting references", async () => {
         await new SoukaiCellar({url: "local://cellars/keller#it", name: "Keller", displayOrder: 1}).save();
-        await new SoukaiProduct({url: "local://products/p#it", name: "Wein"}).save();
+        await new SoukaiProduct({
+            url: "local://products/p#it",
+            name: "Wein",
+            orderItemUrl: "local://orders/o#item", // IRI back-link (rewritten by MigrateLocalUrls)
+        }).save();
         await new SoukaiBottle({
             url: "local://bottles/b#it",
             productUrl: "local://products/p#it",   // IRI reference (rewritten by MigrateLocalUrls)
@@ -55,6 +59,12 @@ describe("SolidSyncService.rehome", () => {
         expect(bottles[0].productUrl).toBe(`${POD}products/p#it`);
         // String-literal reference rewritten by the fixup.
         expect(bottles[0].cellarUrl).toBe(`${POD}cellars/keller#it`);
+
+        // The product → order-item back-link is re-homed the same way, so the
+        // seller stays resolvable after sync.
+        const products = await SoukaiProduct.all({from: `${POD}products/`});
+        expect(products).toHaveLength(1);
+        expect(products[0].orderItemUrl).toBe(`${POD}orders/o#item`);
     });
 
     it("is idempotent and a no-op when there is nothing provisional", async () => {

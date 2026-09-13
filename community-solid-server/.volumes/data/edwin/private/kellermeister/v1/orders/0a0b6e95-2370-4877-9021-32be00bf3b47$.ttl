@@ -1,0 +1,27 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/orderDate> "2026-03-27T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1004727";
+    <https://schema.org/seller> <#f56433c2-90d0-4106-8b55-618d74361733>;
+    <https://schema.org/customer> <#9b000a2e-d1c8-459b-bfa3-21d40f87bc48>;
+    <https://schema.org/orderedItem> <#5cb1a032-26eb-4d82-bf55-051e6e783324>.
+<#f56433c2-90d0-4106-8b55-618d74361733> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Boucherville AG";
+    <https://schema.org/email> "info@boucherville.ch";
+    <https://schema.org/url> <https://www.boucherville.ch>.
+<#9b000a2e-d1c8-459b-bfa3-21d40f87bc48> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern, Schweiz";
+    <https://schema.org/contactPoint> <#ce5b605d-4d10-49d7-ae67-22b6d7ea4a50>.
+<#5cb1a032-26eb-4d82-bf55-051e6e783324> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/342634cc-58cd-45da-8f64-edc2d5ccc9b9#it>;
+    <https://schema.org/orderQuantity> 1;
+    <https://schema.org/price> 90;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-09T16:33:16.323Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-09T16:33:16.323Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.
+<#ce5b605d-4d10-49d7-ae67-22b6d7ea4a50> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".

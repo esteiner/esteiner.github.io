@@ -3,18 +3,18 @@ ToDo
 
 ### Prio 1
 
+- [x] E: Quelle (= product.orderitem.order.seller.name) muss in Produkt Details angezeigt werden
+- [ ] E: Keller Kellerarbeit soll sich gleich wie alle Keller verhalten
 - [ ] S: Profil umbennen und überarbeiten (Kellerinfo)
 - [ ] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
-- [ ] E: Rating auf bottle anstatt Product
+- [ ] E: Rating auf Bottle anstatt Product (: benötigt Beziehung Product -> Bottle)
 - [ ] E: Änderungen zu Produkt machen (im Keller, auf Flasche neues Icon "ändern", wenn icon Stift gedrückt, dann alle Felder auf Input und 2 neue Icons, accept und cancel)
 - [ ] S: Filter nach Weinfarbe und Weinart überdenken 
 - [ ] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY)
 - [ ] S&E: Preis lookup review
 - [ ] E: API Key für REST API
-- [ ] S: dezimalstellen (number) bei Fotoeingabe statt Integer
-- [ ] E: Menge muss auf ttl Menge gemappt werden 
-- [ ] E: Quelle muss angezeigt werden
+- [ ] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 
 ### Prio 2
 
@@ -48,6 +48,7 @@ ToDo
 Done
 ---
 
+- [x] E: Menge muss auf ttl Menge gemappt werden
 - [-] Icons für Suchen differenzieren
 - [x] Upload Foto
 - [x] Layout: Einkäufe ist Text zu nahe am Rand und Bullet Points wegnehmen

@@ -51,6 +51,12 @@ export class SoukaiOrderRepository implements OrderRepository {
                 // it must be loaded explicitly or getProduct() stays undefined.
                 for (const item of order.getOrderItems()) {
                     await item.loadRelation("product");
+                    // Wire the reverse links in memory so the product view can walk
+                    // product → order item → order → seller from the item's product:
+                    // the order (with seller) and item are already loaded here, so no
+                    // extra fetch is needed.
+                    item.relatedOrder.setRelated(order);
+                    item.getProduct()?.relatedOrderItem.setRelated(item);
                 }
             }
         });

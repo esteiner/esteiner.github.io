@@ -311,6 +311,15 @@ export class KellermeisterService implements ReadModelCache {
         // failed deletion never loses an already-processed order.
         const processedOrder = await this.addBottles(order, cellarForCellarwork);
         await this.orderRespository.saveProcessedOrder(processedOrder);
+        // The save minted the order and its order items' URLs on the built order,
+        // so back-link each product to its order item (km:orderItem) — the product
+        // view resolves product → order item → order → seller from that link.
+        for (const item of processedOrder.getOrderItems() ?? []) {
+            const product = item.getProduct();
+            if (product) {
+                await this.productRepository.linkOrderItem(product, item);
+            }
+        }
         this.cachedOrders = null;
         await this.orderRespository.deleteFromInbox(order);
         this.cachedBottles = null;

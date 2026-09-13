@@ -1,4 +1,5 @@
 import type {Product} from "./Product.ts";
+import type {OrderItem} from "../Order/OrderItem.ts";
 
 /**
  * Per-resource repository for products. A product is its own local/Pod resource
@@ -11,6 +12,13 @@ export interface ProductRepository {
      * within the product's own document.
      */
     save(product: Product): Promise<Product>;
+
+    /**
+     * Record the order item a product came from (its `km:orderItem` back-link)
+     * and persist the update. Called after the order item has a stable persisted
+     * URL, so the product → order item → order → seller chain resolves on read.
+     */
+    linkOrderItem(product: Product, orderItem: OrderItem): Promise<void>;
 
     /**
      * Fetch a product by its resource URL, with ratings resolved.
