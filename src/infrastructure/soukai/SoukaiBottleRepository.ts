@@ -27,11 +27,32 @@ export class SoukaiBottleRepository implements BottleRepository {
         const products = await this.productRepository.fetchAll();
         const productByUrl = new Map(products.map((product) => [product.url, product]));
 
+        // Resolve each bottle's (same-document) rating so it is available for the
+        // product's aggregated rating display. Same-document relations are not
+        // auto-populated on read — they must be loaded explicitly.
+        await withLocalEngine(async () => {
+            for (const bottle of bottles) {
+                await bottle.loadRelation("rating");
+            }
+        });
+
+        // Join product ↔ bottle in BOTH directions in memory. Cross-container
+        // relations are not query-loadable here (products and bottles live in
+        // separate containers), so the product → bottles link — which lets a
+        // product aggregate the ratings stored on its bottles (getRatings()) —
+        // is wired the same way as the bottle → product link.
+        const bottlesByProduct = new Map<string, SoukaiBottle[]>();
         for (const bottle of bottles) {
             const product = bottle.productUrl ? productByUrl.get(bottle.productUrl) : undefined;
             if (product) {
                 bottle.relatedProduct.setRelated(product);
+                const group = bottlesByProduct.get(product.url as string) ?? [];
+                group.push(bottle);
+                bottlesByProduct.set(product.url as string, group);
             }
+        }
+        for (const product of products) {
+            product.relatedBottles.related = bottlesByProduct.get(product.url as string) ?? [];
         }
         // Preserve the previous invariant: only bottles with a resolved product
         // are surfaced (downstream code assumes bottle.getProduct() is present).

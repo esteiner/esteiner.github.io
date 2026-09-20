@@ -6,6 +6,7 @@ import {number, string, url} from "zod";
 export default defineSchema({
     rdfContexts: {
         schema: "https://schema.org/",
+        km: "https://vocab.kellermeister.ch/wine/",
     },
     rdfClass: "schema:ListItem",
     timestamps: true,
@@ -22,10 +23,15 @@ export default defineSchema({
         cellarUrl: string().optional().rdfProperty("schema:cellar"),
         orderItemId: url().optional().rdfProperty("schema:orderItemId"),
 
-        // Legacy: rating moved to Product (as schema:Rating instances). Kept here
-        // only so old pods (where rating was a number on the ListItem) remain
-        // readable. New bottles do not write this — see Product.getRatings().
-        rating: number().optional().rdfProperty("schema:rating"),
+        // Foreign key for the same-document `rating` relation (a schema:Rating
+        // node embedded in the bottle document). See the `rating` relation below
+        // and Bottle.setRating()/getRating().
+        ratingUrl: url().optional().rdfProperty("km:rating"),
+
+        // Legacy: rating used to be a bare number on the ListItem, then moved to
+        // Product. Kept read-only so old pods remain readable — Bottle.getRating()
+        // surfaces it as a dateless Rating when no structured rating is present.
+        legacyRating: number().optional().rdfProperty("schema:rating"),
 
         // Legacy: price/priceCurrency moved to Product. Kept here only so old
         // pods (where these fields were written on the ListItem) remain readable.
@@ -36,5 +42,8 @@ export default defineSchema({
 
     relations: {
         product: belongsToOne(() => requireBootedModel("SoukaiProduct"), "productUrl"),
+        // A single rating stored on the bottle, embedded in the bottle document
+        // so writing a rating rewrites only this (small) resource, not the product.
+        rating: belongsToOne(() => requireBootedModel("SoukaiRating"), "ratingUrl").usingSameDocument(),
     },
 });

@@ -1,7 +1,8 @@
-import type {BelongsToManyRelation, BelongsToOneRelation} from "soukai-bis";
+import type {BelongsToManyRelation, BelongsToOneRelation, HasManyRelation} from "soukai-bis";
 import Model from "./SoukaiProduct.schema";
 import type { Product } from "../../../domain/Product/Product";
 import type {Rating} from "../../../domain/Product/Rating.ts";
+import type {SoukaiBottle} from "./SoukaiBottle.ts";
 import {SoukaiOrderItem} from "./SoukaiOrderItem.ts";
 import {SoukaiRating} from "./SoukaiRating.ts";
 
@@ -13,6 +14,10 @@ export class SoukaiProduct extends Model implements Product {
 
     declare public ratings: SoukaiRating[];
     declare public relatedRatings: BelongsToManyRelation<this, SoukaiRating, typeof SoukaiRating>;
+
+    // Inverse relation to the bottles of this product (see SoukaiProduct.schema.ts).
+    declare public bottles: SoukaiBottle[];
+    declare public relatedBottles: HasManyRelation<this, SoukaiBottle, typeof SoukaiBottle>;
 
     getId(): string {
         return this.url as string;
@@ -75,8 +80,20 @@ export class SoukaiProduct extends Model implements Product {
         return this.orderItem;
     }
     getRatings(): Rating[] {
-        return this.ratings ?? [];
+        // Aggregate the legacy product-level ratings with the ratings now stored
+        // on this product's bottles. Both relations are loaded by the repository
+        // before display; when unloaded, the magic getter yields undefined.
+        const productRatings: Rating[] = this.ratings ?? [];
+        const bottleRatings: Rating[] = (this.bottles ?? [])
+            .map((bottle) => bottle.getRating())
+            .filter((rating): rating is Rating => rating !== undefined);
+        return [...productRatings, ...bottleRatings];
     }
+    /**
+     * @deprecated Ratings are now stored per bottle via SoukaiBottle.setRating().
+     * Retained so existing product-level rating arrays remain writable; new code
+     * SHOULD NOT add ratings to the product.
+     */
     createRating(value: number): SoukaiRating {
         const rating: SoukaiRating = new SoukaiRating();
         rating.value = value;

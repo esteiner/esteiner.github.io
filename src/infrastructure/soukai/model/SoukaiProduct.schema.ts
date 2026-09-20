@@ -1,5 +1,5 @@
 import "soukai-bis/patch-zod";
-import {belongsToOne, belongsToMany, defineSchema, requireBootedModel} from "soukai-bis";
+import {belongsToOne, belongsToMany, defineSchema, hasMany, requireBootedModel} from "soukai-bis";
 import {array, date, number, string, url} from "zod";
 
 // https://schema.org/Product
@@ -40,5 +40,9 @@ export default defineSchema({
     relations: {
         orderItem: belongsToOne(() => requireBootedModel("SoukaiOrderItem"), "orderItemUrl"),
         ratings: belongsToMany(() => requireBootedModel("SoukaiRating"), "ratingUrls").usingSameDocument(),
+        // Inverse of SoukaiBottle.product (bottles reference their product via
+        // `productUrl` / schema:subjectOf). Lets a product gather the ratings now
+        // stored on its bottles for the aggregated display — see getRatings().
+        bottles: hasMany(() => requireBootedModel("SoukaiBottle"), "productUrl"),
     },
 });

@@ -23,5 +23,10 @@ export interface Product {
     getDrinkingWindowTo(): Date;
     getOrderItem(): OrderItem;
     getRatings(): Rating[];
+    /**
+     * @deprecated Ratings are now stored per bottle via {@link Bottle.setRating}.
+     * Retained for backward compatibility with existing product-level rating
+     * arrays; new code SHOULD NOT add ratings to the product.
+     */
     createRating(value: number): Rating;
 }

@@ -362,8 +362,9 @@ export class KellermeisterService implements ReadModelCache {
         console.log("disposeBottleToAltglass: with id", bottle.getId());
         bottle.setCellar(this.getAltglassId());
         if (ratingValue !== undefined) {
-            bottle.getProduct().createRating(ratingValue);
-            await this.productRepository.save(bottle.getProduct());
+            // The rating is stored on the bottle and rides along on the bottle
+            // save below — no separate (full-document) product write needed.
+            bottle.setRating(ratingValue);
         }
         await this.bottleRepository.save(bottle);
         this.cachedBottles = null;

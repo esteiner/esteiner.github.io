@@ -8,9 +8,8 @@ ToDo
 - [ ] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
 - [ ] S: Filter nach Weinfarbe und Weinart überdenken
 - [ ] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
-- [ ] E: API Key für REST API
-- [ ] E: Rating auf Bottle anstatt Product (: benötigt Beziehung Product -> Bottle)
 - [ ] E: Änderungen zu Produkt machen (im Keller, auf Flasche neues Icon "ändern", wenn icon Stift gedrückt, dann alle Felder auf Input und 2 neue Icons, accept und cancel)
+- [ ] E: API Key für REST API
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
 - [ ] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY)
 
@@ -46,6 +45,7 @@ ToDo
 Done
 ---
 
+- [x] E: Rating auf Bottle anstatt Product (: benötigt Beziehung Product -> Bottle)
 - [X] E: Keller Kellerarbeit soll sich gleich wie alle Keller verhalten
 - [x] E: Quelle (= product.orderitem.order.seller.name) muss in Produkt Details angezeigt werden
 - [x] E: Menge muss auf ttl Menge gemappt werden
