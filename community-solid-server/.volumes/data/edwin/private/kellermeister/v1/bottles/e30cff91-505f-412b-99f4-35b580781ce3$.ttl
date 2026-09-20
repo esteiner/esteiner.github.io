@@ -1,10 +1,10 @@
 <#it> a <https://schema.org/ListItem>;
     <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/b16bbed8-a6d7-431b-be54-b2c1c7e96fcb#it>;
-    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/dee09f56-74c7-45a9-8f7c-996e60241054#it".
+    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it".
 <#37753a3e-a08a-41a2-b3ab-47fdf6255294> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-13T14:25:55.688Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-13T14:26:21.492Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-13T14:29:18.318Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-ae194d49-5d38-4495-ab13-1b8345d1a992> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:26:21.492Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -20,3 +20,8 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:25:55.688Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
     <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/cellarwork#it".
+<#it-operation-088c59f2-c5f6-427c-b9ba-5f6dfd2b8eae> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:29:18.318Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
+    <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it".

@@ -16,14 +16,14 @@
     <https://schema.org/price> "17.99"^^<http://www.w3.org/2001/XMLSchema#integer>;
     <https://schema.org/priceCurrency> "EUR";
     <https://vocab.kellermeister.ch/wine/orderItem> <http://localhost:3000/edwin/private/kellermeister/v1/orders/c84dda1d-7685-408b-9243-72fd3fb9e42b#d495799f-c505-44f4-bef3-d9417305edde>;
-    <https://vocab.kellermeister.ch/wine/hasRating> <#8671fdc4-d855-4f94-a4b5-4cc1e9e5b518>.
+    <https://vocab.kellermeister.ch/wine/hasRating> <#8671fdc4-d855-4f94-a4b5-4cc1e9e5b518>, <#a80b6cac-31cd-41d6-bd4c-607ad58b93a7>.
 <#8671fdc4-d855-4f94-a4b5-4cc1e9e5b518> a <https://schema.org/Rating>;
     <https://schema.org/ratingValue> 1;
     <https://schema.org/dateCreated> "2026-09-13T14:26:54.432Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#5410bacf-0b3b-4402-8cae-2d0b8527fb74> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-13T14:25:55.685Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-13T14:26:54.432Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-13T14:29:18.314Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-aa6daf55-24cd-4aaa-93bf-427fee180543> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:25:55.693Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -114,3 +114,8 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:26:54.432Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
     <https://vocab.noeldemartin.com/crdt/value> <#8671fdc4-d855-4f94-a4b5-4cc1e9e5b518>.
+<#it-operation-de7ab26a-4218-4e55-af76-20f4005ab391> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-13T14:29:18.314Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
+    <https://vocab.noeldemartin.com/crdt/value> <#8671fdc4-d855-4f94-a4b5-4cc1e9e5b518>, <#a80b6cac-31cd-41d6-bd4c-607ad58b93a7>.
