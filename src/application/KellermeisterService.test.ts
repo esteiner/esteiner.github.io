@@ -401,7 +401,7 @@ describe('KellermeisterService', () => {
             expect(result.size).toBe(0);
         });
 
-        it('groups bottles by product name', async () => {
+        it('groups bottles by product id', async () => {
             injectBottles(service, [
                 makeBottle('p1', 'cellar-a', 'Merlot'),
                 makeBottle('p1', 'cellar-a', 'Merlot'),
@@ -409,8 +409,34 @@ describe('KellermeisterService', () => {
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
             expect(result.size).toBe(2);
-            expect(result.get('Merlot')).toHaveLength(2);
-            expect(result.get('Chardonnay')).toHaveLength(1);
+            expect(result.get(u('p1'))).toHaveLength(2);
+            expect(result.get(u('p2'))).toHaveLength(1);
+        });
+
+        it('shows products with the same name but different ids as separate groups', async () => {
+            // Two orders of the same wine mint two product resources with equal
+            // names; they must not be merged into one row.
+            injectBottles(service, [
+                makeBottle('p1', 'cellar-a', 'Merlot'),
+                makeBottle('p1', 'cellar-a', 'Merlot'),
+                makeBottle('p2', 'cellar-a', 'Merlot'),
+            ]);
+            const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
+            expect(result.size).toBe(2);
+            expect(result.get(u('p1'))).toHaveLength(2);
+            expect(result.get(u('p2'))).toHaveLength(1);
+        });
+
+        it('orders groups by product name, keeping identically-named products adjacent', async () => {
+            injectBottles(service, [
+                makeBottle('p-z', 'cellar-a', 'Zinfandel'),
+                makeBottle('p-m2', 'cellar-a', 'Merlot'),
+                makeBottle('p-a', 'cellar-a', 'Aligoté'),
+                makeBottle('p-m1', 'cellar-a', 'Merlot'),
+            ]);
+            const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
+            const names = [...result.values()].map((group) => group[0].getProduct().getName());
+            expect(names).toEqual(['Aligoté', 'Merlot', 'Merlot', 'Zinfandel']);
         });
 
         it('excludes bottles from other cellars', async () => {
@@ -420,7 +446,7 @@ describe('KellermeisterService', () => {
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, new ProductFilter());
             expect(result.size).toBe(1);
-            expect(result.has('Merlot')).toBe(true);
+            expect(result.has(u('p1'))).toBe(true);
         });
 
         it('excludes bottles that do not pass the filter', async () => {
@@ -432,8 +458,8 @@ describe('KellermeisterService', () => {
                 makeBottle('p2', 'cellar-a', 'Chardonnay'),
             ]);
             const result = await service.bottlesFromCellarGroupedByProduct(cellarA, filter);
-            expect(result.has('Merlot')).toBe(true);
-            expect(result.has('Chardonnay')).toBe(false);
+            expect(result.has(u('p1'))).toBe(true);
+            expect(result.has(u('p2'))).toBe(false);
         });
 
         it('returns an empty map when cellar is undefined', async () => {

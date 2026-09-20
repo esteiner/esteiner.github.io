@@ -125,14 +125,22 @@ export class KellermeisterService implements ReadModelCache {
 
         for (const bottle of bottles) {
             if (bottle.getProduct() && this.isBottleInThisCellar(bottle, cellar) && filter.filterProduct(bottle.getProduct())) {
-                //console.log("bottlesFromCellarGroupedByProduct", bottle.getProduct().getName());
-                if (!grouped.has(bottle.getProduct().getName())) {
-                    grouped.set(bottle.getProduct().getName(), []);
+                // Group by product id (not name): the app mints a distinct product
+                // resource per order item, so two orders of the same wine are two
+                // products with equal names — they must stay separate rows.
+                const productId = bottle.getProduct().getId();
+                if (!grouped.has(productId)) {
+                    grouped.set(productId, []);
                 }
-                grouped.get(bottle.getProduct().getName())?.push(bottle);
+                grouped.get(productId)?.push(bottle);
             }
         }
-        return new Map([...grouped.entries()].sort(([a], [b]) => a.toLowerCase().localeCompare(b.toLowerCase())));
+        // Order rows by product name (case-insensitive) so identically-named
+        // products remain adjacent, preserving the alphabetical layout.
+        return new Map([...grouped.entries()].sort(
+            ([, a], [, b]) => (a[0].getProduct().getName() ?? "").toLowerCase()
+                .localeCompare((b[0].getProduct().getName() ?? "").toLowerCase()),
+        ));
     }
 
     /**
