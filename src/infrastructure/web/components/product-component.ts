@@ -3,6 +3,7 @@ import {customElement, property} from "lit/decorators.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Product} from "../../../domain/Product/Product.ts";
 import type {Rating} from "../../../domain/Product/Rating.ts";
+import {CDI} from "../../cdi/CDI.ts";
 
 @customElement('product-component')
 class ProductComponent extends BaseComponent {
@@ -10,8 +11,22 @@ class ProductComponent extends BaseComponent {
     @property()
     product: Product | undefined;
 
+    /** When true, editable detail fields render as inputs (set by bottle-component). */
+    @property({type: Boolean})
+    editing: boolean = false;
+
+    /** Whether the model has unpersisted edits (persist on commit / on removal). */
+    private dirty: boolean = false;
+
     constructor() {
         super();
+    }
+
+    disconnectedCallback(): void {
+        // Collapsing removes this component; flush a pending edit that was written
+        // to the model but not yet committed via a field's change event.
+        this.persist();
+        super.disconnectedCallback();
     }
 
     static get styles() {
@@ -61,73 +76,192 @@ class ProductComponent extends BaseComponent {
                     color: var(--km-text, #1A1917);
                     font-family: var(--app-font-family, 'DM Sans', sans-serif);
                 }
+
+                .edit-input {
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 14px;
+                    color: var(--km-text, #1A1917);
+                    width: 100%;
+                    box-sizing: border-box;
+                    padding: 4px 8px;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    border-radius: 6px;
+                    background: var(--km-surface, white);
+                    outline: none;
+                }
+
+                .edit-input:focus {
+                    border-color: var(--app-color-primary, #3A6B28);
+                }
+
+                .value.range {
+                    display: flex;
+                    align-items: baseline;
+                    gap: 6px;
+                }
+
+                .value.range .edit-input {
+                    width: 5em;
+                }
             `
         ];
     }
 
     protected render() {
+        const p = this.product;
         return html`
             <div class="expanded">
                 <div class="group">
                     <label>Preis / Flasche</label>
-                    <span class="value"><slot></slot></span>
+                    ${this.editing
+                        ? this.numberInput(p?.getPrice(), (v) => p?.setPrice(v))
+                        : html`<span class="value"><slot></slot></span>`}
+                </div>
+                <div class="group">
+                    <label>Hersteller</label>
+                    ${this.textField(p?.getProducer(), (v) => { p?.setProducer(v); this.deriveName(); })}
+                </div>
+                <div class="group">
+                    <label>Weinname</label>
+                    ${this.textField(p?.getWineName(), (v) => { p?.setWineName(v); this.deriveName(); })}
                 </div>
                 <div class="group">
                     <label>Jahrgang</label>
-                    <span class="value">${this.renderYear(this.product?.getProductionDate())}</span>
+                    ${this.editing
+                        ? this.yearInput(p?.getProductionDate(), (d) => { p?.setProductionDate(d); this.deriveName(); })
+                        : html`<span class="value">${this.renderYear(p?.getProductionDate())}</span>`}
                 </div>
                 <div class="group">
                     <label>Flaschengrösse</label>
-                    <span class="value">${this.product?.getVolumeMl() ? `${this.product?.getVolumeMl()} ml` : ''}</span>
+                    ${this.editing
+                        ? this.numberInput(p?.getVolumeMl(), (v) => p?.setVolumeMl(v))
+                        : html`<span class="value">${p?.getVolumeMl() ? `${p?.getVolumeMl()} ml` : ''}</span>`}
                 </div>
                 <div class="group">
                     <label>Weinart</label>
-                    <span class="value">${this.product?.getWineType()}</span>
+                    ${this.textField(p?.getWineType(), (v) => p?.setWineType(v))}
                 </div>
                 <div class="group">
                     <label>Weinfarbe</label>
-                    <span class="value">${this.product?.getWineColor()}</span>
+                    ${this.textField(p?.getWineColor(), (v) => p?.setWineColor(v))}
                 </div>
                 <div class="group">
                     <label>Region</label>
-                    <span class="value">${this.product?.getRegion()}</span>
+                    ${this.textField(p?.getRegion(), (v) => p?.setRegion(v))}
                 </div>
                 <div class="group">
                     <label>Land</label>
-                    <span class="value">${this.product?.getCountry()}</span>
+                    ${this.textField(p?.getCountry(), (v) => p?.setCountry(v))}
                 </div>
                 <div class="group">
                     <label>Traubensorte</label>
-                    <span class="value">${this.product?.getGrapeVariety()}</span>
+                    ${this.textField(p?.getGrapeVariety(), (v) => p?.setGrapeVariety(v))}
                 </div>
                 <div class="group">
                     <label>Klassifikation</label>
-                    <span class="value">${this.product?.getClassification()}</span>
+                    ${this.textField(p?.getClassification(), (v) => p?.setClassification(v))}
                 </div>
                 <div class="group">
                     <label>Alkohol</label>
-                    <span class="value">${this.product?.getAlcoholContent()}</span>
+                    ${this.textField(p?.getAlcoholContent(), (v) => p?.setAlcoholContent(v))}
                 </div>
                 <div class="group">
                     <label>Ausbau</label>
-                    <span class="value">${this.product?.getProduction()}</span>
+                    ${this.textField(p?.getProduction(), (v) => p?.setProduction(v))}
                 </div>
                 <div class="group">
                     <label>Biologisch</label>
-                    <span class="value">${this.product?.getOrganic()}</span>
+                    ${this.textField(p?.getOrganic(), (v) => p?.setOrganic(v))}
                 </div>
                 <div class="group">
                     <label>Trinkfenster</label>
-                    <span class="value">${this.renderYear(this.product?.getDrinkingWindowFrom())} – ${this.renderYear(this.product?.getDrinkingWindowTo())}</span>
+                    ${this.editing
+                        ? html`<span class="value range">
+                            ${this.yearInput(p?.getDrinkingWindowFrom(), (d) => p?.setDrinkingWindowFrom(d))}
+                            –
+                            ${this.yearInput(p?.getDrinkingWindowTo(), (d) => p?.setDrinkingWindowTo(d))}
+                          </span>`
+                        : html`<span class="value">${this.renderYear(p?.getDrinkingWindowFrom())} – ${this.renderYear(p?.getDrinkingWindowTo())}</span>`}
                 </div>
                 <div class="group">
                     <label>Quelle</label>
-                    <span class="value">${this.product?.getOrderItem()?.getOrder()?.getSeller()?.getName()}${this.renderDate(this.product?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
+                    <span class="value">${p?.getOrderItem()?.getOrder()?.getSeller()?.getName()}${this.renderDate(p?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
                 </div>
                 ${this.renderRatings()}
             </div>
         `
     }
+
+    /** A string field: read-only span, or a text input that writes through on input. */
+    private textField(value: string | undefined, setter: (value: string) => void) {
+        if (!this.editing) {
+            return html`<span class="value">${value}</span>`;
+        }
+        return html`<input
+            class="value edit-input"
+            type="text"
+            .value="${value ?? ''}"
+            @input="${(e: Event) => this.writeThrough(() => setter((e.target as HTMLInputElement).value))}"
+            @change="${this.persist}"
+        >`;
+    }
+
+    private numberInput(value: number | undefined, setter: (value: number) => void) {
+        return html`<input
+            class="value edit-input"
+            type="number"
+            .value="${value != null ? String(value) : ''}"
+            @input="${(e: Event) => this.writeThrough(() => {
+                const raw = (e.target as HTMLInputElement).value;
+                const n = Number(raw);
+                if (raw !== '' && !Number.isNaN(n)) setter(n);
+            })}"
+            @change="${this.persist}"
+        >`;
+    }
+
+    private yearInput(date: Date | undefined, setter: (date: Date | undefined) => void) {
+        return html`<input
+            class="value edit-input"
+            type="number"
+            .value="${date ? String(date.getFullYear()) : ''}"
+            @input="${(e: Event) => this.writeThrough(() => {
+                const raw = (e.target as HTMLInputElement).value;
+                const year = parseInt(raw, 10);
+                setter(Number.isNaN(year) ? undefined : new Date(year, 0, 1));
+            })}"
+            @change="${this.persist}"
+        >`;
+    }
+
+    /** Apply a setter to the model instantly and mark the model dirty. */
+    private writeThrough(apply: () => void) {
+        apply();
+        this.dirty = true;
+    }
+
+    /**
+     * Recompute the product name from Hersteller + Weinname + Jahrgang whenever
+     * one of those is edited, and notify the header (bottle-component) so it
+     * re-renders with the new name.
+     */
+    private deriveName() {
+        const p = this.product;
+        if (!p) return;
+        const year = p.getProductionDate()?.getFullYear();
+        const parts = [p.getProducer(), p.getWineName(), year]
+            .filter((part) => part != null && String(part).trim() !== "");
+        p.setName(parts.join(" "));
+        this.dispatchEvent(new CustomEvent("product-name-changed", {bubbles: true, composed: true}));
+    }
+
+    /** Persist the model if it has uncommitted edits. */
+    private persist = () => {
+        if (this.dirty && this.product) {
+            this.dirty = false;
+            void CDI.getInstance().getKellermeisterService().updateProduct(this.product);
+        }
+    };
 
     private renderRatings() {
         const ratings = this.product?.getRatings() ?? [];

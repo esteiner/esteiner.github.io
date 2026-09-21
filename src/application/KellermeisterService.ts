@@ -366,6 +366,15 @@ export class KellermeisterService implements ReadModelCache {
         return newOrder;
     }
 
+    /**
+     * Persist an in-place edit of a product's detail fields (inline editing in
+     * the cellar view). The edited instance is the one already rendered, so no
+     * cache is invalidated — that would refetch and re-collapse/reorder the row.
+     */
+    async updateProduct(product: Product): Promise<void> {
+        await this.productRepository.save(product);
+    }
+
     async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
         console.log("disposeBottleToAltglass: with id", bottle.getId());
         bottle.setCellar(this.getAltglassId());

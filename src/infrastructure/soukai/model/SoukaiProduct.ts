@@ -104,6 +104,60 @@ export class SoukaiProduct extends Model implements Product {
         return rating;
     }
 
+    // setters — inline editing writes through to the mapped schema fields;
+    // persistence happens via KellermeisterService.updateProduct.
+    setName(name: string): void {
+        this.name = name;
+    }
+    setProducer(producer: string): void {
+        this.hersteller = producer;
+    }
+    setWineName(wineName: string): void {
+        this.weinname = wineName;
+    }
+    setProductionDate(date: Date | undefined): void {
+        this.productionDate = date;
+    }
+    setPrice(price: number): void {
+        this.price = price;
+    }
+    setVolumeMl(volumeMl: number): void {
+        this.milliliter = volumeMl;
+    }
+    setRegion(region: string): void {
+        this.region = region;
+    }
+    setCountry(country: string): void {
+        this.land = country;
+    }
+    setGrapeVariety(grapeVariety: string): void {
+        this.traubensorte = grapeVariety;
+    }
+    setWineType(wineType: string): void {
+        this.weinart = wineType;
+    }
+    setWineColor(wineColor: string): void {
+        this.weinfarbe = wineColor;
+    }
+    setAlcoholContent(alcoholContent: string): void {
+        this.alkoholgehalt = alcoholContent;
+    }
+    setProduction(production: string): void {
+        this.ausbau = production;
+    }
+    setOrganic(organic: string): void {
+        this.biologisch = organic;
+    }
+    setClassification(classification: string): void {
+        this.klassifikation = classification;
+    }
+    setDrinkingWindowFrom(date: Date | undefined): void {
+        this.trinkfensterVon = date;
+    }
+    setDrinkingWindowTo(date: Date | undefined): void {
+        this.trinkfensterBis = date;
+    }
+
     private orUndefined(value: any): any | undefined {
         return value ? value : undefined;
     }
