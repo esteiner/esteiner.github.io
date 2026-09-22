@@ -49,6 +49,11 @@ class CellarPage extends BasePage {
         return new Map<string, Bottle[]>();
     });
 
+    // The header shows the cellar's total, so this deliberately ignores this.filter.
+    private _bottleCountTask = new Task(this, async () => {
+        return await this.cdi.getKellermeisterService().bottleCountInCellar(this.cellar);
+    });
+
     constructor() {
         super();
         this.filter = new ProductFilter();
@@ -109,6 +114,9 @@ class CellarPage extends BasePage {
     render() {
         return html`
           <kellermeister-header>Keller ${this.cellar?.getName()}
+              ${this._bottleCountTask.render({
+                  complete: (count) => html`<span slot="subtitle">${count} ${count === 1 ? 'Flasche' : 'Flaschen'}</span>`,
+              })}
               <kellermeister-button slot="actions" text="Search" @click="${this.handleTextFilterClick}" .ghost=${this.filter.isText} icon="search" size="small"></kellermeister-button>
               <kellermeister-button slot="actions" text="Kellerarbeit" @click="${this.handleCellarworkClick}" icon="work" size="small"></kellermeister-button>
           </kellermeister-header>
@@ -184,6 +192,7 @@ class CellarPage extends BasePage {
     private loadBottles() {
         if (this.cellar) {
             this._bottlesTask.run();
+            this._bottleCountTask.run();
         } else {
             console.log("loadBottle: failed, because cellar is undefined!");
         }

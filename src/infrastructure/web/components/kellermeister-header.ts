@@ -13,10 +13,24 @@ class KellermeisterHeader extends BaseComponent {
         return [
             ...super.styles,
             css`
+                .title-container {
+                    display: flex;
+                    flex-direction: column;
+                }
+
                 h1 {
                     font-family: var(--app-font-family-display);
                     font-style: italic;
                     font-size: 24px;
+                    font-weight: 400;
+                    color: var(--app-color-primary, #3A6B28);
+                    margin: 0;
+                }
+
+                ::slotted([slot="subtitle"]) {
+                    font-family: var(--app-font-family-display);
+                    font-style: italic;
+                    font-size: 16px;
                     font-weight: 400;
                     color: var(--app-color-primary, #3A6B28);
                     margin: 0;
@@ -51,9 +65,12 @@ class KellermeisterHeader extends BaseComponent {
 
     render() {
         return html`
-            <h1>
-                <slot></slot>
-            </h1>
+            <div class="title-container">
+                <h1>
+                    <slot></slot>
+                </h1>
+                <slot name="subtitle"></slot>
+            </div>
             <div class="actions-container">
                 <slot name="actions"></slot>
             </div>

@@ -152,6 +152,18 @@ export class KellermeisterService implements ReadModelCache {
             .sort((a: Bottle, b: Bottle) => this.productComparator(a.getProduct(), b.getProduct()));
     }
 
+    /**
+     * Returns the total number of bottles in a cellar, unaffected by any product
+     * filter — this is the cellar's size, not the size of a filtered listing.
+     */
+    async bottleCountInCellar(cellar: Cellar | undefined): Promise<number> {
+        if (!cellar) {
+            return 0;
+        }
+        const bottles = await this.getAllBottles();
+        return bottles.filter(bottle => this.isBottleInThisCellar(bottle, cellar)).length;
+    }
+
     productComparator(a: Product, b: Product): number {
         const nameA = a.getName();
         const nameB = b.getName();

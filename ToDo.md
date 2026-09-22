@@ -5,7 +5,6 @@ ToDo
 
 - [ ] S&E: Preis lookup review
 - [ ] S: Profil umbennen und überarbeiten (Kellerinfo)
-- [ ] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
 - [ ] S: Filter nach Weinfarbe und Weinart überdenken
 - [ ] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 - [ ] E: API Key für REST API
@@ -44,6 +43,7 @@ ToDo
 Done
 ---
 
+- [x] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
 - [x] E: Änderungen zu Produkt machen (im Keller, auf Flasche neues Icon "ändern", wenn icon Stift gedrückt)
 - [x] E: Rating auf Bottle anstatt Product (: benötigt Beziehung Product -> Bottle)
 - [X] E: Keller Kellerarbeit soll sich gleich wie alle Keller verhalten
