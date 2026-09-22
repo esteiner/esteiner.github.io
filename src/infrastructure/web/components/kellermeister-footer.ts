@@ -685,7 +685,7 @@ class KellermeisterFooter extends BaseComponent {
             <kellermeister-button text="Übersicht" @click="${this.handleOverviewClick}" icon="house" size="small"></kellermeister-button>
             <kellermeister-button text="Hinzufügen" @click="${this.handleAddClick}" icon="umbuchen" size="small"></kellermeister-button>
             <kellermeister-button text="Einkäufe" @click="${this.handleOrderClick}" icon="shopping" size="small"></kellermeister-button>
-            <kellermeister-button text="Profil" @click="${this.handleProfileClick}" icon="profile" size="small"></kellermeister-button>
+            <kellermeister-button text="Kellerprofil" @click="${this.handleProfileClick}" icon="profile" size="small"></kellermeister-button>
         `;
     }
 

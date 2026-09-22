@@ -160,10 +160,35 @@ class ProfilePage extends BasePage {
                   </div>
               </div>
           ` : ''}
-          <kellermeister-header>Profil
+          <kellermeister-header>Kellerprofil
               <kellermeister-button text="Logout" @click="${this.handleLogoutClick}" slot="actions" icon="logout" size="small"></kellermeister-button>
           </kellermeister-header>
           <main>
+              <div class="section-header"><p>Kellermeister</p></div>
+              <div class="card">
+                  <div class="group">
+                      <label>Version</label>
+                      <span class="value">${getBuildVersion()}</span>
+                  </div>
+                  <div class="group">
+                      <label>Flaschen</label>
+                      <span class="value">${this.numberOfBottles}</span>
+                  </div>
+                  <div class="group group-keller">
+                      <label>Keller</label>
+                      <span class="value">
+                          ${this.cellars.length > 0
+                              ? html`<div class="cellar-list">
+                                  ${this.cellars.map(cellar => html`
+                                      <span class="cellar-name">${cellar.getName()}</span>
+                                      <kellermeister-button icon="trash" size="small" @click="${() => this.handleDeleteCellarClick(cellar)}"></kellermeister-button>
+                                  `)}
+                                </div>`
+                              : "Keine Keller"}
+                      </span>
+                      <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" size="small" ghost></kellermeister-button>
+                  </div>
+              </div>
               <div class="section-header"><p>Solid Profil</p></div>
               <div class="card">
                   <div class="group">
@@ -197,31 +222,6 @@ class ProfilePage extends BasePage {
                   <div class="group">
                       <label>Last Sync</label>
                       <span class="value">${this.lastSyncedAt ? formatLastSync(this.lastSyncedAt) : "Nur lokal"}</span>
-                  </div>
-              </div>
-              <div class="section-header"><p>Kellermeister</p></div>
-              <div class="card">
-                  <div class="group">
-                      <label>Version</label>
-                      <span class="value">${getBuildVersion()}</span>
-                  </div>
-                  <div class="group">
-                      <label>Flaschen</label>
-                      <span class="value">${this.numberOfBottles}</span>
-                  </div>
-                  <div class="group group-keller">
-                      <label>Keller</label>
-                      <span class="value">
-                          ${this.cellars.length > 0
-                              ? html`<div class="cellar-list">
-                                  ${this.cellars.map(cellar => html`
-                                      <span class="cellar-name">${cellar.getName()}</span>
-                                      <kellermeister-button icon="trash" size="small" @click="${() => this.handleDeleteCellarClick(cellar)}"></kellermeister-button>
-                                  `)}
-                                </div>`
-                              : "Keine Keller"}
-                      </span>
-                      <kellermeister-button icon="plus" text="neuer Keller" @click="${this.handleNewCellarClick}" size="small" ghost></kellermeister-button>
                   </div>
               </div>
               <div class="section-header"><p>Solid Apps</p></div>

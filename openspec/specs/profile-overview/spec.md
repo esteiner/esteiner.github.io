@@ -3,9 +3,7 @@
 ## Purpose
 
 The profile page gives the user an overview of their Kellermeister data. It presents the user's cellars in a "Keller" group, allowing the user to see the cellars they own, add a new cellar, and delete an empty cellar (or navigate to a non-empty cellar's page to empty it first). This overview is available local-first, so it works even without an authenticated Solid session.
-
 ## Requirements
-
 ### Requirement: Profile page lists existing cellars
 The profile page SHALL display the names of the user's cellars in its "Keller" group. The list SHALL include every existing cellar EXCEPT those with a negative `displayOrder` (e.g. the well-known `cellarwork`/`altglass` cellars); a cellar with a zero or absent `displayOrder` SHALL be shown. The list SHALL be available local-first (without requiring an authenticated session).
 
@@ -119,3 +117,38 @@ The profile page SHALL offer, in the "Inbox Upload" row of its "Debug" section, 
 - **WHEN** the chosen file is not a well-formed order
 - **THEN** it is uploaded unchanged and the upload is reported as successful
 - **AND** the problem surfaces where orders are ingested, not at upload time
+
+### Requirement: Profile page sections are ordered with Kellermeister first
+
+The profile page SHALL present its sections in this order, top to bottom: **"Kellermeister"**, **"Solid Profil"**, **"Solid Apps"**, **"Debug"**. The "Kellermeister" section — which holds the app version, the bottle total, and the "Keller" group with its add and delete actions — SHALL be the first section, so the page opens on the user's own cellar data rather than on Solid account details.
+
+#### Scenario: Kellermeister is the first section
+- **WHEN** the profile page is opened
+- **THEN** the first section shown is "Kellermeister"
+- **AND** it appears above the "Solid Profil" section
+
+#### Scenario: The remaining sections keep their relative order
+- **WHEN** the profile page is opened
+- **THEN** the sections read, in order: "Kellermeister", "Solid Profil", "Solid Apps", "Debug"
+
+#### Scenario: Section contents are unaffected by the ordering
+- **WHEN** the profile page is opened
+- **THEN** each section shows exactly the rows it did before, with its actions working as specified elsewhere in this capability
+
+### Requirement: The profile page is labelled "Kellerprofil"
+
+The profile page SHALL be titled **"Kellerprofil"**, and the footer action that navigates to it SHALL carry the same label. The name distinguishes the user's Kellermeister profile from the "Solid Profil" section shown within the page, which keeps its own name.
+
+#### Scenario: The page title
+- **WHEN** the profile page is opened
+- **THEN** its header reads "Kellerprofil"
+
+#### Scenario: The footer action
+- **WHEN** any page showing the app footer is displayed
+- **THEN** the footer action leading to the profile page is labelled "Kellerprofil"
+- **AND** activating it opens the profile page
+
+#### Scenario: The Solid section keeps its own name
+- **WHEN** the profile page is opened
+- **THEN** the section listing the Solid account details is still headed "Solid Profil"
+
