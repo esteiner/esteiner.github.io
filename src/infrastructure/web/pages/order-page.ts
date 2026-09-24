@@ -1,5 +1,6 @@
 import {css, html} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
+import {repeat} from 'lit/directives/repeat.js';
 import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import '../components/kellermeister-button.ts';
@@ -154,9 +155,11 @@ class OrderPage extends BasePage {
                         pending: () => html`<div class="spinner"></div>`,
                         complete: (orders) => orders.size > 0
                             ? html`
-                                ${[...orders.keys()].map(
+                                ${repeat(
+                                        [...orders.keys()],
+                                        month => month.getTime(),
                                         month => html`
-                                            <orders-component .month="${month}" .orders="${orders.get(month)}">`
+                                            <orders-component .month="${month}" .orders="${orders.get(month)}"></orders-component>`
                                 )}
                             `
                             : html`

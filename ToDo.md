@@ -11,7 +11,6 @@ ToDo
 
 ### Prio 2
 
-- [ ] Monate im Einkauf zu/aufklappbar machen
 - [ ] Keller in Suche zu/aufklappbar machen
 - [ ] Verwendung von WebMCP
 - [ ] neue Seite Statistik:
@@ -41,6 +40,7 @@ ToDo
 Done
 ---
 
+- [x] Monate im Einkauf zu/aufklappbar machen
 - [x] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY), aktuell ist es nur YYYY
 - [-] Dezimalstellen des Preises werden nicht angezeigt (Soukai Bug?)
 - [x] S: Profil umbennen und überarbeiten (Kellerprofil)
