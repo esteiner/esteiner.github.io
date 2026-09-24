@@ -3,17 +3,17 @@ ToDo
 
 ### Prio 1
 
+- [ ] S: Filter nach Weinfarbe und Weinart überdenken: Weinfarbe und Weinart müssen in Kombination sein
 - [ ] S&E: Preis lookup review
-- [ ] S: Filter nach Weinfarbe und Weinart überdenken
 - [ ] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 - [ ] E: API Key für REST API
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
-- [ ] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY)
 
 ### Prio 2
 
+- [ ] Monate im Einkauf zu/aufklappbar machen
+- [ ] Keller in Suche zu/aufklappbar machen
 - [ ] Verwendung von WebMCP
-- [ ] Dezimalstellen des Preises werden nicht angezeigt (Soukai Bug?)
 - [ ] neue Seite Statistik:
   - Anzahl Rotweine, Weissweine, Roseweine, Sprudel (weiss, rot, rose), Gesamt und pro Keller
   - Weine trinkreif von - bis
@@ -21,7 +21,6 @@ ToDo
   - Weinbewertungen Top (3), (2), (1) 
 - [ ] Client ID Metadata Document als JSON-LD (https://github.com/mfhepp/test_mime_types)
 - [ ] Refresh Button
-- [ ] Monate im Einkauf zu/aufklappbar machen
 - [ ] E: Filter nach muss ausgetrunken werden --> lange (1sec) auf filter toggle drücken
 
 ### Prio 3
@@ -42,6 +41,8 @@ ToDo
 Done
 ---
 
+- [x] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY), aktuell ist es nur YYYY
+- [-] Dezimalstellen des Preises werden nicht angezeigt (Soukai Bug?)
 - [x] S: Profil umbennen und überarbeiten (Kellerprofil)
 - [x] S: In Kellerseite immer Anzahl Flaschen anzeigen klein unterhalb des Kellernamens
 - [x] E: Änderungen zu Produkt machen (im Keller, auf Flasche neues Icon "ändern", wenn icon Stift gedrückt)

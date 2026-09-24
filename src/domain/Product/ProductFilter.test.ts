@@ -238,16 +238,50 @@ describe('ProductFilter', () => {
             expect(filter.filterProduct(makeBottle({ region: 'Burgund', trinkfensterBis: new Date(2030, 0, 1) }))).toBe(true);
         });
 
-        it('passes when trinkfensterBis year <= textFilter year (only when no other fields match)', () => {
-            filter.textFilter = '2025';
-            const bottle = makeBottle({ trinkfensterBis: new Date(2024, 0, 1) });
-            expect(filter.filterProduct(bottle)).toBe(true);
+        it('passes "bis <year>" when trinkfensterBis year < entered year', () => {
+            filter.textFilter = 'bis 2025';
+            expect(filter.filterProduct(makeBottle({ trinkfensterBis: new Date(2024, 0, 1) }))).toBe(true);
         });
 
-        it('blocks when trinkfensterBis year > textFilter year (and no other fields match)', () => {
-            filter.textFilter = '2020';
-            const bottle = makeBottle({ trinkfensterBis: new Date(2025, 0, 1) });
-            expect(filter.filterProduct(bottle)).toBe(false);
+        it('passes "bis <year>" when trinkfensterBis year equals entered year', () => {
+            filter.textFilter = 'bis 2025';
+            expect(filter.filterProduct(makeBottle({ trinkfensterBis: new Date(2025, 11, 31) }))).toBe(true);
+        });
+
+        it('blocks "bis <year>" when trinkfensterBis year > entered year', () => {
+            filter.textFilter = 'bis 2020';
+            expect(filter.filterProduct(makeBottle({ trinkfensterBis: new Date(2025, 0, 1) }))).toBe(false);
+        });
+
+        it('blocks "bis <year>" when trinkfensterBis is undefined', () => {
+            filter.textFilter = 'bis 2025';
+            expect(filter.filterProduct(makeBottle({ name: 'Merlot' }))).toBe(false);
+        });
+
+        it('accepts case and whitespace variants of "bis <year>"', () => {
+            const bottle = makeBottle({ trinkfensterBis: new Date(2024, 0, 1) });
+            for (const text of ['Bis 2025', 'BIS2025', '  bis   2025  ']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(bottle)).toBe(true);
+            }
+        });
+
+        it('does not search regular text fields for "bis <year>"', () => {
+            filter.textFilter = 'bis 2025';
+            expect(filter.filterProduct(makeBottle({ name: 'Cuvée bis 2025', trinkfensterBis: new Date(2030, 0, 1) }))).toBe(false);
+        });
+
+        it('ignores trinkfensterBis for a bare year', () => {
+            filter.textFilter = '2025';
+            expect(filter.filterProduct(makeBottle({ trinkfensterBis: new Date(2024, 0, 1) }))).toBe(false);
+        });
+
+        it('treats near-misses of "bis <year>" as plain text', () => {
+            const bottle = makeBottle({ name: 'Chardonnay', trinkfensterBis: new Date(2020, 0, 1) });
+            for (const text of ['bis 25', 'bis 2025 rot', 'bisher']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(bottle)).toBe(false);
+            }
         });
 
         it('passes any text when textFilter is null', () => {

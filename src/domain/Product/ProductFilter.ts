@@ -92,16 +92,20 @@ export class ProductFilter {
         // Text
         if (this.isText) {
             if (this.textFilter) {
-                const textFilterLowerCase = this.textFilter.toLowerCase();
-                result = result && (
-                    this.isIncludedIn(textFilterLowerCase, product.getName()?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.getProductionDate()?.toUTCString().toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.getGrapeVariety()?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.getAlcoholContent())
-                    || this.isIncludedIn(textFilterLowerCase, product.getCountry()?.toLowerCase())
-                    || this.isIncludedIn(textFilterLowerCase, product.getRegion()?.toLowerCase())
-                    || this.isBiggerThan(this.textFilter, product.getDrinkingWindowTo()?.getFullYear())
-                );
+                const drinkingWindowYear = ProductFilter.parseDrinkingWindowYear(this.textFilter);
+                if (drinkingWindowYear !== null) {
+                    result = result && this.endsDrinkingWindowBy(drinkingWindowYear, product.getDrinkingWindowTo()?.getFullYear());
+                } else {
+                    const textFilterLowerCase = this.textFilter.toLowerCase();
+                    result = result && (
+                        this.isIncludedIn(textFilterLowerCase, product.getName()?.toLowerCase())
+                        || this.isIncludedIn(textFilterLowerCase, product.getProductionDate()?.toUTCString().toLowerCase())
+                        || this.isIncludedIn(textFilterLowerCase, product.getGrapeVariety()?.toLowerCase())
+                        || this.isIncludedIn(textFilterLowerCase, product.getAlcoholContent())
+                        || this.isIncludedIn(textFilterLowerCase, product.getCountry()?.toLowerCase())
+                        || this.isIncludedIn(textFilterLowerCase, product.getRegion()?.toLowerCase())
+                    );
+                }
             }
         }
         return result;
@@ -115,15 +119,17 @@ export class ProductFilter {
         return result;
     }
 
-    private isBiggerThan(filter: string, value: number | undefined): boolean {
-        if (value === undefined) {
+    // Parses "bis <year>" (e.g. "bis 2025") and returns the year, or null for any other text.
+    private static parseDrinkingWindowYear(text: string): number | null {
+        const match = /^bis\s*(\d{4})$/i.exec(text.trim());
+        return match ? Number(match[1]) : null;
+    }
+
+    private endsDrinkingWindowBy(year: number, drinkingWindowToYear: number | undefined): boolean {
+        if (drinkingWindowToYear === undefined) {
             return false;
         }
-        const result = value <= Number(filter)
-        if (result) {
-            console.log("includes", value, filter, result)
-        }
-        return result;
+        return drinkingWindowToYear <= year;
     }
 
 }
