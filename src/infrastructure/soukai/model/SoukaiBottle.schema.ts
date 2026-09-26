@@ -32,12 +32,6 @@ export default defineSchema({
         // Product. Kept read-only so old pods remain readable — Bottle.getRating()
         // surfaces it as a dateless Rating when no structured rating is present.
         legacyRating: number().optional().rdfProperty("schema:rating"),
-
-        // Legacy: price/priceCurrency moved to Product. Kept here only so old
-        // pods (where these fields were written on the ListItem) remain readable.
-        // New bottles do not write these — see Bottle.getPrice()/getPriceCurrency().
-        price: number().optional().rdfProperty("schema:price"),
-        priceCurrency: string().optional().rdfProperty("schema:priceCurrency"),
     },
 
     relations: {

@@ -87,4 +87,33 @@ test.describe('Inline product editing in the cellar', () => {
       page.locator('bottle-component .product-name').filter({ hasText: 'Löwengang Chardonnay' }).first(),
     ).toBeVisible();
   });
+
+  test('an edited price is shown read-only right after leaving edit mode and after re-expanding', async ({
+    authedPage: page,
+  }) => {
+    await page.getByRole('button', { name: 'Hütte' }).click();
+    await page.waitForURL(/\/cellar\//);
+
+    const PRODUCT = 'Alois Lageder Chardonnay 2020';
+    const header = page.locator('bottle-component .product-name').filter({ hasText: PRODUCT }).first();
+    await header.click();
+    const pencil = page.locator('bottle-component .edit-button');
+    await pencil.click();
+
+    const NEW_PRICE = '987';
+    const priceInput = page.locator('product-component .group').filter({ hasText: 'Preis / Flasche' }).locator('input');
+    await priceInput.fill(NEW_PRICE);
+    await priceInput.blur();
+
+    // Leave edit mode → the read-only price (slotted into product-component) shows the new value.
+    await pencil.click();
+    await expect(priceInput).toHaveCount(0);
+    const product = page.locator('bottle-component product-component').first();
+    await expect(product).toContainText(NEW_PRICE);
+
+    // Collapse and re-expand → still the new value.
+    await header.click();
+    await header.click();
+    await expect(page.locator('bottle-component product-component').first()).toContainText(NEW_PRICE);
+  });
 });

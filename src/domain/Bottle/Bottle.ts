@@ -6,8 +6,6 @@ export interface Bottle {
     getId(): string;
     getCellar(): string;
     getProduct(): Product;
-    getPrice(): number;
-    getPriceCurrency(): string;
     getRating(): Rating | undefined;
     // setter
     setCellar(cellarId: string): void;

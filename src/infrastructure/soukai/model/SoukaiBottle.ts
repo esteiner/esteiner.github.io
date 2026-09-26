@@ -30,14 +30,6 @@ export class SoukaiBottle extends Model implements Bottle {
     getProduct(): SoukaiProduct {
         return this.product;
     }
-    getPrice(): number {
-        const productPrice = this.getProduct().getPrice();
-        return productPrice ? productPrice : this.orUndefined(this.price);
-    }
-    getPriceCurrency(): string {
-        const productPrice = this.getProduct().getPrice();
-        return productPrice ? this.getProduct().getPriceCurrency() : this.orUndefined(this.priceCurrency);
-    }
     getRating(): Rating | undefined {
         // Prefer the structured, dated rating stored on this bottle.
         if (this.rating) {

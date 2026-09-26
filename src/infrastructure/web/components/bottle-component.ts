@@ -103,8 +103,8 @@ class BottleComponent extends BaseComponent {
                         <product-component
                             .product="${this.bottle.getProduct()}"
                             .editing="${this.editing}"
-                            @product-name-changed="${() => this.requestUpdate()}"
-                        ><slot></slot></product-component>
+                            @product-changed="${() => this.requestUpdate()}"
+                        >${this.bottle.getProduct().getPrice()} ${this.bottle.getProduct().getPriceCurrency()}</product-component>
                     `
                     : nothing
                     }

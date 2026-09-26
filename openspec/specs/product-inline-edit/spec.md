@@ -3,9 +3,7 @@
 ## Purpose
 
 Kellermeister lets a product's own attributes be edited inline from the cellar bottle view. When a product row is expanded, a pencil affordance toggles the row's detail fields between read-only labels and editable inputs; changes are written through to the product model and persisted so they survive collapsing the row, leaving the page, and synchronization. The product name is kept in sync with its defining attributes (Hersteller, Weinname, Jahrgang), while derived fields and product displays elsewhere remain read-only.
-
 ## Requirements
-
 ### Requirement: An expanded product row offers an edit affordance
 
 When a product row in the cellar bottle view is expanded, the system SHALL show a pencil button in the row header, aligned to the right. The button SHALL NOT be shown while the row is collapsed.
@@ -35,7 +33,7 @@ Clicking the pencil button SHALL toggle the row's detail fields between read-onl
 
 ### Requirement: Editing a field writes through to the product and persists
 
-While in edit mode, changing an editable input SHALL write the new value to the product model immediately, and the change SHALL be persisted so it survives collapsing the row, leaving the page, and synchronization.
+While in edit mode, changing an editable input SHALL write the new value to the product model immediately, and the change SHALL be persisted so it survives collapsing the row, leaving the page, and synchronization. The read-only display of every edited field, including the price, SHALL show the product model's current value as soon as edit mode is left, without requiring a reload or a second edit.
 
 #### Scenario: A change is written and persisted
 - **WHEN** the user edits an editable field (for example, Region) in edit mode
@@ -45,6 +43,14 @@ While in edit mode, changing an editable input SHALL write the new value to the 
 #### Scenario: Persisted edit survives a reload
 - **WHEN** a user edits a product field, then collapses the row and re-expands it (or reloads the cellar view)
 - **THEN** the edited value is shown
+
+#### Scenario: Edited price is shown after leaving edit mode
+- **WHEN** the user changes "Preis / Flasche" from 25 to 32 in edit mode and then presses the pencil to leave edit mode
+- **THEN** the read-only price shows 32 with its currency
+
+#### Scenario: Edited price is shown after collapsing and re-expanding
+- **WHEN** the user changes the price, collapses the row and expands it again
+- **THEN** the read-only price shows the new value
 
 ### Requirement: Only the product's own attributes are editable
 
@@ -91,3 +97,4 @@ Inline product editing SHALL be available in the cellar bottle view. The product
 #### Scenario: Order view stays read-only
 - **WHEN** a product's details are shown in the order view
 - **THEN** no pencil button is shown and the fields cannot be edited
+

@@ -315,7 +315,7 @@ class CellarWorkPage extends BasePage {
                                 <div class="data-row">
                                     ${repeat(bottles, (bottle) => bottle.getId(), (bottle, index) =>  html`
                                         <span class="column1">
-                                            <bottle-component .bottle="${bottle}" .expandable=${this.expandable}>${bottle.getPrice()}</bottle-component>
+                                            <bottle-component .bottle="${bottle}" .expandable=${this.expandable}></bottle-component>
                                         </span>
                                         ${repeat(this.cellars, (cellar) => cellar.getId(), (cellar, cellarIndex) =>  html`
                                             <span class="column2"><input @input="${this.handleCellarSelectionClick}" ${cellarIndex}" type="radio" id="${index}" name="${index}" value="${cellar.getId()}" .checked=${this.cellarIds[index] == cellar.getId()}></input></span>

@@ -234,16 +234,21 @@ class ProductComponent extends BaseComponent {
         >`;
     }
 
-    /** Apply a setter to the model instantly and mark the model dirty. */
+    /**
+     * Apply a setter to the model instantly, mark the model dirty, and notify
+     * the parent (bottle-component) so its read-only display (name, price)
+     * re-renders with the new value.
+     */
     private writeThrough(apply: () => void) {
         apply();
         this.dirty = true;
+        this.dispatchEvent(new CustomEvent("product-changed", {bubbles: true, composed: true}));
     }
 
     /**
      * Recompute the product name from Hersteller + Weinname + Jahrgang whenever
-     * one of those is edited, and notify the header (bottle-component) so it
-     * re-renders with the new name.
+     * one of those is edited. The header picks up the new name through the
+     * product-changed event dispatched by writeThrough.
      */
     private deriveName() {
         const p = this.product;
@@ -252,7 +257,6 @@ class ProductComponent extends BaseComponent {
         const parts = [p.getProducer(), p.getWineName(), year]
             .filter((part) => part != null && String(part).trim() !== "");
         p.setName(parts.join(" "));
-        this.dispatchEvent(new CustomEvent("product-name-changed", {bubbles: true, composed: true}));
     }
 
     /** Persist the model if it has uncommitted edits. */
