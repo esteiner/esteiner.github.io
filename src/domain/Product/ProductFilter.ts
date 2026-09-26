@@ -76,18 +76,30 @@ export class ProductFilter {
         if (this.isSprudel) {
             result = result && Weinart.Schaumwein.equals(product.getWineType());
         }
+        // if (!this.isSprudel) {
+        //     result = result && ( Weinart.Weisswein.equals(product.getWineType()) || Weinart.Rotwein.equals(product.getWineType()) || Weinart.Dessertwein.equals(product.getWineType()) );
+        // }
         if (this.isDessert) {
             result = result && Weinart.Dessertwein.equals(product.getWineType());
         }
         // Weinfarbe
         if (this.isWhite) {
             result = result && Weinfarbe.Weiss.equals(product.getWineColor());
+            if (!this.isSprudel) {
+                result = result && Weinart.Weisswein.equals(product.getWineType());
+            }
         }
         if (this.isRed) {
             result = result && Weinfarbe.Rot.equals(product.getWineColor());
+            if (!this.isSprudel) {
+                result = result && Weinart.Rotwein.equals(product.getWineType());
+            }
         }
         if (this.isRose) {
             result = result && Weinfarbe.Rose.equals(product.getWineColor());
+            if (!this.isSprudel) {
+                result = result && Weinart.Rosewein.equals(product.getWineType());
+            }
         }
         // Text
         if (this.isText) {

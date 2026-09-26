@@ -1,5 +1,8 @@
 export class Weinart {
     static Wein        = new Weinart("Wein");
+    static Rotwein        = new Weinart("Rotwein");
+    static Weisswein        = new Weinart("Weisswein");
+    static Rosewein        = new Weinart("Rosewein");
     static Schaumwein  = new Weinart("Schaumwein");
     static Dessertwein = new Weinart("Dessertwein");
 
