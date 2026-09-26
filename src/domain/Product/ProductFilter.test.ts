@@ -177,6 +177,58 @@ describe('ProductFilter', () => {
     });
 
     // -----------------------------------------------------------------
+    // filterProduct — colour without a Weinart filter requires the still wine type
+    // -----------------------------------------------------------------
+
+    describe('colour filter without a Weinart filter selects still wine of that colour', () => {
+        it('isWhite passes Weisswein and blocks Schaumwein, Wein and Dessertwein of the same colour', () => {
+            filter.isWhite = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Weisswein', weinfarbe: 'weiss' }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Schaumwein', weinfarbe: 'weiss' }))).toBe(false);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Wein', weinfarbe: 'weiss' }))).toBe(false);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Dessertwein', weinfarbe: 'weiss' }))).toBe(false);
+        });
+
+        it('isRed passes Rotwein and blocks Schaumwein of the same colour', () => {
+            filter.isRed = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Rotwein', weinfarbe: 'rot' }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Schaumwein', weinfarbe: 'rot' }))).toBe(false);
+        });
+
+        it('isRose passes Rosewein and blocks Schaumwein of the same colour', () => {
+            filter.isRose = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Rosewein', weinfarbe: 'rose' }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Schaumwein', weinfarbe: 'rose' }))).toBe(false);
+        });
+
+        it('passes a product with matching colour and undefined weinart (treated as match)', () => {
+            filter.isRed = true;
+            expect(filter.filterProduct(makeBottle({ weinfarbe: 'rot' }))).toBe(true);
+        });
+
+        it('still blocks a still wine of a different colour', () => {
+            filter.isWhite = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Rotwein', weinfarbe: 'rot' }))).toBe(false);
+        });
+    });
+
+    describe('colour filter with a Weinart filter selects that Weinart of that colour', () => {
+        it('isSprudel + isRose passes Schaumwein/rose and blocks Rosewein/rose', () => {
+            filter.isSprudel = true;
+            filter.isRose = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Schaumwein', weinfarbe: 'rose' }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Rosewein', weinfarbe: 'rose' }))).toBe(false);
+        });
+
+        it('isDessert + isWhite passes Dessertwein/weiss and blocks Weisswein/weiss', () => {
+            filter.isDessert = true;
+            filter.isWhite = true;
+            expect(filter.filterProduct(makeBottle({ weinart: 'Dessertwein', weinfarbe: 'weiss' }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ weinart: 'Weisswein', weinfarbe: 'weiss' }))).toBe(false);
+        });
+    });
+
+    // -----------------------------------------------------------------
     // filterProduct — combined filters (AND logic)
     // -----------------------------------------------------------------
 
