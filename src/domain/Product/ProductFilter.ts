@@ -104,10 +104,13 @@ export class ProductFilter {
             if (this.textFilter) {
                 const drinkingWindowYear = ProductFilter.parseDrinkingWindowYear(this.textFilter);
                 const bottleSizeMl = ProductFilter.parseBottleSizeMl(this.textFilter);
+                const rating = ProductFilter.parseRatingQuery(this.textFilter);
                 if (drinkingWindowYear !== null) {
                     result = result && this.endsDrinkingWindowBy(drinkingWindowYear, product.getDrinkingWindowTo()?.getFullYear());
                 } else if (bottleSizeMl !== null) {
                     result = result && product.getVolumeMl() === bottleSizeMl;
+                } else if (rating !== null) {
+                    result = result && (product.getRatings() ?? []).some(r => r.getValue() === rating);
                 } else {
                     const textFilterLowerCase = this.textFilter.toLowerCase();
                     result = result && (
@@ -141,6 +144,12 @@ export class ProductFilter {
     // Parses "ml <size>" (e.g. "ml1500") and returns the size in millilitres, or null for any other text.
     private static parseBottleSizeMl(text: string): number | null {
         const match = /^ml\s*(\d+)$/i.exec(text.trim());
+        return match ? Number(match[1]) : null;
+    }
+
+    // Parses "top <N>" (e.g. "top3", N = 1..3) and returns the rating, or null for any other text.
+    private static parseRatingQuery(text: string): number | null {
+        const match = /^top\s*([1-3])$/i.exec(text.trim());
         return match ? Number(match[1]) : null;
     }
 

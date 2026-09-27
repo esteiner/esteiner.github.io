@@ -14,6 +14,7 @@ function makeBottle(product: {
     productionDate?: Date;
     trinkfensterBis?: Date;
     volumeMl?: number;
+    ratings?: number[];
 }): SoukaiProduct {
     return {
         getName: () => product.name,
@@ -26,6 +27,7 @@ function makeBottle(product: {
         getProductionDate: () => product.productionDate,
         getDrinkingWindowTo: () => product.trinkfensterBis,
         getVolumeMl: () => product.volumeMl,
+        getRatings: () => (product.ratings ?? []).map((value) => ({ getValue: () => value })),
     } as unknown as SoukaiProduct;
 }
 
@@ -366,6 +368,44 @@ describe('ProductFilter', () => {
         it('treats near-misses of "ml <size>" as plain text', () => {
             const bottle = makeBottle({ name: 'Chardonnay', volumeMl: 1500 });
             for (const text of ['ml', 'ml 1500 rot', '1500ml', 'mlx']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(bottle)).toBe(false);
+            }
+        });
+
+        it('passes "top<N>" only when a rating is exactly N', () => {
+            filter.textFilter = 'top3';
+            expect(filter.filterProduct(makeBottle({ ratings: [3] }))).toBe(true);
+            filter.textFilter = 'top2';
+            expect(filter.filterProduct(makeBottle({ ratings: [3] }))).toBe(false);
+        });
+
+        it('passes "top<N>" when any of several ratings is N', () => {
+            filter.textFilter = 'top1';
+            expect(filter.filterProduct(makeBottle({ ratings: [3, 1] }))).toBe(true);
+        });
+
+        it('blocks "top<N>" for a product without ratings', () => {
+            filter.textFilter = 'top3';
+            expect(filter.filterProduct(makeBottle({ name: 'Unbewertet' }))).toBe(false);
+        });
+
+        it('accepts case and whitespace variants of "top<N>"', () => {
+            const rated = makeBottle({ ratings: [3] });
+            for (const text of ['TOP3', 'top 3', '  Top   3  ']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(rated)).toBe(true);
+            }
+        });
+
+        it('does not search regular text fields for "top<N>"', () => {
+            filter.textFilter = 'top 3';
+            expect(filter.filterProduct(makeBottle({ name: 'Cuvée top 3', ratings: [1] }))).toBe(false);
+        });
+
+        it('treats near-misses of "top<N>" as plain text', () => {
+            const bottle = makeBottle({ name: 'Chardonnay', ratings: [0, 3, 4] });
+            for (const text of ['top', 'top0', 'top4', 'top 3 rot', 'topwein']) {
                 filter.textFilter = text;
                 expect(filter.filterProduct(bottle)).toBe(false);
             }
