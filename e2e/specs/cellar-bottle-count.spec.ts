@@ -5,8 +5,9 @@ import { login } from '../helpers/login';
  * The cellar header shows the cellar's total bottle count under its name.
  *
  * Serial with one shared, logged-in page: the Solid OIDC login is slow, and the
- * later cases build on each other (a bottle is moved into the empty "Brixen"
- * cellar, then disposed out of it again).
+ * later cases build on each other (a bottle is moved into the "Brixen" cellar,
+ * then disposed out of it again). Counts are read from the seed at run time and
+ * checked relative to that, so the tests don't depend on the seed's exact contents.
  */
 test.describe.configure({ mode: 'serial' });
 
@@ -24,6 +25,9 @@ async function subtitleCount(page: Page): Promise<number> {
   return Number(text.trim().split(/\s+/)[0]);
 }
 
+/** The header subline for a count: "1 Flasche", otherwise "N Flaschen". */
+const countLabel = (n: number): string => `${n} ${n === 1 ? 'Flasche' : 'Flaschen'}`;
+
 async function openCellar(page: Page, name: string): Promise<void> {
   await page.goto('/');
   await page.getByRole('button', { name, exact: true }).click();
@@ -35,6 +39,7 @@ test.describe('Cellar header bottle count', () => {
   let page: Page;
   let luzernTotal: number;
   let huetteTotal: number;
+  let brixenStart: number;
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
@@ -97,13 +102,14 @@ test.describe('Cellar header bottle count', () => {
     await page.keyboard.press('Escape');
   });
 
-  test('an empty cellar reads "0 Flaschen"', async () => {
+  test('a cellar\'s count matches its rows and uses the right noun', async () => {
     await openCellar(page, 'Brixen');
-    await expect(subtitle(page)).toHaveText('0 Flaschen');
-    expect(await sumOfRowBadges(page)).toBe(0);
+    brixenStart = await subtitleCount(page);
+    expect(brixenStart).toBe(await sumOfRowBadges(page));
+    await expect(subtitle(page)).toHaveText(countLabel(brixenStart));
   });
 
-  test('a cellar holding one bottle reads "1 Flasche"', async () => {
+  test('moving one bottle into a cellar increments its count by one', async () => {
     // Move exactly one bottle Hütte -> Brixen through the umbuchen grid.
     await openCellar(page, 'Hütte');
     await page.getByRole('button', { name: 'Kellerarbeit', exact: true }).click();
@@ -123,7 +129,7 @@ test.describe('Cellar header bottle count', () => {
     await expect(page.locator('.spinner')).toHaveCount(0, { timeout: 60_000 });
 
     await openCellar(page, 'Brixen');
-    await expect(subtitle(page)).toHaveText('1 Flasche');
+    await expect(subtitle(page)).toHaveText(countLabel(brixenStart + 1));
 
     // ...and the source cellar's total went down by one.
     await openCellar(page, 'Hütte');
@@ -132,13 +138,13 @@ test.describe('Cellar header bottle count', () => {
 
   test('disposing a bottle to Altglass decrements the count', async () => {
     await openCellar(page, 'Brixen');
-    await expect(subtitle(page)).toHaveText('1 Flasche');
+    await expect(subtitle(page)).toHaveText(countLabel(brixenStart + 1));
 
     await page.locator('li .bottle-button').first().click();
     await page.locator('.rating-button').first().click();
     await page.locator('.rating-action.confirm').click();
 
-    await expect(subtitle(page)).toHaveText('0 Flaschen', { timeout: 30_000 });
+    await expect(subtitle(page)).toHaveText(countLabel(brixenStart), { timeout: 30_000 });
   });
 
   test("other views' headers are unchanged", async () => {

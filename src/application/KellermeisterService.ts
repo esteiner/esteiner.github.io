@@ -406,6 +406,41 @@ export class KellermeisterService implements ReadModelCache {
         this.cachedBottles = null;
     }
 
+    /**
+     * Add `count` new bottles of an existing product to a cellar (the "+" in the
+     * cellar page's rating dialog). The product is reused, so the new bottles
+     * join the existing row, which is grouped by product id.
+     */
+    async addBottlesOfProduct(product: Product, cellarId: string, count: number): Promise<void> {
+        if (!(count > 0)) {
+            return;
+        }
+        const bottles: Bottle[] = [];
+        for (let i = 0; i < count; i++) {
+            const bottle = this.bottleFactory.createFromProduct(product);
+            bottle.setCellar(cellarId);
+            bottles.push(bottle);
+        }
+        await this.bottleRepository.saveAll(bottles);
+        this.cachedBottles = null;
+    }
+
+    /**
+     * Permanently delete bottles from the Altglass cellar (swipe-to-delete on the
+     * Altglass cellar page). Ratings stored on the bottles go with them; the
+     * product is kept. Refuses — deleting nothing — if any bottle is elsewhere.
+     */
+    async deleteBottlesFromAltglass(bottles: Bottle[]): Promise<void> {
+        const altglassId = this.getAltglassId();
+        if (bottles.some(bottle => bottle.getCellar() !== altglassId)) {
+            throw new Error("deleteBottlesFromAltglass: only bottles in the Altglass cellar can be deleted");
+        }
+        for (const bottle of bottles) {
+            await this.bottleRepository.delete(bottle);
+        }
+        this.cachedBottles = null;
+    }
+
     async transferBottles(bottles: Bottle[], cellarIds: string[]): Promise<void> {
         const toSave: Bottle[] = [];
         for (let i = 0; i < bottles.length; i++) {

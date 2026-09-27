@@ -3,11 +3,14 @@ ToDo
 
 ### Prio 1
 
-- [ ] E: Verifikation von Order TTLs via SHACL
+- [ ] E: Edit soll auch ein Feld für Währung anbieten
+- [ ] E: Verifikation von Order TTLs via SHACL (mit jbang)
 - [ ] S&E: Preis lookup review
 - [ ] E: API Key für REST API
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
 - [ ] E: Suche nach Flaschengrösse ("ml 750")
+- [ ] E: beim Editieren von einem der Felder Hersteller, Weinname, Jahrgang, Flaschengrösse soll der Name aktualisiert werden
+- [ ] E: in Einkäufe soll auch ein Löschen sein
 
 ### Prio 2
 
@@ -40,6 +43,8 @@ ToDo
 Done
 ---
 
+- [x] E: im Altglass Keller sollen Flaschen auch komplett gelöscht werden können
+- [x] E: zu bestehenden Flaschen weitere hinzufügen
 - [x] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 - [x] S: Filter nach Weinfarbe und Weinart überdenken: Weinfarbe und Weinart müssen in Kombination sein
 - [x] Monate im Einkauf zu/aufklappbar machen

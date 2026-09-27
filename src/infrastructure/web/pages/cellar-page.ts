@@ -1,5 +1,6 @@
 import {css, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators.js';
+import {unsafeHTML} from 'lit/directives/unsafe-html.js';
 import {Task} from '@lit/task';
 import {BasePage} from "../common/base-page.ts";
 import {Router, type RouterLocation} from "@vaadin/router";
@@ -10,11 +11,13 @@ import '../components/kellermeister-header.ts';
 import '../components/kellermeister-footer.ts';
 import '../components/kellermeister-wine-filter.ts';
 import '../components/bottle-component.ts';
+import '../components/swipe-row.ts';
 import {router} from "../router.ts";
 import {getDefaultSession} from "@inrupt/solid-client-authn-browser";
 import type {Bottle} from "../../../domain/Bottle/Bottle.ts";
 import type {Cellar} from "../../../domain/Cellar/Cellar.ts";
 import {CELLAR_UPDATED_EVENT} from "../events.ts";
+import plusIcon from "../images/icons/plus.svg?raw";
 
 @customElement('cellar-page')
 class CellarPage extends BasePage {
@@ -40,7 +43,27 @@ class CellarPage extends BasePage {
     @state()
     private selectedRating?: number = undefined;
 
+    // Number of bottles in the row whose count was clicked (the dialog's current count).
+    private ratingCount: number = 0;
+
+    // Bottle-count dialog ("+" in the rating dialog): the row's bottle and the entered value.
+    @state()
+    private countBottle?: Bottle = undefined;
+
+    @state()
+    private countValue: string = '';
+
     private cdi: CDI = CDI.getInstance();
+
+    // Altglass swipe-to-delete: the row currently swiped open (at most one).
+    private openSwipeRow: HTMLElementTagNameMap['swipe-row'] | null = null;
+
+    // While a row is open, a tap anywhere outside it closes it.
+    private closeOpenSwipeRowOnOutsideTap = (e: PointerEvent) => {
+        if (this.openSwipeRow && !e.composedPath().includes(this.openSwipeRow)) {
+            this.closeOpenSwipeRow();
+        }
+    };
 
     private _bottlesTask = new Task(this, async () => {
         if (this.cellar) {
@@ -75,6 +98,7 @@ class CellarPage extends BasePage {
 
     disconnectedCallback() {
         window.removeEventListener(CELLAR_UPDATED_EVENT, this.handleCellarUpdated);
+        this.closeOpenSwipeRow();
         super.disconnectedCallback();
     }
 
@@ -144,8 +168,9 @@ class CellarPage extends BasePage {
           ${this.ratingBottle ? html`
               <div class="rating-overlay">
                   <div class="rating-container">
-                      <div class="rating-title">Bewertung</div>
+                      <button class="rating-add" aria-label="Flaschen hinzufügen" title="Flaschen hinzufügen" @click="${this.handleCountOpen}">${unsafeHTML(plusIcon)}</button>
                       <div class="rating-product">${this.ratingBottle.getProduct()?.getName()}</div>
+                      <div class="rating-title">Bewertung</div>
                       <div class="rating-buttons">
                           ${[0, 1, 2, 3].map(value => html`
                               <button
@@ -161,21 +186,51 @@ class CellarPage extends BasePage {
                   </div>
               </div>
           ` : ''}
+          ${this.countBottle ? html`
+              <div class="rating-overlay">
+                  <div class="rating-container count-container">
+                      <div class="rating-product">${this.countBottle.getProduct()?.getName()}</div>
+                      <label class="count-row">
+                          <span class="count-label">Anzahl Flaschen</span>
+                          <input
+                              class="count-input"
+                              type="number"
+                              inputmode="numeric"
+                              min="${this.ratingCount}"
+                              step="1"
+                              .value="${this.countValue}"
+                              @input="${(e: Event) => this.countValue = (e.target as HTMLInputElement).value}"
+                          />
+                      </label>
+                      <div class="rating-actions">
+                          <button class="rating-action cancel" @click="${this.handleCountCancel}">Abbrechen</button>
+                          <button class="rating-action confirm" ?disabled="${!this.isCountIncrease()}" @click="${this.handleCountConfirm}">Aktualisieren</button>
+                      </div>
+                  </div>
+              </div>
+          ` : ''}
           <main>
                     ${this._bottlesTask.render({
                         pending: () => html`<div class="spinner"></div>`,
                         complete: (bottles) => bottles.size > 0
                             ? html`<div class="bottles">
-                              ${[...bottles.values()].map(
-                                    bottleGroup =>
-                                        html`
-                                            <li>
-                                                <bottle-component .bottle="${bottleGroup[0]}">
-                                                    <button @click="${() => this.handleBottleClick(bottleGroup[0])}" class="bottle-button" slot="count">${bottleGroup.length}</button>
-                                                </bottle-component>
-                                            </li>
-                                      `
-                            )}
+                              ${[...bottles.values()].map(bottleGroup => {
+                                    const row = html`
+                                        <bottle-component .bottle="${bottleGroup[0]}">
+                                            <button @click="${() => this.handleBottleClick(bottleGroup[0], bottleGroup.length)}" class="bottle-button" slot="count">${bottleGroup.length}</button>
+                                        </bottle-component>`;
+                                    // Swipe-to-delete exists only in the Altglass cellar.
+                                    return html`
+                                        <li>
+                                            ${this.isAltglass() ? html`
+                                                <swipe-row
+                                                    @swipe-open="${this.handleSwipeOpen}"
+                                                    @swipe-delete="${() => this.handleSwipeDelete(bottleGroup)}"
+                                                >${row}</swipe-row>
+                                            ` : row}
+                                        </li>
+                                    `;
+                              })}
                             </div>`
                             : html`
                               <p class="no-bottles">Keine Flaschen in diesem Keller gefunden.</p>
@@ -276,8 +331,34 @@ class CellarPage extends BasePage {
         this.loadBottles();
     }
 
-    private handleBottleClick(bottle: Bottle): void {
+    private isAltglass(): boolean {
+        return this.cellar?.getId() === this.cdi.getKellermeisterService().getAltglassId();
+    }
+
+    private handleSwipeOpen(e: Event): void {
+        const row = e.currentTarget as HTMLElementTagNameMap['swipe-row'];
+        if (this.openSwipeRow && this.openSwipeRow !== row) {
+            this.openSwipeRow.close();
+        }
+        this.openSwipeRow = row;
+        document.addEventListener('pointerdown', this.closeOpenSwipeRowOnOutsideTap, true);
+    }
+
+    private closeOpenSwipeRow(): void {
+        this.openSwipeRow?.close();
+        this.openSwipeRow = null;
+        document.removeEventListener('pointerdown', this.closeOpenSwipeRowOnOutsideTap, true);
+    }
+
+    private async handleSwipeDelete(bottles: Bottle[]): Promise<void> {
+        this.closeOpenSwipeRow();
+        await this.cdi.getKellermeisterService().deleteBottlesFromAltglass(bottles);
+        this.loadBottles();
+    }
+
+    private handleBottleClick(bottle: Bottle, count: number): void {
         this.ratingBottle = bottle;
+        this.ratingCount = count;
         this.selectedRating = undefined;
     }
 
@@ -288,6 +369,32 @@ class CellarPage extends BasePage {
     private handleRatingCancel(): void {
         this.ratingBottle = undefined;
         this.selectedRating = undefined;
+    }
+
+    private handleCountOpen(): void {
+        this.countBottle = this.ratingBottle;
+        this.countValue = String(this.ratingCount);
+        this.ratingBottle = undefined;
+        this.selectedRating = undefined;
+    }
+
+    private handleCountCancel(): void {
+        this.countBottle = undefined;
+    }
+
+    /** Only whole numbers above the current count are accepted — the dialog never removes bottles. */
+    private isCountIncrease(): boolean {
+        const value = Number(this.countValue);
+        return this.countValue.trim() !== '' && Number.isInteger(value) && value > this.ratingCount;
+    }
+
+    private async handleCountConfirm(): Promise<void> {
+        if (this.countBottle && this.cellar && this.isCountIncrease()) {
+            await this.cdi.getKellermeisterService().addBottlesOfProduct(
+                this.countBottle.getProduct(), this.cellar.getId(), Number(this.countValue) - this.ratingCount);
+            this.loadBottles();
+        }
+        this.countBottle = undefined;
     }
 
     private async handleRatingConfirm(): Promise<void> {
@@ -421,6 +528,7 @@ class CellarPage extends BasePage {
                 }
 
                 .rating-container {
+                    position: relative;
                     width: calc(100% - 64px);
                     max-width: 360px;
                     background: var(--km-surface, white);
@@ -430,21 +538,88 @@ class CellarPage extends BasePage {
                     box-shadow: 0 16px 48px rgba(26, 25, 23, 0.15);
                 }
 
-                .rating-title {
+                /* Product name is the title, "Bewertung" the subtitle below it. */
+                .rating-product {
                     font-family: var(--app-font-family, 'DM Sans', sans-serif);
                     font-size: 18px;
                     font-weight: 600;
                     color: var(--km-text, #1A1917);
                     text-align: center;
-                    margin-bottom: 4px;
+                    margin: 0 32px 4px;
                 }
 
-                .rating-product {
+                .rating-title {
                     font-family: var(--app-font-family, 'DM Sans', sans-serif);
                     font-size: 14px;
                     color: var(--km-text-muted, #8A8278);
                     text-align: center;
                     margin-bottom: 20px;
+                }
+
+                .rating-add {
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    padding: 0;
+                    border: none;
+                    background: transparent;
+                    color: var(--km-text, #1A1917);
+                    cursor: pointer;
+                    border-radius: 8px;
+                }
+
+                .rating-add svg {
+                    width: 18px;
+                    height: 18px;
+                }
+
+                .rating-add svg path {
+                    stroke: currentColor;
+                    stroke-width: 2.5;
+                }
+
+                .rating-add:active {
+                    opacity: 0.6;
+                }
+
+                .count-container .rating-product {
+                    margin-bottom: 20px;
+                }
+
+                .count-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                }
+
+                .count-label {
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 15px;
+                    color: var(--km-text, #1A1917);
+                }
+
+                .count-input {
+                    width: 5em;
+                    box-sizing: border-box;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: 1.5px solid var(--km-border, #E4DFD7);
+                    background: var(--km-bg, #F7F5F1);
+                    font-family: var(--app-font-family, 'DM Sans', sans-serif);
+                    font-size: 16px;
+                    color: var(--km-text, #1A1917);
+                    text-align: right;
+                    outline: none;
+                }
+
+                .count-input:focus {
+                    border-color: var(--app-color-primary, #3A6B28);
                 }
 
                 .rating-buttons {
@@ -514,6 +689,12 @@ class CellarPage extends BasePage {
                     background: var(--app-color-primary, #3A6B28);
                     color: white;
                     border: 1.5px solid var(--app-color-primary, #3A6B28);
+                }
+
+                .rating-action:disabled {
+                    opacity: 0.4;
+                    cursor: default;
+                    transform: none;
                 }
             `
         ];

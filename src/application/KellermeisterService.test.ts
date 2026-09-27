@@ -124,6 +124,85 @@ function makeService() {
 
 describe('KellermeisterService', () => {
 
+    describe('deleteBottlesFromAltglass', () => {
+        const inCellar = (cellarId: string) => ({ getCellar: () => cellarId } as unknown as Bottle);
+
+        it('deletes every given Altglass bottle', async () => {
+            const { service, bottleRepo } = makeService();
+            const bottles = [inCellar('altglass-id'), inCellar('altglass-id'), inCellar('altglass-id')];
+
+            await service.deleteBottlesFromAltglass(bottles);
+
+            expect(bottleRepo.delete).toHaveBeenCalledTimes(3);
+            bottles.forEach(bottle => expect(bottleRepo.delete).toHaveBeenCalledWith(bottle));
+        });
+
+        it('throws and deletes nothing if any bottle is not in Altglass', async () => {
+            const { service, bottleRepo } = makeService();
+            const bottles = [inCellar('altglass-id'), inCellar('keller-a')];
+
+            await expect(service.deleteBottlesFromAltglass(bottles)).rejects.toThrow(/Altglass/);
+            expect(bottleRepo.delete).not.toHaveBeenCalled();
+        });
+
+        it('invalidates the bottle cache so the next read refetches', async () => {
+            const { service, bottleRepo } = makeService();
+            await service.getAllBottles();
+
+            await service.deleteBottlesFromAltglass([inCellar('altglass-id')]);
+            await service.getAllBottles();
+
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe('addBottlesOfProduct', () => {
+        function withFactory() {
+            const deps = makeService();
+            const cellars: string[] = [];
+            const products: Product[] = [];
+            vi.mocked(deps.bottleFactory.createFromProduct).mockImplementation((product: Product) => {
+                products.push(product);
+                return { setCellar: (c: string) => cellars.push(c) } as unknown as Bottle;
+            });
+            return { ...deps, cellars, products };
+        }
+
+        it('creates and saves the given number of bottles of the product in the cellar', async () => {
+            const { service, bottleRepo, cellars, products } = withFactory();
+            const product = makeProduct('p1', 'Agrapart 7 Crus');
+
+            await service.addBottlesOfProduct(product, 'keller-a', 2);
+
+            expect(products).toEqual([product, product]);
+            expect(cellars).toEqual(['keller-a', 'keller-a']);
+            expect(bottleRepo.saveAll).toHaveBeenCalledTimes(1);
+            expect(vi.mocked(bottleRepo.saveAll).mock.calls[0][0]).toHaveLength(2);
+        });
+
+        it('does nothing for zero or a negative count', async () => {
+            const { service, bottleRepo, bottleFactory } = withFactory();
+            const product = makeProduct('p1');
+
+            await service.addBottlesOfProduct(product, 'keller-a', 0);
+            await service.addBottlesOfProduct(product, 'keller-a', -3);
+
+            expect(bottleFactory.createFromProduct).not.toHaveBeenCalled();
+            expect(bottleRepo.saveAll).not.toHaveBeenCalled();
+        });
+
+        it('invalidates the bottle cache so the next read refetches', async () => {
+            const { service, bottleRepo } = withFactory();
+            await service.getAllBottles();
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledTimes(1);
+
+            await service.addBottlesOfProduct(makeProduct('p1'), 'keller-a', 1);
+            await service.getAllBottles();
+
+            expect(bottleRepo.fetchBottles).toHaveBeenCalledTimes(2);
+        });
+    });
+
     describe('countBottles', () => {
         // Stubs with the raw cellar id, so it can equal the mocked getAltglassId().
         const inCellar = (cellarId: string | undefined) => ({ getCellar: () => cellarId } as unknown as Bottle);
