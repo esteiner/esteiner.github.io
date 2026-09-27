@@ -3,8 +3,8 @@ ToDo
 
 ### Prio 1
 
+- [ ] E: Verifikation von Order TTLs via SHACL
 - [ ] S&E: Preis lookup review
-- [ ] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 - [ ] E: API Key für REST API
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
 - [ ] E: Suche nach Flaschengrösse ("ml 750")
@@ -40,6 +40,7 @@ ToDo
 Done
 ---
 
+- [x] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer
 - [x] S: Filter nach Weinfarbe und Weinart überdenken: Weinfarbe und Weinart müssen in Kombination sein
 - [x] Monate im Einkauf zu/aufklappbar machen
 - [x] E: Filter nach muss ausgetrunken werden --> via Suche "bis2026" (bisYYYY), aktuell ist es nur YYYY

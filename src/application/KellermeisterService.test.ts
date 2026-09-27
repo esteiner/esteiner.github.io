@@ -124,6 +124,33 @@ function makeService() {
 
 describe('KellermeisterService', () => {
 
+    describe('countBottles', () => {
+        // Stubs with the raw cellar id, so it can equal the mocked getAltglassId().
+        const inCellar = (cellarId: string | undefined) => ({ getCellar: () => cellarId } as unknown as Bottle);
+
+        it('excludes Altglass but counts Kellerarbeit and cellar-less bottles', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                inCellar('keller-a'), inCellar('keller-a'), inCellar('keller-b'),
+                inCellar('cellarwork-id'),
+                inCellar(undefined),
+                inCellar('altglass-id'), inCellar('altglass-id'),
+            ]);
+            expect(await service.countBottles()).toBe(5);
+        });
+
+        it('counts every bottle when none is in Altglass', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([inCellar('keller-a'), inCellar('keller-b')]);
+            expect(await service.countBottles()).toBe(2);
+        });
+
+        it('returns zero when there are no bottles', async () => {
+            const { service } = makeService();
+            expect(await service.countBottles()).toBe(0);
+        });
+    });
+
     describe('getAltglassId / getCellarWorkId', () => {
         it('delegates getAltglassId to the cellar repository', () => {
             const { service } = makeService();

@@ -76,8 +76,7 @@ class ProfilePage extends BasePage {
             this.solidUserProfile = await fetchLoginUserProfile(this.session.info.webId);
             console.log("fetchUserProfile: fetched login user profile", this.solidUserProfile);
         }
-        const bottles = await this.cdi.getKellermeisterService().getAllBottles();
-        this.numberOfBottles = bottles.length;
+        this.numberOfBottles = await this.cdi.getKellermeisterService().countBottles();
         await this.loadCellars();
     }
 

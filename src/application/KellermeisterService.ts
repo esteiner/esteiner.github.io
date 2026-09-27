@@ -69,6 +69,13 @@ export class KellermeisterService implements ReadModelCache {
         return this.cachedBottles;
     }
 
+    /** Number of bottles in all cellars except the Altglass cellar. */
+    async countBottles(): Promise<number> {
+        const bottles = await this.getAllBottles();
+        const altglassId = this.getAltglassId();
+        return bottles.filter(bottle => bottle.getCellar() !== altglassId).length;
+    }
+
     /**
      * Returns a map with the product.id as key and an array of bottles as value.
      */
