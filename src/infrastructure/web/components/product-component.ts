@@ -4,6 +4,7 @@ import {ifDefined} from "lit/directives/if-defined.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Product} from "../../../domain/Product/Product.ts";
 import type {Rating} from "../../../domain/Product/Rating.ts";
+import {composeProductName} from "../../../domain/Product/ProductName.ts";
 import {CDI} from "../../cdi/CDI.ts";
 
 @customElement('product-component')
@@ -142,7 +143,7 @@ class ProductComponent extends BaseComponent {
                 <div class="group">
                     <label>Flaschengrösse</label>
                     ${this.editing
-                        ? this.numberInput(p?.getVolumeMl(), (v) => p?.setVolumeMl(v))
+                        ? this.numberInput(p?.getVolumeMl(), (v) => { p?.setVolumeMl(v); this.deriveName(); })
                         : html`<span class="value">${p?.getVolumeMl() ? `${p?.getVolumeMl()} ml` : ''}</span>`}
                 </div>
                 <div class="group">
@@ -256,17 +257,14 @@ class ProductComponent extends BaseComponent {
     }
 
     /**
-     * Recompute the product name from Hersteller + Weinname + Jahrgang whenever
-     * one of those is edited. The header picks up the new name through the
-     * product-changed event dispatched by writeThrough.
+     * Recompute the product name from Hersteller + Weinname + Jahrgang +
+     * Flaschengrösse whenever one of those is edited. The header picks up the
+     * new name through the product-changed event dispatched by writeThrough.
      */
     private deriveName() {
         const p = this.product;
         if (!p) return;
-        const year = p.getProductionDate()?.getFullYear();
-        const parts = [p.getProducer(), p.getWineName(), year]
-            .filter((part) => part != null && String(part).trim() !== "");
-        p.setName(parts.join(" "));
+        p.setName(composeProductName(p.getProducer(), p.getWineName(), p.getProductionDate()?.getFullYear(), p.getVolumeMl()));
     }
 
     /** Persist the model if it has uncommitted edits. */

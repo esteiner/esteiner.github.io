@@ -139,4 +139,44 @@ test.describe('Inline product editing in the cellar', () => {
     await page.locator('bottle-component .product-name').filter({ hasText: PRODUCT }).first().click();
     await expect(page.locator('bottle-component product-component').first()).toContainText(`${NEW_PRICE} ${NEW_CURRENCY}`);
   });
+
+  test('Flaschengrösse is derived into the name as a litre suffix (none for 750 ml)', async ({
+    authedPage: page,
+  }) => {
+    await page.getByRole('button', { name: 'Hütte' }).click();
+    await page.waitForURL(/\/cellar\//);
+
+    // Any product works; take the first row's name at run time (the seed drifts).
+    const firstName = page.locator('bottle-component .product-name').first();
+    console.log('editing size of:', JSON.stringify(((await firstName.textContent()) ?? '').trim()));
+    await firstName.click();
+    await page.locator('bottle-component .edit-button').click();
+
+    // The expanded row's header, even if the renamed row moves in the list.
+    const header = page.locator('bottle-component').filter({ has: page.locator('product-component') }).locator('.product-name');
+    const sizeInput = page.locator('product-component .group').filter({ hasText: 'Flaschengrösse' }).locator('input');
+
+    // A standard bottle has no suffix; that derived name is the base for the rest.
+    await sizeInput.fill('750');
+    await expect(header).not.toHaveText(/\(\d+(\.\d+)?l\)$/);
+    const base = ((await header.textContent()) ?? '').trim();
+
+    await sizeInput.fill('1500');
+    await expect(header).toHaveText(`${base} (1.5l)`);
+    await sizeInput.fill('375');
+    await expect(header).toHaveText(`${base} (0.375l)`);
+    await sizeInput.fill('750');
+    await expect(header).toHaveText(base);
+
+    // A magnum persists across a full reload.
+    await sizeInput.fill('1500');
+    await sizeInput.blur();
+    await page.waitForTimeout(800); // let the async IndexedDB save settle
+    await page.reload();
+    await page.getByRole('button', { name: 'Hütte' }).click();
+    await page.waitForURL(/\/cellar\//);
+    await expect(
+      page.locator('bottle-component .product-name').filter({ hasText: `${base} (1.5l)` }).first(),
+    ).toBeVisible();
+  });
 });

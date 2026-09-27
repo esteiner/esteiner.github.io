@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Kellermeister lets a product's own attributes be edited inline from the cellar bottle view. When a product row is expanded, a pencil affordance toggles the row's detail fields between read-only labels and editable inputs; changes are written through to the product model and persisted so they survive collapsing the row, leaving the page, and synchronization. The product name is kept in sync with its defining attributes (Hersteller, Weinname, Jahrgang), while derived fields and product displays elsewhere remain read-only.
+Kellermeister lets a product's own attributes be edited inline from the cellar bottle view. When a product row is expanded, a pencil affordance toggles the row's detail fields between read-only labels and editable inputs; changes are written through to the product model and persisted so they survive collapsing the row, leaving the page, and synchronization. The product name is kept in sync with its defining attributes (Hersteller, Weinname, Jahrgang, Flaschengrösse), while derived fields and product displays elsewhere remain read-only.
 ## Requirements
 ### Requirement: An expanded product row offers an edit affordance
 
