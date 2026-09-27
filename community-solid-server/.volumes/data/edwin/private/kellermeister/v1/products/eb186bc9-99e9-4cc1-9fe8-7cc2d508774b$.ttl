@@ -1,0 +1,119 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Famille Perrin Château de Beaucastel 2012";
+    <https://vocab.kellermeister.ch/wine/weinname> "Château de Beaucastel";
+    <https://schema.org/productionDate> "2012-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/hersteller> "Famille Perrin";
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Châteauneuf-du-Pape, Rhône";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Grenache, Mourvèdre, Syrah, Counoise und weitere zugelassene Rebsorten";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Châteauneuf-du-Pape AOC";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14-15%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Ausbau in großen Foudres";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2017-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2032-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/price> "95.5"^^<http://www.w3.org/2001/XMLSchema#integer>;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/orderItem> <http://localhost:3000/edwin/private/kellermeister/v1/orders/e8572cb9-ce75-4056-9226-0ead7402dd37#1ebbf212-aa5f-49bb-8304-1c2e1e0fe389>.
+<#1aa6a06d-5ac9-4a17-ba7e-3a7b70317725> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T16:13:49.015Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-f4463160-2046-48a6-b843-60de52c82704> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.015Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/orderItem>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/orders/e8572cb9-ce75-4056-9226-0ead7402dd37#1ebbf212-aa5f-49bb-8304-1c2e1e0fe389>.
+<#it-operation-c29996cf-3dec-4c4c-a076-f3f17b21e34a> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Famille Perrin Château de Beaucastel 2012".
+<#it-operation-7046b327-1f0c-4056-a08f-d3ae6abb5b21> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinname>;
+    <https://vocab.noeldemartin.com/crdt/value> "Château de Beaucastel".
+<#it-operation-e869209b-9fa6-4414-a8b6-7c01b6f23f62> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/productionDate>;
+    <https://vocab.noeldemartin.com/crdt/value> "2012-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-845adc6a-4e43-4d4f-9e32-3de088fe9795> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hersteller>;
+    <https://vocab.noeldemartin.com/crdt/value> "Famille Perrin".
+<#it-operation-01ece321-e4d8-47ea-bd1a-2b966597e77c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinart>;
+    <https://vocab.noeldemartin.com/crdt/value> "Rotwein".
+<#it-operation-786802f3-fbeb-4458-a479-d732a1e072ff> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinfarbe>;
+    <https://vocab.noeldemartin.com/crdt/value> "rot".
+<#it-operation-82441f5b-8cdc-40e0-b785-e62db9cd268c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/milliliter>;
+    <https://vocab.noeldemartin.com/crdt/value> 750.
+<#it-operation-c28e200c-4452-471d-bd98-85858deb920e> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/region>;
+    <https://vocab.noeldemartin.com/crdt/value> "Châteauneuf-du-Pape, Rhône".
+<#it-operation-3e8e884e-2acb-498c-b16f-7df47ab426c8> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/land>;
+    <https://vocab.noeldemartin.com/crdt/value> "Frankreich".
+<#it-operation-515e7e59-152b-49c6-a211-127830cabbc9> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/traubensorte>;
+    <https://vocab.noeldemartin.com/crdt/value> "Grenache, Mourvèdre, Syrah, Counoise und weitere zugelassene Rebsorten".
+<#it-operation-c50f0a79-f768-40d0-8d29-94ad938e7712> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/klassifikation>;
+    <https://vocab.noeldemartin.com/crdt/value> "Châteauneuf-du-Pape AOC".
+<#it-operation-9422b44f-58a3-4d40-b3b1-a9eaaa26c8ea> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/alkoholgehalt>;
+    <https://vocab.noeldemartin.com/crdt/value> "14-15%".
+<#it-operation-6f2bf792-8ba2-41e0-a15e-3a5dcbcdf49d> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/ausbau>;
+    <https://vocab.noeldemartin.com/crdt/value> "Ausbau in großen Foudres".
+<#it-operation-a1521c3c-89c8-4df3-939b-f7b57c34b463> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/biologisch>;
+    <https://vocab.noeldemartin.com/crdt/value> "ja".
+<#it-operation-f63de3be-6519-43a8-b9ba-ffa1512fd592> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterVon>;
+    <https://vocab.noeldemartin.com/crdt/value> "2017-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-b0f5b37f-e857-4e55-8f2c-c328cc0539c8> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterBis>;
+    <https://vocab.noeldemartin.com/crdt/value> "2032-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-d56818b7-1da1-4281-bbdb-709cbba81554> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> "95.5"^^<http://www.w3.org/2001/XMLSchema#integer>.
+<#it-operation-929cf7ba-f04e-45df-96fc-0fe4cc30dbc7> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:49.012Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/priceCurrency>;
+    <https://vocab.noeldemartin.com/crdt/value> "CHF".

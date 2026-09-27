@@ -1,0 +1,20 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/orderDate> "2026-09-27T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "bestandsaufnahme-2";
+    <https://schema.org/seller> <#8ad2bf45-234b-4dd9-a3e5-a80b793c691f>;
+    <https://schema.org/customer> <#0baf930f-18a6-414e-b5a4-3dca250b97cb>;
+    <https://schema.org/orderedItem> <#062ed4a1-e8a9-45b1-b4d3-845c5149d3ba>.
+<#8ad2bf45-234b-4dd9-a3e5-a80b793c691f> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Sonja Steiner <sonja.steiner@acons.ch>".
+<#0baf930f-18a6-414e-b5a4-3dca250b97cb> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Bestandsaufnahme".
+<#062ed4a1-e8a9-45b1-b4d3-845c5149d3ba> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/2cdc946c-1a49-4243-b3c5-0b9d3c8443a1#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> 50;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-27T11:30:51.940Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-27T11:30:51.940Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.

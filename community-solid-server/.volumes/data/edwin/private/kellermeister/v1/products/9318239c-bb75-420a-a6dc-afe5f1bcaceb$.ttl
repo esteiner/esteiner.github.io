@@ -1,6 +1,6 @@
 <#it> a <https://schema.org/Product>;
     <https://schema.org/name> "Agrapart 7 Crus";
-    <https://schema.org/price> 45;
+    <https://schema.org/price> "48.25"^^<http://www.w3.org/2001/XMLSchema#integer>;
     <https://schema.org/priceCurrency> "CHF";
     <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
     <https://vocab.kellermeister.ch/wine/ausbau> "Ausbau in Edelstahltanks und alten Fässern, 36 Monate Hefelagerung";
@@ -23,7 +23,7 @@
 <#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-31T07:22:22.258Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-07T14:54:19.571Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T14:33:44.662Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-0bfc2ac7-49cf-4688-bccf-2458a6fee43b> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T07:22:22.258Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -129,3 +129,48 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-09-07T14:54:19.571Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
     <https://vocab.noeldemartin.com/crdt/value> <#90bafc4b-67c1-40f6-ac7b-e9dc9f262f26>, <#aaacb95f-dca8-4c28-81d8-6184e5f0a24f>, <#de0050b4-b7da-4536-95a4-6fe2147cf76e>, <#4ff08ebe-a7e8-444a-9427-6ef1da7bf7ae>.
+<#it-operation-7a5cbde8-d621-4a7c-bc32-046e30a54b59> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:29:14.114Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 46.
+<#it-operation-3e5a1768-528a-4632-905a-4ab00d037f96> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:29:14.560Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 47.
+<#it-operation-fa3c9cb9-d712-4980-8468-63b0345de388> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:29:14.729Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 48.
+<#it-operation-eee68a6d-9558-4169-af9d-9ad01df4cc70> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:29:14.882Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 49.
+<#it-operation-528ef8af-4a93-4a74-909a-976617bdff19> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:33:22.111Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hersteller>;
+    <https://vocab.noeldemartin.com/crdt/value> "Agrapart".
+<#it-operation-0e40aa47-9f5e-471d-afcf-5a2d50851275> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-22T19:33:22.111Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Agrapart 7 Crus".
+<#it-operation-473c32e7-22dc-4fba-9e38-21f7c39c2196> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T14:23:08.199Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 48.
+<#it-operation-b1d4c7ba-8c1b-429c-b85c-d1c6c7390568> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T14:23:25.585Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> "48.15"^^<http://www.w3.org/2001/XMLSchema#integer>.
+<#it-operation-c4adcac4-1650-46a5-9b33-40c07255a1ab> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T14:33:44.662Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> "48.25"^^<http://www.w3.org/2001/XMLSchema#integer>.

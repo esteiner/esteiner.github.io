@@ -1,0 +1,113 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Louis Latour Montagny 1er Cru La Grande Roche 2023";
+    <https://vocab.kellermeister.ch/wine/weinname> "Montagny 1er Cru La Grande Roche";
+    <https://schema.org/productionDate> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/hersteller> "Louis Latour";
+    <https://vocab.kellermeister.ch/wine/weinart> "Weisswein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Montagny, Côte Chalonnaise, Burgund";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay 100%";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "1er Cru AC";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12.5%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "8-10 Monate in Edelstahltanks und teilweise Eichenfässern";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/price> 30;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/orderItem> <http://localhost:3000/edwin/private/kellermeister/v1/orders/f9f3bd6d-35c5-4b76-94f8-40357311a203#4e7602f9-ffb2-44bd-a1bf-bf242364d606>.
+<#f205f7fc-185b-4b1e-af45-26e367752fda> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T16:13:48.910Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-b3f10b60-8dac-43e1-9edb-b132001cc579> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.910Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/orderItem>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/orders/f9f3bd6d-35c5-4b76-94f8-40357311a203#4e7602f9-ffb2-44bd-a1bf-bf242364d606>.
+<#it-operation-be355d5f-2684-42e3-a2bc-8931022750bd> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Louis Latour Montagny 1er Cru La Grande Roche 2023".
+<#it-operation-e95f3793-ee37-4c2e-99ea-06246396a866> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinname>;
+    <https://vocab.noeldemartin.com/crdt/value> "Montagny 1er Cru La Grande Roche".
+<#it-operation-037930b2-a995-4002-8ded-307d54c3288d> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/productionDate>;
+    <https://vocab.noeldemartin.com/crdt/value> "2023-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-d72f20e3-25d1-43c8-b372-64f9815d15f0> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hersteller>;
+    <https://vocab.noeldemartin.com/crdt/value> "Louis Latour".
+<#it-operation-306449c8-c73d-49ad-abb7-530f933aecf2> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinart>;
+    <https://vocab.noeldemartin.com/crdt/value> "Weisswein".
+<#it-operation-abff814c-8f00-4670-b6de-7a936a12df68> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinfarbe>;
+    <https://vocab.noeldemartin.com/crdt/value> "weiss".
+<#it-operation-c2d0cf85-75b8-4081-87dc-2d5c843ecb39> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/milliliter>;
+    <https://vocab.noeldemartin.com/crdt/value> 750.
+<#it-operation-cef74cc6-a9fc-481d-986f-d7fc614ce8b3> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/region>;
+    <https://vocab.noeldemartin.com/crdt/value> "Montagny, Côte Chalonnaise, Burgund".
+<#it-operation-3f208527-5a82-4d49-b02f-4849a5ce50e6> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/land>;
+    <https://vocab.noeldemartin.com/crdt/value> "Frankreich".
+<#it-operation-1dd14801-e803-43b2-a522-32f70652463c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/traubensorte>;
+    <https://vocab.noeldemartin.com/crdt/value> "Chardonnay 100%".
+<#it-operation-9d9623e3-2c62-41e4-819f-4737371d8005> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/klassifikation>;
+    <https://vocab.noeldemartin.com/crdt/value> "1er Cru AC".
+<#it-operation-ab1ff0a3-23b6-45bd-befd-e83f375dee48> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/alkoholgehalt>;
+    <https://vocab.noeldemartin.com/crdt/value> "12.5%".
+<#it-operation-f3498288-6730-40fa-a2cb-2a2829818dc0> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/ausbau>;
+    <https://vocab.noeldemartin.com/crdt/value> "8-10 Monate in Edelstahltanks und teilweise Eichenfässern".
+<#it-operation-1efca6cf-fc17-4e73-9f91-bf4287cd6ea7> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterVon>;
+    <https://vocab.noeldemartin.com/crdt/value> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-a2d3fba2-a524-4283-8c00-a940e00e792f> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterBis>;
+    <https://vocab.noeldemartin.com/crdt/value> "2030-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-ebc4932f-27ca-43f9-9a83-8f4e819c29f3> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 30.
+<#it-operation-a2468898-72e5-427c-86ca-499a2540f554> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.897Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/priceCurrency>;
+    <https://vocab.noeldemartin.com/crdt/value> "CHF".

@@ -1,0 +1,107 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Lucien Roguet No4";
+    <https://vocab.kellermeister.ch/wine/weinname> "No4";
+    <https://vocab.kellermeister.ch/wine/hersteller> "Lucien Roguet";
+    <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Champagne";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Chardonnay, Pinot Noir, Pinot Meunier";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "Champagne AOC";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "Méthode Champenoise, traditionelle Flaschengärung";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2027-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/price> 58;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/orderItem> <http://localhost:3000/edwin/private/kellermeister/v1/orders/d2cb0601-275b-4e85-94a2-a34ab555c046#787f7ace-fc4d-423b-b9e7-60af2505800b>.
+<#4079e377-3c83-426b-9943-55e98350e73a> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T16:01:46.819Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-5183f1b4-ca37-451e-ac08-c49daf8ce4b2> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.819Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/orderItem>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/orders/d2cb0601-275b-4e85-94a2-a34ab555c046#787f7ace-fc4d-423b-b9e7-60af2505800b>.
+<#it-operation-ec83a118-4f18-4d2d-b382-f5e4b4b9d01b> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Lucien Roguet No4".
+<#it-operation-7cd52b6a-cd1c-4863-b802-51943f3a8165> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinname>;
+    <https://vocab.noeldemartin.com/crdt/value> "No4".
+<#it-operation-02040401-a75d-4ea1-9ae8-6c39f653ed6c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hersteller>;
+    <https://vocab.noeldemartin.com/crdt/value> "Lucien Roguet".
+<#it-operation-7fa5b601-14a2-479d-bd09-e86cfa6fcef7> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinart>;
+    <https://vocab.noeldemartin.com/crdt/value> "Schaumwein".
+<#it-operation-a8d6e45e-f9b5-463a-8c40-3bba04c4cb9b> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinfarbe>;
+    <https://vocab.noeldemartin.com/crdt/value> "weiss".
+<#it-operation-5af7d1fa-50b3-4c30-afeb-a2e97c1db164> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/milliliter>;
+    <https://vocab.noeldemartin.com/crdt/value> 750.
+<#it-operation-ed69cf22-c370-4959-97ff-1c6e315bfb24> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/region>;
+    <https://vocab.noeldemartin.com/crdt/value> "Champagne".
+<#it-operation-4acad180-19c1-4a7f-97ce-9288a3b9815d> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/land>;
+    <https://vocab.noeldemartin.com/crdt/value> "Frankreich".
+<#it-operation-d0a4c672-9a01-49bf-a037-fea8c7c05ade> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/traubensorte>;
+    <https://vocab.noeldemartin.com/crdt/value> "Chardonnay, Pinot Noir, Pinot Meunier".
+<#it-operation-599558e4-2aa9-4e90-8c43-34ca2cf66421> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/klassifikation>;
+    <https://vocab.noeldemartin.com/crdt/value> "Champagne AOC".
+<#it-operation-d42cea52-cdd7-4a87-98f4-3dd7667801a6> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/alkoholgehalt>;
+    <https://vocab.noeldemartin.com/crdt/value> "12%".
+<#it-operation-c6847ee5-5643-41ad-a27f-296f2d09b113> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/ausbau>;
+    <https://vocab.noeldemartin.com/crdt/value> "Méthode Champenoise, traditionelle Flaschengärung".
+<#it-operation-f4aa024b-909a-4a30-bc9b-b441da1bd1d8> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterVon>;
+    <https://vocab.noeldemartin.com/crdt/value> "2024-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-b9d93a22-583f-4e4f-b066-e197a3a25074> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterBis>;
+    <https://vocab.noeldemartin.com/crdt/value> "2027-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-d93d77b2-4dcb-4cb2-9dc4-184eee3840f7> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 58.
+<#it-operation-951c8018-a795-4418-8acf-cefea4b052a1> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:01:46.816Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/priceCurrency>;
+    <https://vocab.noeldemartin.com/crdt/value> "CHF".

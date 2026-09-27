@@ -1,0 +1,119 @@
+<#it> a <https://schema.org/Product>;
+    <https://schema.org/name> "Château Pontet-Canet Pontet-Canet 2019";
+    <https://vocab.kellermeister.ch/wine/weinname> "Pontet-Canet";
+    <https://schema.org/productionDate> "2019-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/hersteller> "Château Pontet-Canet";
+    <https://vocab.kellermeister.ch/wine/weinart> "Rotwein";
+    <https://vocab.kellermeister.ch/wine/weinfarbe> "rot";
+    <https://vocab.kellermeister.ch/wine/milliliter> 750;
+    <https://vocab.kellermeister.ch/wine/region> "Pauillac, Bordeaux";
+    <https://vocab.kellermeister.ch/wine/land> "Frankreich";
+    <https://vocab.kellermeister.ch/wine/traubensorte> "Cabernet Sauvignon 65%, Merlot 30%, Cabernet Franc 4%, Petit Verdot 1%";
+    <https://vocab.kellermeister.ch/wine/klassifikation> "5ème Grand Cru Classé, Pauillac AC";
+    <https://vocab.kellermeister.ch/wine/alkoholgehalt> "14%";
+    <https://vocab.kellermeister.ch/wine/ausbau> "18 Monate in französischen Eichenfässern, 50% neue Fässer";
+    <https://vocab.kellermeister.ch/wine/biologisch> "ja";
+    <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2025-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.kellermeister.ch/wine/trinkfensterBis> "2045-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/price> 89;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/orderItem> <http://localhost:3000/edwin/private/kellermeister/v1/orders/f9f3bd6d-35c5-4b76-94f8-40357311a203#683251da-d550-485f-96a9-e8b070fb2277>.
+<#34e0f794-29ea-4212-ba52-fe1ddfe3b387> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T16:13:48.904Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-b720060c-05dc-49fb-8dc9-12683cd64251> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.904Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/orderItem>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/orders/f9f3bd6d-35c5-4b76-94f8-40357311a203#683251da-d550-485f-96a9-e8b070fb2277>.
+<#it-operation-802031fa-81ca-4d34-bb7d-eae5d6c47b80> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Château Pontet-Canet Pontet-Canet 2019".
+<#it-operation-f011b77e-940b-41fc-a992-438ad9932376> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinname>;
+    <https://vocab.noeldemartin.com/crdt/value> "Pontet-Canet".
+<#it-operation-69c7b89a-318e-4fcc-bb44-705d84f9ef52> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/productionDate>;
+    <https://vocab.noeldemartin.com/crdt/value> "2019-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-f3dee2d7-bdce-46db-adaf-1c951a836985> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hersteller>;
+    <https://vocab.noeldemartin.com/crdt/value> "Château Pontet-Canet".
+<#it-operation-b69c61b1-5eca-4841-a6e1-ed5c12d21edf> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinart>;
+    <https://vocab.noeldemartin.com/crdt/value> "Rotwein".
+<#it-operation-25bfd937-1c0d-446a-83e9-b5be9b9b8c5a> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinfarbe>;
+    <https://vocab.noeldemartin.com/crdt/value> "rot".
+<#it-operation-071db2bc-d2c3-4806-b760-de5492bfafb0> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/milliliter>;
+    <https://vocab.noeldemartin.com/crdt/value> 750.
+<#it-operation-52b8a047-0e8b-4067-9f62-5a776ffb8fd8> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/region>;
+    <https://vocab.noeldemartin.com/crdt/value> "Pauillac, Bordeaux".
+<#it-operation-970fd44f-adc8-4f27-aee2-9f39b58a4be4> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/land>;
+    <https://vocab.noeldemartin.com/crdt/value> "Frankreich".
+<#it-operation-d1bdb123-1db4-45bb-aef2-a179279ef715> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/traubensorte>;
+    <https://vocab.noeldemartin.com/crdt/value> "Cabernet Sauvignon 65%, Merlot 30%, Cabernet Franc 4%, Petit Verdot 1%".
+<#it-operation-13ade73e-e497-4b18-a1be-95403f6d4a66> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/klassifikation>;
+    <https://vocab.noeldemartin.com/crdt/value> "5ème Grand Cru Classé, Pauillac AC".
+<#it-operation-9c94f4f8-c2e6-417a-bd6b-c1ed076e53af> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/alkoholgehalt>;
+    <https://vocab.noeldemartin.com/crdt/value> "14%".
+<#it-operation-9d1e2d58-a916-402b-b12c-010eeba9b931> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/ausbau>;
+    <https://vocab.noeldemartin.com/crdt/value> "18 Monate in französischen Eichenfässern, 50% neue Fässer".
+<#it-operation-035b27f3-a081-481b-80cb-628435e53437> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/biologisch>;
+    <https://vocab.noeldemartin.com/crdt/value> "ja".
+<#it-operation-58392428-9525-4fb6-9284-ab5e89296978> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterVon>;
+    <https://vocab.noeldemartin.com/crdt/value> "2025-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-352dcdbc-ef6d-43a9-a876-00e8d2b112e3> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/trinkfensterBis>;
+    <https://vocab.noeldemartin.com/crdt/value> "2045-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-d4ff3bde-39e9-4910-8eb5-236c3776d115> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> 89.
+<#it-operation-d582db83-e5df-4b4e-bed9-b0e0c0a04947> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T16:13:48.891Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/priceCurrency>;
+    <https://vocab.noeldemartin.com/crdt/value> "CHF".

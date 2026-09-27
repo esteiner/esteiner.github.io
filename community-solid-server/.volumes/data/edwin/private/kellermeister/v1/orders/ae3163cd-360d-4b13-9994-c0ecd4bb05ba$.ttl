@@ -1,0 +1,33 @@
+<#it> a <https://schema.org/Order>;
+    <https://schema.org/orderDate> "2023-12-11T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://schema.org/orderNumber> "1224769";
+    <https://schema.org/seller> <#2e90c1eb-5f77-4eaf-81b1-38e86cdb9ae1>;
+    <https://schema.org/customer> <#95b3dd49-bba7-4060-ad85-0b15a1ac3db6>;
+    <https://schema.org/orderedItem> <#1c84569f-62e9-434b-877e-1a4a5075f13c>, <#72b61bfd-d1f0-4334-ba1d-5721faf436c5>.
+<#2e90c1eb-5f77-4eaf-81b1-38e86cdb9ae1> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Flaschenpost";
+    <https://schema.org/email> "mail@flaschenpost.ch";
+    <https://schema.org/url> <https://www.flaschenpost.ch>.
+<#95b3dd49-bba7-4060-ad85-0b15a1ac3db6> a <https://schema.org/Organization>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/address> "Morgartenstrasse 9, 6003 Luzern";
+    <https://schema.org/contactPoint> <#5b75a3b5-1336-4900-acd7-2191125a2dd9>.
+<#1c84569f-62e9-434b-877e-1a4a5075f13c> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/6b683a6f-c53f-4e18-94f8-36044c93bfc0#it>;
+    <https://schema.org/orderQuantity> 12;
+    <https://schema.org/price> "119.95"^^<http://www.w3.org/2001/XMLSchema#integer>;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#72b61bfd-d1f0-4334-ba1d-5721faf436c5> a <https://schema.org/OrderItem>;
+    <https://schema.org/orderedItem> <http://localhost:3000/edwin/private/kellermeister/v1/products/c77ca411-c847-463d-8f69-7bb6298c28fa#it>;
+    <https://schema.org/orderQuantity> 6;
+    <https://schema.org/price> "119.95"^^<http://www.w3.org/2001/XMLSchema#integer>;
+    <https://schema.org/priceCurrency> "CHF";
+    <https://vocab.kellermeister.ch/wine/order> <#it>.
+<#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
+    <https://vocab.noeldemartin.com/crdt/createdAt> "2026-09-26T16:13:48.988Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T16:13:48.988Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>.
+<#5b75a3b5-1336-4900-acd7-2191125a2dd9> a <https://schema.org/ContactPoint>;
+    <https://schema.org/name> "Frau Sonja Steiner";
+    <https://schema.org/email> "sonja.steiner@acons.ch".

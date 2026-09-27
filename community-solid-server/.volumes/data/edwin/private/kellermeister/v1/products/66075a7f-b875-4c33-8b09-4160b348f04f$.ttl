@@ -1,6 +1,6 @@
 <#it> a <https://schema.org/Product>;
-    <https://schema.org/name> "Agrapart 7 Crus";
-    <https://schema.org/price> 44;
+    <https://schema.org/name> "Agrapart 77 Crus 2026";
+    <https://schema.org/price> "44.15"^^<http://www.w3.org/2001/XMLSchema#integer>;
     <https://schema.org/priceCurrency> "CHF";
     <https://vocab.kellermeister.ch/wine/alkoholgehalt> "12%";
     <https://vocab.kellermeister.ch/wine/ausbau> "Reifung in Edelstahltanks, mindestens 3 Jahre auf der Hefe";
@@ -15,12 +15,13 @@
     <https://vocab.kellermeister.ch/wine/trinkfensterVon> "2017-01-01T00:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.kellermeister.ch/wine/weinart> "Schaumwein";
     <https://vocab.kellermeister.ch/wine/weinfarbe> "weiss";
-    <https://vocab.kellermeister.ch/wine/weinname> "7 Crus";
-    <https://vocab.kellermeister.ch/wine/hasRating> <#c86ea9a3-6715-45ae-9baf-f17a3adc9b79>.
+    <https://vocab.kellermeister.ch/wine/weinname> "77 Crus";
+    <https://vocab.kellermeister.ch/wine/hasRating> <#c86ea9a3-6715-45ae-9baf-f17a3adc9b79>;
+    <https://schema.org/productionDate> "2025-12-31T23:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:56:44.035Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-31T19:33:24.514Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T14:30:27.532Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-0e858b29-c14c-4edb-b7ab-7f121f449b0e> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-23T16:56:44.035Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -111,3 +112,23 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T19:33:24.514Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/hasRating>;
     <https://vocab.noeldemartin.com/crdt/value> <#c86ea9a3-6715-45ae-9baf-f17a3adc9b79>.
+<#it-operation-80bf0c79-6764-4cce-85d2-4b09720d8750> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-20T16:07:45.302Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/productionDate>;
+    <https://vocab.noeldemartin.com/crdt/value> "2025-12-31T23:00:00.000Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-52b200a9-6045-48ac-bcd5-192e3f0a256c> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-21T05:51:09.419Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/weinname>;
+    <https://vocab.noeldemartin.com/crdt/value> "77 Crus".
+<#it-operation-c745f0ac-836c-43f6-af1f-874a07e2dd73> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-21T05:51:09.419Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/name>;
+    <https://vocab.noeldemartin.com/crdt/value> "Agrapart 77 Crus 2026".
+<#it-operation-2ba4caaf-32ca-451d-b1a7-2b66ff5d1469> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T14:30:27.532Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/price>;
+    <https://vocab.noeldemartin.com/crdt/value> "44.15"^^<http://www.w3.org/2001/XMLSchema#integer>.

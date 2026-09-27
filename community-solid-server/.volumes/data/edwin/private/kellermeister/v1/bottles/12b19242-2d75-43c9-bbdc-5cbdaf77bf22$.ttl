@@ -1,7 +1,22 @@
 <#it> a <https://schema.org/ListItem>;
-    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/be7b3ae4-f8dc-4aa9-bff3-0c3133412332#it";
+    <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/dee09f56-74c7-45a9-8f7c-996e60241054#it";
     <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/690aa5b1-efd7-4f3d-a5a9-55621270598d#it>.
 <#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-23T16:54:09.166Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-23T16:54:09.166Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-26T14:50:29.734Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+<#it-operation-43f845d7-97ef-41b9-848a-3647dfe7d554> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-23T16:54:09.166Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/subjectOf>;
+    <https://vocab.noeldemartin.com/crdt/value> <http://localhost:3000/edwin/private/kellermeister/v1/products/690aa5b1-efd7-4f3d-a5a9-55621270598d#it>.
+<#it-operation-c863d4ed-5162-4489-9876-9a92bdafc5b6> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-08-23T16:54:09.166Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
+    <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/be7b3ae4-f8dc-4aa9-bff3-0c3133412332#it".
+<#it-operation-d8a11a06-aa10-430e-a0f2-eb636376a5b6> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-26T14:50:29.734Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
+    <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/dee09f56-74c7-45a9-8f7c-996e60241054#it".

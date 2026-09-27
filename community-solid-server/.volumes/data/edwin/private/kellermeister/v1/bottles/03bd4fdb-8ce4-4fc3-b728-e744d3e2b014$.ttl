@@ -1,10 +1,11 @@
 <#it> a <https://schema.org/ListItem>;
     <https://schema.org/cellar> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it";
-    <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/9318239c-bb75-420a-a6dc-afe5f1bcaceb#it>.
+    <https://schema.org/subjectOf> <http://localhost:3000/edwin/private/kellermeister/v1/products/9318239c-bb75-420a-a6dc-afe5f1bcaceb#it>;
+    <https://vocab.kellermeister.ch/wine/rating> <#680bab5e-3f6c-4b0f-bf9e-6fb65ab754ff>.
 <#it-metadata> a <https://vocab.noeldemartin.com/crdt/Metadata>;
     <https://vocab.noeldemartin.com/crdt/createdAt> "2026-08-31T07:23:10.887Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
-    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-08-31T09:44:22.202Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    <https://vocab.noeldemartin.com/crdt/updatedAt> "2026-09-27T12:18:07.580Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
 <#it-operation-0598e50c-1388-40bb-b21b-4c45c10e2031> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
     <https://vocab.noeldemartin.com/crdt/resource> <#it>;
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T07:23:10.887Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
@@ -20,3 +21,8 @@
     <https://vocab.noeldemartin.com/crdt/date> "2026-08-31T09:44:22.202Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
     <https://vocab.noeldemartin.com/crdt/property> <https://schema.org/cellar>;
     <https://vocab.noeldemartin.com/crdt/value> "http://localhost:3000/edwin/private/kellermeister/v1/cellars/altglass#it".
+<#it-operation-4e898aad-3baf-442f-add6-1156d8bde8ad> a <https://vocab.noeldemartin.com/crdt/SetPropertyOperation>;
+    <https://vocab.noeldemartin.com/crdt/resource> <#it>;
+    <https://vocab.noeldemartin.com/crdt/date> "2026-09-27T12:18:07.580Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+    <https://vocab.noeldemartin.com/crdt/property> <https://vocab.kellermeister.ch/wine/rating>;
+    <https://vocab.noeldemartin.com/crdt/value> <#680bab5e-3f6c-4b0f-bf9e-6fb65ab754ff>.
