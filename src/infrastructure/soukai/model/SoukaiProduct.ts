@@ -121,6 +121,9 @@ export class SoukaiProduct extends Model implements Product {
     setPrice(price: number): void {
         this.price = price;
     }
+    setPriceCurrency(currency: string | undefined): void {
+        this.priceCurrency = currency;
+    }
     setVolumeMl(volumeMl: number): void {
         this.milliliter = volumeMl;
     }

@@ -3,7 +3,6 @@ ToDo
 
 ### Prio 1
 
-- [ ] E: Edit soll auch ein Feld für Währung anbieten
 - [ ] E: Verifikation von Order TTLs via SHACL (mit jbang)
 - [ ] S&E: Preis lookup review
 - [ ] E: API Key für REST API
@@ -43,6 +42,7 @@ ToDo
 Done
 ---
 
+- [x] E: Edit soll auch ein Feld für Währung anbieten
 - [x] E: im Altglass Keller sollen Flaschen auch komplett gelöscht werden können
 - [x] E: zu bestehenden Flaschen weitere hinzufügen
 - [x] S: Dezimalstellen (number) für Preis bei Fotoeingabe statt Integer

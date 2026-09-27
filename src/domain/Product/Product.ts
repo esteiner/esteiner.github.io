@@ -35,6 +35,7 @@ export interface Product {
     setWineName(wineName: string): void;
     setProductionDate(date: Date | undefined): void;
     setPrice(price: number): void;
+    setPriceCurrency(currency: string | undefined): void;
     setVolumeMl(volumeMl: number): void;
     setRegion(region: string): void;
     setCountry(country: string): void;

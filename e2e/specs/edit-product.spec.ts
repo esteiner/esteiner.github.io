@@ -88,32 +88,55 @@ test.describe('Inline product editing in the cellar', () => {
     ).toBeVisible();
   });
 
-  test('an edited price is shown read-only right after leaving edit mode and after re-expanding', async ({
+  test('price and currency are edited on one line and shown read-only after leaving edit mode', async ({
     authedPage: page,
   }) => {
     await page.getByRole('button', { name: 'Hütte' }).click();
     await page.waitForURL(/\/cellar\//);
 
-    const PRODUCT = 'Alois Lageder Chardonnay 2020';
+    // Any product works; take the first row's name at run time (the seed drifts).
+    const firstName = page.locator('bottle-component .product-name').first();
+    const PRODUCT = ((await firstName.textContent()) ?? '').trim();
+    console.log('editing price of:', JSON.stringify(PRODUCT));
     const header = page.locator('bottle-component .product-name').filter({ hasText: PRODUCT }).first();
     await header.click();
     const pencil = page.locator('bottle-component .edit-button');
     await pencil.click();
 
+    // Two inputs on the "Preis / Flasche" line: price (number) and currency (text).
+    const priceInput = page.getByLabel('Preis', { exact: true });
+    const currencyInput = page.getByLabel('Währung', { exact: true });
+    await expect(priceInput).toHaveAttribute('type', 'number');
+    await expect(currencyInput).toHaveAttribute('type', 'text');
+    const priceBox = (await priceInput.boundingBox())!;
+    const currencyBox = (await currencyInput.boundingBox())!;
+    expect(Math.abs(priceBox.y - currencyBox.y)).toBeLessThan(2);
+    expect(currencyBox.x).toBeGreaterThan(priceBox.x);
+
     const NEW_PRICE = '987';
-    const priceInput = page.locator('product-component .group').filter({ hasText: 'Preis / Flasche' }).locator('input');
+    const NEW_CURRENCY = 'EUR';
     await priceInput.fill(NEW_PRICE);
     await priceInput.blur();
+    await currencyInput.fill(NEW_CURRENCY);
+    await currencyInput.blur();
+    await page.waitForTimeout(800); // let the async IndexedDB save settle
 
-    // Leave edit mode → the read-only price (slotted into product-component) shows the new value.
+    // Leave edit mode → the read-only price (slotted into product-component) shows both.
     await pencil.click();
     await expect(priceInput).toHaveCount(0);
     const product = page.locator('bottle-component product-component').first();
-    await expect(product).toContainText(NEW_PRICE);
+    await expect(product).toContainText(`${NEW_PRICE} ${NEW_CURRENCY}`);
 
-    // Collapse and re-expand → still the new value.
+    // Collapse and re-expand → still the new values.
     await header.click();
     await header.click();
-    await expect(page.locator('bottle-component product-component').first()).toContainText(NEW_PRICE);
+    await expect(page.locator('bottle-component product-component').first()).toContainText(`${NEW_PRICE} ${NEW_CURRENCY}`);
+
+    // Persisted across a full reload.
+    await page.reload();
+    await page.getByRole('button', { name: 'Hütte' }).click();
+    await page.waitForURL(/\/cellar\//);
+    await page.locator('bottle-component .product-name').filter({ hasText: PRODUCT }).first().click();
+    await expect(page.locator('bottle-component product-component').first()).toContainText(`${NEW_PRICE} ${NEW_CURRENCY}`);
   });
 });

@@ -1,5 +1,6 @@
 import {css, html, nothing} from "lit";
 import {customElement, property} from "lit/decorators.js";
+import {ifDefined} from "lit/directives/if-defined.js";
 import {BaseComponent} from "../common/base-component.ts";
 import type {Product} from "../../../domain/Product/Product.ts";
 import type {Rating} from "../../../domain/Product/Rating.ts";
@@ -103,6 +104,10 @@ class ProductComponent extends BaseComponent {
                 .value.range .edit-input {
                     width: 5em;
                 }
+
+                .value.range .edit-input.currency-input {
+                    width: 4em;
+                }
             `
         ];
     }
@@ -114,7 +119,10 @@ class ProductComponent extends BaseComponent {
                 <div class="group">
                     <label>Preis / Flasche</label>
                     ${this.editing
-                        ? this.numberInput(p?.getPrice(), (v) => p?.setPrice(v))
+                        ? html`<span class="value range">
+                            ${this.numberInput(p?.getPrice(), (v) => p?.setPrice(v), 'Preis')}
+                            ${this.textField(p?.getPriceCurrency(), (v) => p?.setPriceCurrency(v.trim() || undefined), {className: 'currency-input', label: 'Währung'})}
+                          </span>`
                         : html`<span class="value"><slot></slot></span>`}
                 </div>
                 <div class="group">
@@ -193,23 +201,25 @@ class ProductComponent extends BaseComponent {
     }
 
     /** A string field: read-only span, or a text input that writes through on input. */
-    private textField(value: string | undefined, setter: (value: string) => void) {
+    private textField(value: string | undefined, setter: (value: string) => void, options: {className?: string; label?: string} = {}) {
         if (!this.editing) {
             return html`<span class="value">${value}</span>`;
         }
         return html`<input
-            class="value edit-input"
+            class="value edit-input ${options.className ?? ''}"
             type="text"
+            aria-label="${ifDefined(options.label)}"
             .value="${value ?? ''}"
             @input="${(e: Event) => this.writeThrough(() => setter((e.target as HTMLInputElement).value))}"
             @change="${this.persist}"
         >`;
     }
 
-    private numberInput(value: number | undefined, setter: (value: number) => void) {
+    private numberInput(value: number | undefined, setter: (value: number) => void, label?: string) {
         return html`<input
             class="value edit-input"
             type="number"
+            aria-label="${ifDefined(label)}"
             .value="${value != null ? String(value) : ''}"
             @input="${(e: Event) => this.writeThrough(() => {
                 const raw = (e.target as HTMLInputElement).value;
