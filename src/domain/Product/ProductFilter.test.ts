@@ -13,6 +13,7 @@ function makeBottle(product: {
     region?: string;
     productionDate?: Date;
     trinkfensterBis?: Date;
+    volumeMl?: number;
 }): SoukaiProduct {
     return {
         getName: () => product.name,
@@ -24,6 +25,7 @@ function makeBottle(product: {
         getRegion: () => product.region,
         getProductionDate: () => product.productionDate,
         getDrinkingWindowTo: () => product.trinkfensterBis,
+        getVolumeMl: () => product.volumeMl,
     } as unknown as SoukaiProduct;
 }
 
@@ -331,6 +333,39 @@ describe('ProductFilter', () => {
         it('treats near-misses of "bis <year>" as plain text', () => {
             const bottle = makeBottle({ name: 'Chardonnay', trinkfensterBis: new Date(2020, 0, 1) });
             for (const text of ['bis 25', 'bis 2025 rot', 'bisher']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(bottle)).toBe(false);
+            }
+        });
+
+        it('passes "ml <size>" only for exactly that Flaschengrösse', () => {
+            filter.textFilter = 'ml1500';
+            expect(filter.filterProduct(makeBottle({ volumeMl: 1500 }))).toBe(true);
+            expect(filter.filterProduct(makeBottle({ volumeMl: 750 }))).toBe(false);
+            expect(filter.filterProduct(makeBottle({ name: 'Magnum ohne Grösse' }))).toBe(false);
+        });
+
+        it('accepts case and whitespace variants of "ml <size>"', () => {
+            const magnum = makeBottle({ volumeMl: 1500 });
+            for (const text of ['ML1500', 'ml 1500', '  Ml   1500  ']) {
+                filter.textFilter = text;
+                expect(filter.filterProduct(magnum)).toBe(true);
+            }
+        });
+
+        it('does not search regular text fields for "ml <size>"', () => {
+            filter.textFilter = 'ml 750';
+            expect(filter.filterProduct(makeBottle({ name: 'Cuvée ml 750', volumeMl: 1500 }))).toBe(false);
+        });
+
+        it('ignores the Flaschengrösse for a bare size', () => {
+            filter.textFilter = '1500';
+            expect(filter.filterProduct(makeBottle({ volumeMl: 1500 }))).toBe(false);
+        });
+
+        it('treats near-misses of "ml <size>" as plain text', () => {
+            const bottle = makeBottle({ name: 'Chardonnay', volumeMl: 1500 });
+            for (const text of ['ml', 'ml 1500 rot', '1500ml', 'mlx']) {
                 filter.textFilter = text;
                 expect(filter.filterProduct(bottle)).toBe(false);
             }

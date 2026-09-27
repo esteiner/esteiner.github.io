@@ -103,8 +103,11 @@ export class ProductFilter {
         if (this.isText) {
             if (this.textFilter) {
                 const drinkingWindowYear = ProductFilter.parseDrinkingWindowYear(this.textFilter);
+                const bottleSizeMl = ProductFilter.parseBottleSizeMl(this.textFilter);
                 if (drinkingWindowYear !== null) {
                     result = result && this.endsDrinkingWindowBy(drinkingWindowYear, product.getDrinkingWindowTo()?.getFullYear());
+                } else if (bottleSizeMl !== null) {
+                    result = result && product.getVolumeMl() === bottleSizeMl;
                 } else {
                     const textFilterLowerCase = this.textFilter.toLowerCase();
                     result = result && (
@@ -132,6 +135,12 @@ export class ProductFilter {
     // Parses "bis <year>" (e.g. "bis 2025") and returns the year, or null for any other text.
     private static parseDrinkingWindowYear(text: string): number | null {
         const match = /^bis\s*(\d{4})$/i.exec(text.trim());
+        return match ? Number(match[1]) : null;
+    }
+
+    // Parses "ml <size>" (e.g. "ml1500") and returns the size in millilitres, or null for any other text.
+    private static parseBottleSizeMl(text: string): number | null {
+        const match = /^ml\s*(\d+)$/i.exec(text.trim());
         return match ? Number(match[1]) : null;
     }
 

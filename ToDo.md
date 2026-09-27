@@ -7,7 +7,6 @@ ToDo
 - [ ] S&E: Preis lookup review
 - [ ] E: API Key für REST API
 - [ ] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
-- [ ] E: Suche nach Flaschengrösse ("ml 750")
 - [ ] E: beim Editieren von einem der Felder Hersteller, Weinname, Jahrgang, Flaschengrösse soll der Name aktualisiert werden
 - [ ] E: in Einkäufe soll auch ein Löschen sein
 
@@ -42,6 +41,7 @@ ToDo
 Done
 ---
 
+- [x] E: Suche nach Flaschengrösse ("ml 750")
 - [x] E: Edit soll auch ein Feld für Währung anbieten
 - [x] E: im Altglass Keller sollen Flaschen auch komplett gelöscht werden können
 - [x] E: zu bestehenden Flaschen weitere hinzufügen
