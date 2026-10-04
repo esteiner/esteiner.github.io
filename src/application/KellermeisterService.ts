@@ -142,12 +142,12 @@ export class KellermeisterService implements ReadModelCache {
                 grouped.get(productId)?.push(bottle);
             }
         }
-        // Order rows by product name (case-insensitive) so identically-named
-        // products remain adjacent, preserving the alphabetical layout.
-        return new Map([...grouped.entries()].sort(
-            ([, a], [, b]) => (a[0].getProduct().getName() ?? "").toLowerCase()
-                .localeCompare((b[0].getProduct().getName() ?? "").toLowerCase()),
-        ));
+        // Altglass shows the most recently drunk wines first; every other cellar
+        // orders rows by product name so identically-named products stay adjacent.
+        const comparator = cellar?.getId() === this.getAltglassId()
+            ? (a: Bottle[], b: Bottle[]) => this.compareRowsByLatestDisposal(a, b)
+            : (a: Bottle[], b: Bottle[]) => this.compareRowsByName(a, b);
+        return new Map([...grouped.entries()].sort(([, a], [, b]) => comparator(a, b)));
     }
 
     /**
@@ -397,6 +397,7 @@ export class KellermeisterService implements ReadModelCache {
     async disposeBottleToAltglass(bottle: Bottle, ratingValue?: number) {
         console.log("disposeBottleToAltglass: with id", bottle.getId());
         bottle.setCellar(this.getAltglassId());
+        bottle.setDisposedAt(new Date());
         if (ratingValue !== undefined) {
             // The rating is stored on the bottle and rides along on the bottle
             // save below — no separate (full-document) product write needed.
@@ -455,6 +456,35 @@ export class KellermeisterService implements ReadModelCache {
     }
 
     // -----------------------------------------------------------------
+
+    /** Case-insensitive by product name. */
+    private compareRowsByName(a: Bottle[], b: Bottle[]): number {
+        return (a[0].getProduct().getName() ?? "").toLowerCase()
+            .localeCompare((b[0].getProduct().getName() ?? "").toLowerCase());
+    }
+
+    /** Newest disposal first; undated rows last; ties by name. */
+    private compareRowsByLatestDisposal(a: Bottle[], b: Bottle[]): number {
+        const latestA = this.latestDisposal(a);
+        const latestB = this.latestDisposal(b);
+        if (latestA !== latestB) {
+            if (latestA === undefined) {
+                return 1;
+            }
+            if (latestB === undefined) {
+                return -1;
+            }
+            return latestB - latestA;
+        }
+        return this.compareRowsByName(a, b);
+    }
+
+    private latestDisposal(bottles: Bottle[]): number | undefined {
+        const times = bottles
+            .map(bottle => bottle.getEffectiveDisposalDate()?.getTime())
+            .filter((time): time is number => time !== undefined);
+        return times.length > 0 ? Math.max(...times) : undefined;
+    }
 
     private isBottleInThisCellar(bottle: Bottle, cellar: Cellar | undefined) {
         if (cellar) {

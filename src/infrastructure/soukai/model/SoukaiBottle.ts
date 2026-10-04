@@ -56,6 +56,18 @@ export class SoukaiBottle extends Model implements Bottle {
         this.relatedRating.setRelated(rating);
     }
 
+    getDisposedAt(): Date | undefined {
+        return this.disposedAt ?? undefined;
+    }
+    setDisposedAt(date: Date): void {
+        this.disposedAt = date;
+    }
+    getEffectiveDisposalDate(): Date | undefined {
+        // Legacy bottles have no stored date: the structured rating is dated at
+        // disposal time; the legacy numeric rating is dateless and skipped.
+        return this.getDisposedAt() ?? this.rating?.date ?? this.updatedAt ?? undefined;
+    }
+
     private orUndefined(value: any): any | undefined {
         return value ? value : undefined;
     }

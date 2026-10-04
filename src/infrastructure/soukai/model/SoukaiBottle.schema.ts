@@ -1,6 +1,6 @@
 import "soukai-bis/patch-zod";
 import {belongsToOne, defineSchema, requireBootedModel} from "soukai-bis";
-import {number, string, url} from "zod";
+import {date, number, string, url} from "zod";
 
 // https://schema.org/ListItem
 export default defineSchema({
@@ -32,6 +32,10 @@ export default defineSchema({
         // Product. Kept read-only so old pods remain readable — Bottle.getRating()
         // surfaces it as a dateless Rating when no structured rating is present.
         legacyRating: number().optional().rdfProperty("schema:rating"),
+
+        // When the bottle was moved to Altglass ("getrunken am"). Optional: bottles
+        // disposed before this field existed have none (see getEffectiveDisposalDate).
+        disposedAt: date().optional().rdfProperty("km:disposedAt"),
     },
 
     relations: {

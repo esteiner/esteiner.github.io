@@ -203,6 +203,82 @@ describe('KellermeisterService', () => {
         });
     });
 
+    describe('bottlesFromCellarGroupedByProduct', () => {
+        // Raw cellar ids so the Altglass cellar can match the mocked getAltglassId().
+        const cellarWithId = (id: string) => ({ getId: () => id } as unknown as Cellar);
+        const altglass = cellarWithId('altglass-id');
+        const day = (n: number) => new Date(2026, 8, n);
+        const drunk = (productId: string, name: string, date?: Date, cellarId = 'altglass-id') => {
+            const product = makeProduct(productId, name);
+            return {
+                getProduct: () => product,
+                getCellar: () => cellarId,
+                getEffectiveDisposalDate: () => date,
+            } as unknown as Bottle;
+        };
+        const rowNames = (grouped: Map<string, Bottle[]>) =>
+            [...grouped.values()].map(bottles => bottles[0].getProduct().getName());
+
+        it('orders Altglass rows newest disposal first', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                drunk('a', 'Amarone', day(1)), drunk('b', 'Barolo', day(3)), drunk('c', 'Chianti', day(2)),
+            ]);
+
+            const grouped = await service.bottlesFromCellarGroupedByProduct(altglass, new ProductFilter());
+
+            expect(rowNames(grouped)).toEqual(['Barolo', 'Chianti', 'Amarone']);
+        });
+
+        it('uses the latest bottle of a row as its date', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                drunk('a', 'Amarone', day(1)), drunk('a', 'Amarone', day(5)), drunk('b', 'Barolo', day(3)),
+            ]);
+
+            const grouped = await service.bottlesFromCellarGroupedByProduct(altglass, new ProductFilter());
+
+            expect(rowNames(grouped)).toEqual(['Amarone', 'Barolo']);
+        });
+
+        it('orders rows with equal dates by name and undated rows last', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                drunk('z', 'Zweigelt', undefined), drunk('c', 'chianti', day(2)),
+                drunk('b', 'Barolo', day(2)), drunk('a', 'Amarone', undefined),
+            ]);
+
+            const grouped = await service.bottlesFromCellarGroupedByProduct(altglass, new ProductFilter());
+
+            expect(rowNames(grouped)).toEqual(['Barolo', 'chianti', 'Amarone', 'Zweigelt']);
+        });
+
+        it('keeps the newest-first order when a filter is applied', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                drunk('a', 'Barolo Riserva', day(1)), drunk('b', 'Barolo', day(3)), drunk('c', 'Chianti', day(4)),
+            ]);
+            const barolo = new ProductFilter();
+            barolo.isText = true;
+            barolo.textFilter = 'barolo';
+
+            const grouped = await service.bottlesFromCellarGroupedByProduct(altglass, barolo);
+
+            expect(rowNames(grouped)).toEqual(['Barolo', 'Barolo Riserva']);
+        });
+
+        it('orders other cellars by name', async () => {
+            const { service, bottleRepo } = makeService();
+            vi.mocked(bottleRepo.fetchBottles).mockResolvedValue([
+                drunk('b', 'Barolo', day(3), 'keller'), drunk('a', 'amarone', day(1), 'keller'),
+            ]);
+
+            const grouped = await service.bottlesFromCellarGroupedByProduct(cellarWithId('keller'), new ProductFilter());
+
+            expect(rowNames(grouped)).toEqual(['amarone', 'Barolo']);
+        });
+    });
+
     describe('countBottles', () => {
         // Stubs with the raw cellar id, so it can equal the mocked getAltglassId().
         const inCellar = (cellarId: string | undefined) => ({ getCellar: () => cellarId } as unknown as Bottle);

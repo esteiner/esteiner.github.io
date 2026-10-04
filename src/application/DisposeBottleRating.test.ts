@@ -89,6 +89,30 @@ describe("disposeBottleToAltglass rating", () => {
         expect(reloaded.getRating()).toBeUndefined();
     });
 
+    it("records the disposal date when disposing with a rating", async () => {
+        const deps = makeService();
+        const bottle = await seedBottle(deps);
+        const before = Date.now();
+
+        await deps.service.disposeBottleToAltglass(bottle, 2);
+
+        const reloaded = await reloadBottleWithRating(bottle.getId());
+        expect(reloaded.getDisposedAt()?.getTime()).toBeGreaterThanOrEqual(before);
+        expect(reloaded.getDisposedAt()?.getTime()).toBeLessThanOrEqual(Date.now());
+    });
+
+    it("records the disposal date when disposing without a rating", async () => {
+        const deps = makeService();
+        const bottle = await seedBottle(deps);
+        const before = Date.now();
+
+        await deps.service.disposeBottleToAltglass(bottle);
+
+        const reloaded = await reloadBottleWithRating(bottle.getId());
+        expect(reloaded.getDisposedAt()?.getTime()).toBeGreaterThanOrEqual(before);
+        expect(reloaded.getDisposedAt()?.getTime()).toBeLessThanOrEqual(Date.now());
+    });
+
     it("surfaces the bottle rating through the product's aggregated ratings (cellar view path)", async () => {
         const deps = makeService();
         const bottle = await seedBottle(deps);
