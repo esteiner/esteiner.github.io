@@ -1,0 +1,54 @@
+PREFIX km:     <https://vocab.kellermeister.ch/wine/>
+PREFIX schema: <https://schema.org/>
+PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>
+
+<https://kellermeister.ch/orders/foto-okt-2026>
+       a                     schema:Order;
+       schema:customer       <https://kellermeister.ch/customers/unbekannter-kunde>;
+       schema:invoiceNumber  "foto-okt-2026";
+       schema:orderDate      "2026-10-06"^^xsd:date;
+       schema:orderedItem    <https://kellermeister.ch/orders/foto-okt-2026/item>;
+       schema:priceCurrency  "CHF";
+       schema:seller         <https://kellermeister.ch/sellers/unbekannter-haendler> .
+
+<https://kellermeister.ch/orders/foto-okt-2026/item>
+       a                     schema:OrderItem;
+       schema:orderQuantity  1;
+       schema:orderedItem    <https://kellermeister.ch/products/champagne-fleury-cuvee-exclusiv>;
+       schema:price          49.95;
+       schema:priceCurrency  "CHF";
+       km:priceSource        "flaschenpost.ch (Fleury Champagne Blanc de Noirs Brut AOC, ohne Jahrgang)" .
+
+<https://kellermeister.ch/places/unbekannter-haendler>
+       a           schema:Place;
+       schema:geo  <https://kellermeister.ch/places/unbekannter-haendler/geo> .
+
+<https://kellermeister.ch/sellers/unbekannter-haendler>
+       a                schema:Organization;
+       schema:location  <https://kellermeister.ch/places/unbekannter-haendler> .
+
+<https://kellermeister.ch/products/champagne-fleury-cuvee-exclusiv>
+       a                   schema:Product;
+       schema:name         "Champagne Fleury Cuvée Exclusiv";
+       km:alkoholgehalt    "12%";
+       km:ausbau           "Flaschengärung nach traditioneller Methode, Dosage 4,8 g/L, dégorgement November 2023. Weinberge auf Kimmeridge-Ton-Kalk-Böden, biodynamisch bewirtschaftet (Demeter, Biodyvin).";
+       km:biologisch       "ja";
+       km:hersteller       "Fleury";
+       km:klassifikation   "AOC Champagne, Brut";
+       km:land             "Frankreich";
+       km:milliliter       750;
+       km:region           "Courteron, Côte des Bar, Champagne";
+       km:traubensorte     "100% Pinot Noir";
+       km:trinkfensterBis  "2029"^^xsd:gYear;
+       km:trinkfensterVon  "2024"^^xsd:gYear;
+       km:weinart          "Schaumwein";
+       km:weinfarbe        "weiss";
+       km:weinname         "Cuvée Exclusiv" .
+
+<https://kellermeister.ch/customers/unbekannter-kunde>
+       a       schema:Organization .
+
+<https://kellermeister.ch/places/unbekannter-haendler/geo>
+       a                 schema:GeoCoordinates;
+       schema:latitude   47.04898333333333;
+       schema:longitude  8.308797222222223 .
