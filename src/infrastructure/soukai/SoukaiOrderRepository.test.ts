@@ -249,6 +249,7 @@ describe("SoukaiOrderRepository same-document embedding", () => {
             getOrderQuantity: () => 2,
             getPrice: () => 10,
             getPriceCurrency: () => "CHF",
+            getPriceSource: () => "Vinothek Zürich",
             getProduct: () => ({getName: () => "Barolo"}),
         } as unknown as OrderItem;
         return {
@@ -329,6 +330,7 @@ describe("SoukaiOrderRepository same-document embedding", () => {
         expect(order.getCustomer()?.getId().split("#")[0]).toBe(docUrl);
         expect(order.getOrderItems()[0].getId().split("#")[0]).toBe(docUrl);
         expect((order.getOrderItems()[0] as SoukaiOrderItem).productUrl).toBe("local://products/p1");
+        expect(order.getOrderItems()[0].getPriceSource()).toBe("Vinothek Zürich");
         // The order item's product (a separate resource) is resolved on read.
         expect((order.getOrderItems()[0] as SoukaiOrderItem).getProduct()?.getName()).toBe("Barolo");
     });

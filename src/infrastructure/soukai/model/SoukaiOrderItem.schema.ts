@@ -18,6 +18,7 @@ export default defineSchema({
         priceCurrency: string().optional().rdfProperty("schema:priceCurrency"),
         orderUrl: url().optional().rdfProperty("km:order"),
         productUrl: url().optional().rdfProperty("schema:orderedItem"),
+        priceSource: string().optional().rdfProperty("km:priceSource"),
     },
 
     relations: {

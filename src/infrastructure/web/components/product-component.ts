@@ -194,7 +194,7 @@ class ProductComponent extends BaseComponent {
                 </div>
                 <div class="group">
                     <label>Quelle</label>
-                    <span class="value">${p?.getOrderItem()?.getOrder()?.getSeller()?.getName()}${this.renderDate(p?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
+                    <span class="value">${p?.getOrderItem()?.getSellerName()}${this.renderDate(p?.getOrderItem()?.getOrder()?.getOrderDate())}</span>
                 </div>
                 ${this.renderRatings()}
             </div>

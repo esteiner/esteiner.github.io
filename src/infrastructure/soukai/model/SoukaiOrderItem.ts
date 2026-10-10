@@ -22,6 +22,12 @@ export class SoukaiOrderItem extends Model implements OrderItem {
   getPriceCurrency(): string {
     return this.orUndefined(this.priceCurrency);
   }
+  getPriceSource(): string {
+    return this.orUndefined(this.priceSource);
+  }
+  getSellerName(): string | undefined {
+    return this.getOrder()?.getSeller()?.getName()?.trim() || this.getPriceSource() || undefined;
+  }
   getOrderQuantity(): number {
     return this.orUndefined(this.orderQuantity);
   }

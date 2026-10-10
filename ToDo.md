@@ -39,6 +39,8 @@ ToDo
 Done
 ---
 
+- [x] E: in Quelle soll der Name des Sellars oder die PriceSource des OrderItems angezeigt werden
+- [x] E: Keller Altglass nach "getrunken" sortiert
 - [x] E: beim Editieren von einem der Felder Hersteller, Weinname, Jahrgang, Flaschengrösse soll der Name aktualisiert werden
 - [x] E: Suche nach Bewertung ("top3" =findet alle Flaschen mit Rating = 3 etc.)
 - [x] E: Suche nach Flaschengrösse ("ml 750")

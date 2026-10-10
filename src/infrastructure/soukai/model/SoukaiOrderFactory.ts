@@ -54,6 +54,7 @@ export class SoukaiOrderFactory implements OrderFactory {
         newOrderItem.orderQuantity = orderItem.getOrderQuantity();
         newOrderItem.price = orderItem.getPrice();
         newOrderItem.priceCurrency = orderItem.getPriceCurrency();
+        newOrderItem.priceSource = orderItem.getPriceSource();
         if (order instanceof SoukaiOrder) {
             newOrderItem.relatedOrder.setRelated(order);
         }
